@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Calendar, FileText, PlayCircle, Pin, Hammer, Ruler, BookOpen } from "lucide-react";
 import { getDashboard } from "@/lib/dashboard.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,16 +14,29 @@ import { formatDistanceToNow } from "date-fns";
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
   component: DashboardPage,
+  errorComponent: ({ error, reset }) => {
+    const router = useRouter();
+    return (
+      <div className="container-prose py-20 text-center space-y-4">
+        <h1 className="font-display text-3xl">Couldn't load your dashboard</h1>
+        <p className="text-sm text-muted-foreground">{error.message || "Please try again."}</p>
+        <Button onClick={() => { router.invalidate(); reset(); }}>Try again</Button>
+      </div>
+    );
+  },
 });
 
 function DashboardPage() {
+  const { user, loading } = useAuth();
   const fetchDashboard = useServerFn(getDashboard);
   const { data, isLoading } = useQuery({
-    queryKey: ["dashboard"],
+    queryKey: ["dashboard", user?.id],
     queryFn: () => fetchDashboard(),
+    enabled: !!user && !loading,
+    retry: 1,
   });
 
-  if (isLoading || !data) return <DashboardSkeleton />;
+  if (loading || isLoading || !data) return <DashboardSkeleton />;
 
   const { profile, member, replays, featuredTemplates, announcements } = data;
   const latest = replays[0];
