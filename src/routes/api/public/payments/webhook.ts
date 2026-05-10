@@ -1,68 +1,85 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type Stripe from "stripe";
-import { type StripeEnv, createStripeClient, getWebhookSecret } from "@/lib/stripe.server";
+import { createStripeClient, getWebhookSecret } from "@/lib/stripe.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-function parseEnv(value: string | null): StripeEnv {
-  return value === "live" ? "live" : "sandbox";
-}
-
-async function resolvePriceLookupKey(stripe: Stripe, priceId: string | null): Promise<string | null> {
-  if (!priceId) return null;
-  try {
-    const price = await stripe.prices.retrieve(priceId);
-    return price.lookup_key ?? price.id;
-  } catch {
-    return priceId;
-  }
-}
-
-async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
-  const stripe = createStripeClient(env);
+async function upsertSubscription(sub: Stripe.Subscription) {
+  const stripe = createStripeClient();
   const item = sub.items.data[0];
-  const priceLookupKey = await resolvePriceLookupKey(stripe, item?.price?.id ?? null);
-
-  // userId resolution: prefer subscription metadata, fall back to customer metadata
-  let userId = sub.metadata?.userId as string | undefined;
-  if (!userId && typeof sub.customer === "string") {
-    try {
-      const customer = await stripe.customers.retrieve(sub.customer);
-      if (customer && !customer.deleted) {
-        userId = (customer.metadata?.userId as string | undefined) ?? undefined;
-      }
-    } catch (e) {
-      console.error("Failed to retrieve customer for userId", e);
-    }
-  }
-  if (!userId) {
-    console.warn("Subscription has no userId metadata, skipping", sub.id);
-    return;
-  }
-
+  const priceId = item?.price?.id ?? null;
+  const productId = typeof item?.price?.product === "string" ? item.price.product : null;
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   const periodEndUnix = item?.current_period_end ?? null;
+  const periodEndIso = periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null;
 
+  // Resolve userId: prefer subscription metadata, then customer metadata, then pending_claims by email
+  let userId = (sub.metadata?.userId as string | undefined) ?? undefined;
+  let customerEmail: string | null = null;
+
+  if (!userId || !customerEmail) {
+    try {
+      const customer = await stripe.customers.retrieve(customerId);
+      if (customer && !customer.deleted) {
+        userId = userId ?? ((customer.metadata?.userId as string | undefined) ?? undefined);
+        customerEmail = customer.email ?? null;
+      }
+    } catch (e) {
+      console.error("Failed to retrieve customer", e);
+    }
+  }
+
+  // If still no user, try to match a registered user by email
+  if (!userId && customerEmail) {
+    const { data: matched } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    const user = matched?.users.find((u) => u.email?.toLowerCase() === customerEmail!.toLowerCase());
+    if (user) userId = user.id;
+  }
+
+  // Always upsert into subscriptions, even without a user (so backfill works)
   const { error } = await supabaseAdmin
     .from("subscriptions")
     .upsert(
       {
-        user_id: userId,
-        environment: env,
+        user_id: userId ?? null,
+        environment: "live",
         stripe_customer_id: customerId,
         stripe_subscription_id: sub.id,
-        price_id: priceLookupKey,
-        product_id: typeof item?.price?.product === "string" ? item.price.product : null,
+        price_id: priceId,
+        product_id: productId,
         status: sub.status,
-        current_period_end: periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null,
+        current_period_end: periodEndIso,
         cancel_at_period_end: sub.cancel_at_period_end,
         metadata: (sub.metadata ?? {}) as Record<string, string>,
       },
-      { onConflict: "stripe_subscription_id,environment" },
+      { onConflict: "stripe_subscription_id" },
     );
 
   if (error) console.error("subscriptions upsert error", error);
 
-  // Mirror to the existing members table so the portal dashboard reflects status
+  // If unclaimed, also write/update a pending_claims row so the member can self-claim
+  if (!userId && customerEmail) {
+    await supabaseAdmin
+      .from("pending_claims")
+      .upsert(
+        {
+          email: customerEmail,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: sub.id,
+          price_id: priceId ?? "",
+          status: sub.status,
+          current_period_end: periodEndIso,
+        },
+        { onConflict: "stripe_subscription_id" },
+      );
+    return;
+  }
+
+  if (!userId) {
+    console.warn("Subscription has no userId and no email match; left unlinked", sub.id);
+    return;
+  }
+
+  // Mirror to members table
   const status =
     sub.status === "active" || sub.status === "trialing"
       ? "active"
@@ -76,10 +93,10 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
     .from("members")
     .update({
       status,
-      plan: priceLookupKey,
+      plan: priceId,
       stripe_customer_id: customerId,
       stripe_subscription_id: sub.id,
-      current_period_end: periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null,
+      current_period_end: periodEndIso,
     })
     .eq("user_id", userId);
 }
@@ -88,20 +105,18 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const url = new URL(request.url);
-        const env = parseEnv(url.searchParams.get("env"));
         const signature = request.headers.get("stripe-signature");
         if (!signature) return new Response("Missing signature", { status: 400 });
 
         const payload = await request.text();
-        const stripe = createStripeClient(env);
+        const stripe = createStripeClient();
 
         let event: Stripe.Event;
         try {
           event = await stripe.webhooks.constructEventAsync(
             payload,
             signature,
-            getWebhookSecret(env),
+            getWebhookSecret(),
           );
         } catch (err) {
           console.error("Webhook signature verification failed", err);
@@ -115,14 +130,14 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
               if (session.mode === "subscription" && session.subscription) {
                 const subId = typeof session.subscription === "string" ? session.subscription : session.subscription.id;
                 const sub = await stripe.subscriptions.retrieve(subId);
-                await upsertSubscription(env, sub);
+                await upsertSubscription(sub);
               }
               break;
             }
             case "customer.subscription.created":
             case "customer.subscription.updated":
             case "customer.subscription.deleted": {
-              await upsertSubscription(env, event.data.object as Stripe.Subscription);
+              await upsertSubscription(event.data.object as Stripe.Subscription);
               break;
             }
             default:

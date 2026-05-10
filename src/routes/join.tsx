@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MarketingHeader } from "@/components/marketing-shell";
-import { PaymentTestModeBanner } from "@/components/payment-test-mode-banner";
 import { StripeEmbeddedCheckout } from "@/components/stripe-embedded-checkout";
+import { NEW_SIGNUP_PRICE_ID } from "@/lib/stripe";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/join")({
@@ -47,7 +47,6 @@ function JoinPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PaymentTestModeBanner />
       <MarketingHeader />
 
       <main className="container-prose py-16">
@@ -125,9 +124,16 @@ function JoinPage() {
                   Continue to payment
                 </Button>
               </div>
+            ) : !NEW_SIGNUP_PRICE_ID ? (
+              <div className="space-y-3">
+                <h2 className="font-display text-2xl">Checkout coming online</h2>
+                <p className="text-sm text-muted-foreground">
+                  We're finalizing the new public membership price. Drop us a note at hello@constructline.io and we'll get you in.
+                </p>
+              </div>
             ) : (
               <StripeEmbeddedCheckout
-                priceId="circle_monthly"
+                priceId={NEW_SIGNUP_PRICE_ID}
                 customerEmail={user?.email ?? email}
                 userId={user?.id}
                 returnUrl={returnUrl}

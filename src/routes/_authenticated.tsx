@@ -1,7 +1,10 @@
 import { createFileRoute, Outlet, redirect, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { PortalSidebar } from "@/components/portal-sidebar";
 import { supabase } from "@/integrations/supabase/client";
+import { claimMyPendingSubscription } from "@/lib/membership.functions";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
@@ -18,6 +21,12 @@ function AuthenticatedLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const crumb = pathname.replace(/^\/portal\/?/, "") || "Dashboard";
   const title = crumb.charAt(0).toUpperCase() + crumb.slice(1).replace(/-/g, " ");
+  const claim = useServerFn(claimMyPendingSubscription);
+
+  useEffect(() => {
+    // Auto-link any pending Stripe subscription to this user (idempotent).
+    claim({ data: undefined as never }).catch((e) => console.warn("claim check failed", e));
+  }, [claim]);
 
   return (
     <SidebarProvider>
