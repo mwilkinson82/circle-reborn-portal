@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SilosThanksRouteImport } from './routes/silos.thanks'
 import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
 import { Route as EstimatingThanksRouteImport } from './routes/estimating.thanks'
+import { Route as ConstructlineLoginRouteImport } from './routes/constructline.login'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -90,6 +91,11 @@ const EstimatingThanksRoute = EstimatingThanksRouteImport.update({
   path: '/thanks',
   getParentRoute: () => EstimatingRoute,
 } as any)
+const ConstructlineLoginRoute = ConstructlineLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => ConstructlineRoute,
+} as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -110,7 +116,7 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/constructline': typeof ConstructlineRoute
+  '/constructline': typeof ConstructlineRouteWithChildren
   '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
@@ -127,7 +134,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/constructline': typeof ConstructlineRoute
+  '/constructline': typeof ConstructlineRouteWithChildren
   '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
@@ -136,6 +143,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
@@ -146,7 +154,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/constructline': typeof ConstructlineRoute
+  '/constructline': typeof ConstructlineRouteWithChildren
   '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
@@ -155,6 +163,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/silos'
     | '/checkout/return'
+    | '/constructline/login'
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
@@ -191,6 +201,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/silos'
     | '/checkout/return'
+    | '/constructline/login'
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
@@ -209,6 +220,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/silos'
     | '/checkout/return'
+    | '/constructline/login'
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
@@ -219,7 +231,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  ConstructlineRoute: typeof ConstructlineRoute
+  ConstructlineRoute: typeof ConstructlineRouteWithChildren
   EstimatingRoute: typeof EstimatingRouteWithChildren
   JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EstimatingThanksRouteImport
       parentRoute: typeof EstimatingRoute
     }
+    '/constructline/login': {
+      id: '/constructline/login'
+      path: '/login'
+      fullPath: '/constructline/login'
+      preLoaderRoute: typeof ConstructlineLoginRouteImport
+      parentRoute: typeof ConstructlineRoute
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -358,6 +377,18 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
+)
+
+interface ConstructlineRouteChildren {
+  ConstructlineLoginRoute: typeof ConstructlineLoginRoute
+}
+
+const ConstructlineRouteChildren: ConstructlineRouteChildren = {
+  ConstructlineLoginRoute: ConstructlineLoginRoute,
+}
+
+const ConstructlineRouteWithChildren = ConstructlineRoute._addFileChildren(
+  ConstructlineRouteChildren,
 )
 
 interface EstimatingRouteChildren {
@@ -395,7 +426,7 @@ const SilosRouteWithChildren = SilosRoute._addFileChildren(SilosRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  ConstructlineRoute: ConstructlineRoute,
+  ConstructlineRoute: ConstructlineRouteWithChildren,
   EstimatingRoute: EstimatingRouteWithChildren,
   JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
