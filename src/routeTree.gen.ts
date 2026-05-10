@@ -9,13 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SilosRouteImport } from './routes/silos'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as Q2RouteImport } from './routes/q2'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as JoinRouteImport } from './routes/join'
+import { Route as EstimatingRouteImport } from './routes/estimating'
+import { Route as ConstructlineRouteImport } from './routes/constructline'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SilosThanksRouteImport } from './routes/silos.thanks'
+import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
+import { Route as EstimatingThanksRouteImport } from './routes/estimating.thanks'
+import { Route as ConstructlineLoginRouteImport } from './routes/constructline.login'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const SilosRoute = SilosRouteImport.update({
+  id: '/silos',
+  path: '/silos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -26,9 +42,29 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Q2Route = Q2RouteImport.update({
+  id: '/q2',
+  path: '/q2',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinRoute = JoinRouteImport.update({
+  id: '/join',
+  path: '/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstimatingRoute = EstimatingRouteImport.update({
+  id: '/estimating',
+  path: '/estimating',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConstructlineRoute = ConstructlineRouteImport.update({
+  id: '/constructline',
+  path: '/constructline',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -40,61 +76,182 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SilosThanksRoute = SilosThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => SilosRoute,
+} as any)
+const Q2ThanksRoute = Q2ThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => Q2Route,
+} as any)
+const EstimatingThanksRoute = EstimatingThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => EstimatingRoute,
+} as any)
+const ConstructlineLoginRoute = ConstructlineLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => ConstructlineRoute,
+} as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPortalIndexRoute =
   AuthenticatedPortalIndexRouteImport.update({
     id: '/portal/',
     path: '/portal/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/constructline': typeof ConstructlineRouteWithChildren
+  '/estimating': typeof EstimatingRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRouteWithChildren
+  '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
+  '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/constructline': typeof ConstructlineRouteWithChildren
+  '/estimating': typeof EstimatingRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRouteWithChildren
+  '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
+  '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/constructline': typeof ConstructlineRouteWithChildren
+  '/estimating': typeof EstimatingRouteWithChildren
+  '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRouteWithChildren
+  '/checkout/return': typeof CheckoutReturnRoute
+  '/constructline/login': typeof ConstructlineLoginRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
+  '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/reset-password' | '/signup' | '/portal/'
+  fullPaths:
+    | '/'
+    | '/constructline'
+    | '/estimating'
+    | '/join'
+    | '/login'
+    | '/q2'
+    | '/reset-password'
+    | '/signup'
+    | '/silos'
+    | '/checkout/return'
+    | '/constructline/login'
+    | '/estimating/thanks'
+    | '/q2/thanks'
+    | '/silos/thanks'
+    | '/portal/'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/reset-password' | '/signup' | '/portal'
+  to:
+    | '/'
+    | '/constructline'
+    | '/estimating'
+    | '/join'
+    | '/login'
+    | '/q2'
+    | '/reset-password'
+    | '/signup'
+    | '/silos'
+    | '/checkout/return'
+    | '/constructline/login'
+    | '/estimating/thanks'
+    | '/q2/thanks'
+    | '/silos/thanks'
+    | '/portal'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/constructline'
+    | '/estimating'
+    | '/join'
     | '/login'
+    | '/q2'
     | '/reset-password'
     | '/signup'
+    | '/silos'
+    | '/checkout/return'
+    | '/constructline/login'
+    | '/estimating/thanks'
+    | '/q2/thanks'
+    | '/silos/thanks'
     | '/_authenticated/portal/'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  ConstructlineRoute: typeof ConstructlineRouteWithChildren
+  EstimatingRoute: typeof EstimatingRouteWithChildren
+  JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
+  Q2Route: typeof Q2RouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SilosRoute: typeof SilosRouteWithChildren
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/silos': {
+      id: '/silos'
+      path: '/silos'
+      fullPath: '/silos'
+      preLoaderRoute: typeof SilosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -109,11 +266,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/q2': {
+      id: '/q2'
+      path: '/q2'
+      fullPath: '/q2'
+      preLoaderRoute: typeof Q2RouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join': {
+      id: '/join'
+      path: '/join'
+      fullPath: '/join'
+      preLoaderRoute: typeof JoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estimating': {
+      id: '/estimating'
+      path: '/estimating'
+      fullPath: '/estimating'
+      preLoaderRoute: typeof EstimatingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/constructline': {
+      id: '/constructline'
+      path: '/constructline'
+      fullPath: '/constructline'
+      preLoaderRoute: typeof ConstructlineRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -130,12 +315,54 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/silos/thanks': {
+      id: '/silos/thanks'
+      path: '/thanks'
+      fullPath: '/silos/thanks'
+      preLoaderRoute: typeof SilosThanksRouteImport
+      parentRoute: typeof SilosRoute
+    }
+    '/q2/thanks': {
+      id: '/q2/thanks'
+      path: '/thanks'
+      fullPath: '/q2/thanks'
+      preLoaderRoute: typeof Q2ThanksRouteImport
+      parentRoute: typeof Q2Route
+    }
+    '/estimating/thanks': {
+      id: '/estimating/thanks'
+      path: '/thanks'
+      fullPath: '/estimating/thanks'
+      preLoaderRoute: typeof EstimatingThanksRouteImport
+      parentRoute: typeof EstimatingRoute
+    }
+    '/constructline/login': {
+      id: '/constructline/login'
+      path: '/login'
+      fullPath: '/constructline/login'
+      preLoaderRoute: typeof ConstructlineLoginRouteImport
+      parentRoute: typeof ConstructlineRoute
+    }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/portal/': {
       id: '/_authenticated/portal/'
       path: '/portal'
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -152,12 +379,63 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface ConstructlineRouteChildren {
+  ConstructlineLoginRoute: typeof ConstructlineLoginRoute
+}
+
+const ConstructlineRouteChildren: ConstructlineRouteChildren = {
+  ConstructlineLoginRoute: ConstructlineLoginRoute,
+}
+
+const ConstructlineRouteWithChildren = ConstructlineRoute._addFileChildren(
+  ConstructlineRouteChildren,
+)
+
+interface EstimatingRouteChildren {
+  EstimatingThanksRoute: typeof EstimatingThanksRoute
+}
+
+const EstimatingRouteChildren: EstimatingRouteChildren = {
+  EstimatingThanksRoute: EstimatingThanksRoute,
+}
+
+const EstimatingRouteWithChildren = EstimatingRoute._addFileChildren(
+  EstimatingRouteChildren,
+)
+
+interface Q2RouteChildren {
+  Q2ThanksRoute: typeof Q2ThanksRoute
+}
+
+const Q2RouteChildren: Q2RouteChildren = {
+  Q2ThanksRoute: Q2ThanksRoute,
+}
+
+const Q2RouteWithChildren = Q2Route._addFileChildren(Q2RouteChildren)
+
+interface SilosRouteChildren {
+  SilosThanksRoute: typeof SilosThanksRoute
+}
+
+const SilosRouteChildren: SilosRouteChildren = {
+  SilosThanksRoute: SilosThanksRoute,
+}
+
+const SilosRouteWithChildren = SilosRoute._addFileChildren(SilosRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  ConstructlineRoute: ConstructlineRouteWithChildren,
+  EstimatingRoute: EstimatingRouteWithChildren,
+  JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
+  Q2Route: Q2RouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SilosRoute: SilosRouteWithChildren,
+  CheckoutReturnRoute: CheckoutReturnRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
