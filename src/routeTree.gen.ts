@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as Q2RouteImport } from './routes/q2'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -27,6 +28,11 @@ const SignupRoute = SignupRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Q2Route = Q2RouteImport.update({
+  id: '/q2',
+  path: '/q2',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -70,6 +76,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2Route
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -80,6 +87,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2Route
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -92,6 +100,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
+  '/q2': typeof Q2Route
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
     | '/'
     | '/join'
     | '/login'
+    | '/q2'
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
@@ -114,6 +124,7 @@ export interface FileRouteTypes {
     | '/'
     | '/join'
     | '/login'
+    | '/q2'
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
@@ -125,6 +136,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/join'
     | '/login'
+    | '/q2'
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
@@ -137,6 +149,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
+  Q2Route: typeof Q2Route
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -157,6 +170,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/q2': {
+      id: '/q2'
+      path: '/q2'
+      fullPath: '/q2'
+      preLoaderRoute: typeof Q2RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -228,6 +248,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
+  Q2Route: Q2Route,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
@@ -236,3 +257,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
