@@ -1,109 +1,113 @@
+# Phase 3 Plan — Existing Stripe + Member Claim Flow
 
-# ALP Contractor Circle Portal — Rebuild Plan
+## Context
 
-A full rebuild of a 30+ page portal is a multi-week effort. We'll execute it in phases. Each phase ends with a working, shippable site. This plan covers Phase 1 in detail and outlines Phases 2–5 so you know what's coming.
+You have a live Stripe account with 18 paying members on Contractor Circle. We need to:
+1. Connect to **your** Stripe account (not the Lovable-managed sandbox we set up earlier)
+2. Let those 18 members claim portal access without disrupting their subscriptions
+3. Create a new product/price for new signups so the existing 18 stay grandfathered on their current price
 
-## What we're rebuilding (from your zip)
+## What changes from what we already built
 
-The current app is an Express + Drizzle + tRPC + Wouter + Stripe + Discord stack with these page groups:
+The webhook handler, `subscriptions` table, `members` table, and embedded checkout component all stay — the data shapes are identical. What changes:
 
-- **Public marketing**: Contractor Circle landing, Join, Circle Welcome, ConstructLine landing, Beta Login/Signup
-- **Lead magnets**: Q2, Estimating Checklist, Three Silos (+ thank-you pages)
-- **Member Portal**: Dashboard, Replays, Templates, Account, Subscribers
-- **Admin**: Members, Analytics, Feedback, Drip Dashboard, Portal Admin
-- **CPM Scheduler**: List, Scheduler, Reports, Comparison
-- **ConstructLine tools**: Hub, Takeoff list/detail, Cost Library, Labor Library
+- **Stripe credentials**: Switch from Lovable-managed `STRIPE_SANDBOX_API_KEY` / `STRIPE_LIVE_API_KEY` to your own `STRIPE_SECRET_KEY` + `STRIPE_PUBLISHABLE_KEY` + `STRIPE_WEBHOOK_SECRET`. The `createStripeClient` helper gets simplified to use the real Stripe SDK directly with your keys (no more gateway proxy).
+- **Webhook URL**: You'll add a new endpoint in your Stripe dashboard pointing at `https://circle-reborn-portal.lovable.app/api/public/payments/webhook`. We drop the `?env=` switching since there's only one account.
+- **Product/price IDs**: We stop using `lookup_keys`. The webhook will store the raw Stripe price ID (e.g. `price_abc123`) — both the grandfathered $497 price and the new $497 price coexist cleanly.
+- **No more sandbox/live banner**: One environment, one set of keys. The `PaymentTestModeBanner` gets removed.
 
-## Target stack
+## Step 1 — Collect your Stripe credentials
 
-- TanStack Start v1 + React 19 + Vite 7 (current template)
-- Tailwind v4 + shadcn/ui (already in)
-- Lovable Cloud (Supabase) — auth, Postgres, storage, server functions
-- Stripe via server route + webhook (`/api/public/webhooks/stripe`)
-- File-based routes under `src/routes/` — every section gets its own route (no hash anchors)
+I'll request three secrets via the secure secrets form:
+- `STRIPE_SECRET_KEY` — `sk_live_...` from your Stripe dashboard → Developers → API keys
+- `STRIPE_PUBLISHABLE_KEY` — `pk_live_...` from the same page
+- `STRIPE_WEBHOOK_SECRET` — created in Step 4 below; you'll add it after the webhook endpoint exists
 
-## Design direction — Modern SaaS / Editorial
+You'll also tell me:
+- The **existing $497 price ID** (e.g. `price_1Abc...`) — for the grandfathered members
+- Whether you want the new $497 price on a **new product** ("Contractor Circle Membership 2026") or as a second price under your existing product
 
-A refined, premium contractor tool that doesn't look like construction software. Think Linear meets Notion meets a finely-printed trade magazine.
+## Step 2 — Create the new $497 price for new signups
 
-- **Palette**: warm off-white canvas (`oklch(0.985 0.005 80)`), deep ink foreground (`oklch(0.18 0.01 260)`), single accent — burnt amber (`oklch(0.68 0.16 55)`) used sparingly. Subtle elevated surface for cards. Dark mode mirror.
-- **Typography**: display serif for headlines (Fraunces or Instrument Serif) + clean grotesque body (Geist or Inter Tight). Big, confident H1s; generous line-height; tabular numerals for data.
-- **Layout**: 12-col grid with wide gutters on marketing pages; portal uses a quiet left sidebar (icon + label, collapsible) with content max-width 1200px. Section dividers are hairline rules, not boxes.
-- **Motion**: framer-motion — single hero reveal, page transitions, list stagger on dashboards. No bouncy micro-interactions.
-- **Data viz**: Recharts with monochrome amber palette + thin gridlines. Tabular-num everywhere money/duration appears.
-- **Tone**: copy that sounds like a senior PM, not marketing. Short, declarative, no exclamation points.
+Done directly in your Stripe dashboard (or I can give you a one-time script). New signups will check out against this new price ID. Existing 18 stay on the old price ID forever — Stripe doesn't migrate them.
 
-All tokens defined in `src/styles.css` as oklch — no hardcoded colors in components.
+## Step 3 — Rewire the Stripe code to BYOK
 
-## Phase 1 — Foundation + Member Portal Dashboard (this turn)
+- `src/lib/stripe.server.ts` — replace gateway proxy with `new Stripe(process.env.STRIPE_SECRET_KEY)`. Remove `StripeEnv` type, `getConnectionApiKey`, gateway URL.
+- `src/lib/stripe.ts` — read `VITE_STRIPE_PUBLISHABLE_KEY` instead of `VITE_PAYMENTS_CLIENT_TOKEN`. Remove `getStripeEnvironment`.
+- `src/lib/payments.functions.ts` — drop `environment` from inputs. `createCheckoutSession` takes a raw Stripe `priceId` (`price_xxx`), not a lookup key.
+- `src/routes/api/public/payments/webhook.ts` — single Stripe client, single webhook secret, no `?env=` query param.
+- `src/components/stripe-embedded-checkout.tsx` — drop env prop.
+- Delete `src/components/payment-test-mode-banner.tsx` and its usages.
+- Remove `.env.production` Stripe vars; add `VITE_STRIPE_PUBLISHABLE_KEY` to `.env`.
 
-**Deliverables**
+We delete the `environment` column from `subscriptions` (or just stop writing to it).
 
-1. **Design system** in `src/styles.css`: full light/dark token set, serif/grotesque font pairing via Google Fonts, motion primitives, container utility.
-2. **Lovable Cloud enabled** — provisions Supabase, creates initial schema:
-   - `profiles` (id ↔ auth.users, display_name, avatar_url, company, role)
-   - `user_roles` (separate table, enum `app_role`: admin, member, beta) + `has_role()` security definer + RLS
-   - `members` (subscription status, stripe_customer_id, plan, joined_at)
-   - `replays` (title, description, video_url, thumbnail_url, recorded_at, duration, tags)
-   - `templates` (title, description, long_description, category, file_type, download_url, featured, badge, pages, highlights[])
-   - `announcements` (for dashboard feed)
-   - All tables with RLS; members read replays/templates, only admins write
-3. **Auth shell**: `/login`, `/signup` (email + Google), `/reset-password`. `_authenticated` layout route guards portal pages with `beforeLoad` session gate.
-4. **Portal layout**: collapsible sidebar (Dashboard, Replays, Templates, Scheduler, Takeoffs, Cost Library, Account, Admin) using shadcn `Sidebar`. Top bar with breadcrumb + user menu.
-5. **Portal Dashboard** (`/portal`) — the anchor page:
-   - Welcome strip with member name + quick stats (active subscription, days as member, next live call)
-   - "Continue where you left off" card (latest replay)
-   - Featured templates row (3 cards from `templates` where `featured=true`)
-   - Upcoming live sessions / announcements feed
-   - Quick links grid (Scheduler, Takeoff, Cost Library, Discord)
-   - All data fetched via `createServerFn` + TanStack Query
-6. **Public landing** (`/`) — refreshed Contractor Circle hero with new design system, CTA to `/join`. Minimal but complete so the homepage isn't a placeholder.
-7. **Seed data** for replays + templates so the dashboard isn't empty.
+## Step 4 — Register the webhook in your Stripe dashboard
 
-**Out of scope this phase**: Stripe checkout, Discord OAuth, Scheduler, Takeoff, Cost/Labor Library, Admin, Drip, lead magnets.
+In Stripe → Developers → Webhooks → Add endpoint:
+- URL: `https://circle-reborn-portal.lovable.app/api/public/payments/webhook`
+- Events: `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `checkout.session.completed`
 
-## Phase 2 — Public site + signup funnel
+Copy the signing secret (`whsec_...`) and paste it into the `STRIPE_WEBHOOK_SECRET` form from Step 1.
 
-- `/` Contractor Circle landing (full sections: hero, value props, testimonials, pricing, FAQ, CTA)
-- `/join` with Stripe Checkout via `createServerFn` + `/api/public/webhooks/stripe`
-- `/circle/welcome` post-purchase
-- `/constructline` landing + `/constructline/login` (beta access)
-- Lead magnets: `/q2`, `/estimating`, `/silos` + thank-you pages, all writing to `leads` and `email_subscribers` tables
-- SEO `head()` per route (title, description, og:image)
+## Step 5 — Backfill the 18 existing subscriptions
 
-## Phase 3 — Member Portal core
+One-time admin server function (`/api/admin/backfill-subscriptions`, admin-only) that:
+1. Lists all active subscriptions in your Stripe account
+2. For each: writes a row into `subscriptions` (with `user_id = NULL` until claimed) and stages a row in a new `pending_claims` table keyed by `stripe_customer_id` + `email`
 
-- `/portal/replays` — searchable, filterable replay library with player route `/portal/replays/$id`
-- `/portal/templates` — category filter, search, download tracking
-- `/portal/account` — profile, billing portal link, subscription status
-- `/portal/subscribers` — for members who manage their own list (if applicable)
+After this runs, you have 18 unclaimed records waiting in the database.
 
-## Phase 4 — Admin
+## Step 6 — Self-serve claim flow
 
-- `/portal/admin` (overview)
-- `/portal/members` (table, search, filters, role management via `user_roles`)
-- `/portal/analytics` (Recharts dashboards)
-- `/portal/feedback`
-- `/portal/drip` — drip campaign dashboard + sender (with hard "no send without confirmation" guardrail per AGENTS.md)
+New flow: existing member visits `/login` → enters the email used in Stripe → signs up (or logs in) → on first successful auth, a server function `claimExistingSubscription` runs:
 
-## Phase 5 — ConstructLine tools (heaviest phase, may split)
+1. Looks up `pending_claims` by `email = auth.user.email`
+2. If found: updates the matching `subscriptions` row's `user_id` to the new auth user, populates `members` with the right `stripe_customer_id` / `stripe_subscription_id` / `status = 'active'` / `plan = 'grandfathered_497'`, deletes the `pending_claims` row
+3. If not found: standard new-member flow (redirect to `/join` for checkout against the new price)
 
-- Scheduler: list, detail (Gantt/CPM), reports, comparison — port `cpmEngine.ts` logic to a server function
-- Takeoff: list, detail (sheet viewer + AI extraction)
-- Cost Library, Labor Library
-- These are full-screen tools and will use a dedicated `hideSidebar` layout
+A small banner on `/portal` after claim: "Welcome back — your $497 membership is active. Manage billing →" linking to the Stripe Customer Portal.
 
-## Migration notes (technical)
+## Step 7 — Email the 18 members
 
-- Drop tRPC; use `createServerFn` + TanStack Query. One thin `*.functions.ts` file per resource.
-- Drop wouter; use TanStack Router file-based routes.
-- Drop Drizzle migrations; rebuild schema as Lovable Cloud migrations. `cpmEngine.ts`, `csiDivisions.ts`, `costTable.ts`, `laborTable.ts` etc. port over as pure modules under `src/lib/` since they have no IO.
-- Express endpoints become server routes under `src/routes/api/`. Webhooks go under `/api/public/`.
-- AGENTS.md guardrails (no broadcast emails without confirmation, members ≠ subscribers ≠ leads) become explicit confirmation flows in the admin Drip UI, not just docs.
-- Stripe live keys: Phase 2 — you'll add `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` as Lovable Cloud secrets when we wire checkout. `VITE_STRIPE_PUBLISHABLE_KEY` lives in code.
-- Discord auth (current portal login method): Lovable Cloud doesn't natively support Discord OAuth. Options when we get to it: (a) email/password + Google for the portal and use Discord only for the community link, or (b) connect raw Supabase to enable Discord provider. **Default**: email + Google (recommended).
+I'll draft a short email you can send (from your tool of choice) telling them:
+- The portal is live at `circle-reborn-portal.lovable.app`
+- Sign up with the same email they pay with
+- Their subscription is untouched
 
-## Confirmation needed before I implement Phase 1
+## Technical details
 
-- This plan covers Phase 1 only. After approval I'll enable Lovable Cloud, create the schema, build the Dashboard + auth + landing, and seed data. Phases 2–5 will each be separate prompts so we can iterate on design and scope as we go.
-- Old assets (logos, replay thumbnails, marketing images) aren't in the zip's binary form here — for Phase 1 I'll use placeholder imagery in the new design language. If you have the ALP logo SVG/PNG, drop it in and I'll wire it in.
+**New table**:
+```sql
+create table public.pending_claims (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  stripe_customer_id text not null unique,
+  stripe_subscription_id text not null unique,
+  price_id text not null,
+  status text not null,
+  current_period_end timestamptz,
+  created_at timestamptz default now()
+);
+-- RLS: admins only; the claim server function uses service role
+create index idx_pending_claims_email on public.pending_claims(lower(email));
+```
+
+**Claim trigger point**: in `src/integrations/supabase/auth-middleware.ts` (or a post-login hook on `/portal` first load), call `claimExistingSubscription` once per session.
+
+**Grandfathered price detection**: `members.plan` gets set to either `'grandfathered_497'` or `'standard_497'` based on which `price_id` the subscription points to. UI can show a small "Founding member" badge for grandfathered.
+
+**Customer Portal**: `createPortalSession` already exists — works unchanged with BYOK keys. Both grandfathered and new members use it for billing self-service.
+
+## Out of scope (unchanged from prior phases)
+
+- Replays, templates, announcements UI is already built and works
+- ConstructLine routes already exist
+- Lead magnets at `/q2`, `/estimating`, `/silos` are unchanged
+
+## Risks / things to confirm
+
+- **Existing webhook**: if your live Stripe account already sends webhooks somewhere (your old portal?), we should leave that one alone and just add a second endpoint. Stripe supports multiple endpoints per event.
+- **Email match is case-sensitive in Stripe but auth.users normalizes**: the claim query lowercases both sides.
+- **What if someone signs up with a different email than they pay with?** They get the new-member checkout flow. They can email you to manually link — or we can add an admin "link this user to this Stripe customer" tool later.
