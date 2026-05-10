@@ -124,9 +124,16 @@ function JoinPage() {
                   Continue to payment
                 </Button>
               </div>
+            ) : !NEW_SIGNUP_PRICE_ID ? (
+              <div className="space-y-3">
+                <h2 className="font-display text-2xl">Checkout coming online</h2>
+                <p className="text-sm text-muted-foreground">
+                  We're finalizing the new public membership price. Drop us a note at hello@constructline.io and we'll get you in.
+                </p>
+              </div>
             ) : (
               <StripeEmbeddedCheckout
-                priceId="circle_monthly"
+                priceId={NEW_SIGNUP_PRICE_ID}
                 customerEmail={user?.email ?? email}
                 userId={user?.id}
                 returnUrl={returnUrl}
