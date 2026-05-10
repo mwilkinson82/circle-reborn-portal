@@ -14,6 +14,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as Q2RouteImport } from './routes/q2'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JoinRouteImport } from './routes/join'
+import { Route as EstimatingRouteImport } from './routes/estimating'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
@@ -44,6 +45,11 @@ const LoginRoute = LoginRouteImport.update({
 const JoinRoute = JoinRouteImport.update({
   id: '/join',
   path: '/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EstimatingRoute = EstimatingRouteImport.update({
+  id: '/estimating',
+  path: '/estimating',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -80,6 +86,7 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/estimating': typeof EstimatingRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/estimating': typeof EstimatingRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/estimating': typeof EstimatingRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/estimating'
     | '/join'
     | '/login'
     | '/q2'
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/estimating'
     | '/join'
     | '/login'
     | '/q2'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/estimating'
     | '/join'
     | '/login'
     | '/q2'
@@ -159,6 +171,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  EstimatingRoute: typeof EstimatingRoute
   JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
   Q2Route: typeof Q2RouteWithChildren
@@ -203,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/join'
       fullPath: '/join'
       preLoaderRoute: typeof JoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/estimating': {
+      id: '/estimating'
+      path: '/estimating'
+      fullPath: '/estimating'
+      preLoaderRoute: typeof EstimatingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -275,6 +295,7 @@ const Q2RouteWithChildren = Q2Route._addFileChildren(Q2RouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  EstimatingRoute: EstimatingRoute,
   JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
   Q2Route: Q2RouteWithChildren,
