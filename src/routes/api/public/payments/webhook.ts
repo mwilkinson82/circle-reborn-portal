@@ -55,7 +55,7 @@ async function upsertSubscription(env: StripeEnv, sub: Stripe.Subscription) {
         status: sub.status,
         current_period_end: periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null,
         cancel_at_period_end: sub.cancel_at_period_end,
-        metadata: sub.metadata as Record<string, unknown>,
+        metadata: (sub.metadata ?? {}) as Record<string, string>,
       },
       { onConflict: "stripe_subscription_id,environment" },
     );
