@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SilosRouteImport } from './routes/silos'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as Q2RouteImport } from './routes/q2'
@@ -23,6 +24,11 @@ import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const SilosRoute = SilosRouteImport.update({
+  id: '/silos',
+  path: '/silos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/silos': typeof SilosRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
@@ -144,6 +153,7 @@ export interface FileRouteTypes {
     | '/q2'
     | '/reset-password'
     | '/signup'
+    | '/silos'
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
@@ -158,6 +168,7 @@ export interface FileRouteTypes {
     | '/q2'
     | '/reset-password'
     | '/signup'
+    | '/silos'
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
@@ -173,6 +184,7 @@ export interface FileRouteTypes {
     | '/q2'
     | '/reset-password'
     | '/signup'
+    | '/silos'
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
@@ -189,12 +201,20 @@ export interface RootRouteChildren {
   Q2Route: typeof Q2RouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
+  SilosRoute: typeof SilosRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/silos': {
+      id: '/silos'
+      path: '/silos'
+      fullPath: '/silos'
+      preLoaderRoute: typeof SilosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -332,6 +352,7 @@ const rootRouteChildren: RootRouteChildren = {
   Q2Route: Q2RouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
+  SilosRoute: SilosRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
