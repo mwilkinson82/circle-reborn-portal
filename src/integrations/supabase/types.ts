@@ -50,6 +50,39 @@ export type Database = {
         }
         Relationships: []
       }
+      leads: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          metadata: Json
+          name: string | null
+          source: string
+          user_agent: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          metadata?: Json
+          name?: string | null
+          source: string
+          user_agent?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          metadata?: Json
+          name?: string | null
+          source?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       members: {
         Row: {
           current_period_end: string | null
