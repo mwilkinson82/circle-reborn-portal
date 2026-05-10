@@ -23,7 +23,7 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
       throw new Error("Admin access required");
     }
 
-    const stripe = createStripeClient();
+    const stripe = createStripeClient("live");
     let imported = 0;
     let unclaimed = 0;
     let claimed = 0;
