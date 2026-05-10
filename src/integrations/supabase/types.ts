@@ -119,6 +119,45 @@ export type Database = {
         }
         Relationships: []
       }
+      pending_claims: {
+        Row: {
+          claimed_at: string | null
+          claimed_by: string | null
+          created_at: string
+          current_period_end: string | null
+          email: string
+          id: string
+          price_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          email: string
+          id?: string
+          price_id: string
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
+          created_at?: string
+          current_period_end?: string | null
+          email?: string
+          id?: string
+          price_id?: string
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -202,7 +241,7 @@ export type Database = {
           stripe_customer_id: string
           stripe_subscription_id: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           cancel_at_period_end?: boolean
@@ -217,7 +256,7 @@ export type Database = {
           stripe_customer_id: string
           stripe_subscription_id: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           cancel_at_period_end?: boolean
@@ -232,7 +271,7 @@ export type Database = {
           stripe_customer_id?: string
           stripe_subscription_id?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
