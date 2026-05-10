@@ -18,6 +18,7 @@ import { Route as JoinRouteImport } from './routes/join'
 import { Route as EstimatingRouteImport } from './routes/estimating'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SilosThanksRouteImport } from './routes/silos.thanks'
 import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
 import { Route as EstimatingThanksRouteImport } from './routes/estimating.thanks'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
@@ -68,6 +69,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SilosThanksRoute = SilosThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => SilosRoute,
+} as any)
 const Q2ThanksRoute = Q2ThanksRouteImport.update({
   id: '/thanks',
   path: '/thanks',
@@ -104,10 +110,11 @@ export interface FileRoutesByFullPath {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/silos': typeof SilosRoute
+  '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -119,10 +126,11 @@ export interface FileRoutesByTo {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/silos': typeof SilosRoute
+  '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -136,10 +144,11 @@ export interface FileRoutesById {
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/silos': typeof SilosRoute
+  '/silos': typeof SilosRouteWithChildren
   '/checkout/return': typeof CheckoutReturnRoute
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
+  '/silos/thanks': typeof SilosThanksRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
+    | '/silos/thanks'
     | '/portal/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
+    | '/silos/thanks'
     | '/portal'
     | '/api/public/payments/webhook'
   id:
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/checkout/return'
     | '/estimating/thanks'
     | '/q2/thanks'
+    | '/silos/thanks'
     | '/_authenticated/portal/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -201,7 +213,7 @@ export interface RootRouteChildren {
   Q2Route: typeof Q2RouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
-  SilosRoute: typeof SilosRoute
+  SilosRoute: typeof SilosRouteWithChildren
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
@@ -270,6 +282,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/silos/thanks': {
+      id: '/silos/thanks'
+      path: '/thanks'
+      fullPath: '/silos/thanks'
+      preLoaderRoute: typeof SilosThanksRouteImport
+      parentRoute: typeof SilosRoute
     }
     '/q2/thanks': {
       id: '/q2/thanks'
@@ -343,6 +362,16 @@ const Q2RouteChildren: Q2RouteChildren = {
 
 const Q2RouteWithChildren = Q2Route._addFileChildren(Q2RouteChildren)
 
+interface SilosRouteChildren {
+  SilosThanksRoute: typeof SilosThanksRoute
+}
+
+const SilosRouteChildren: SilosRouteChildren = {
+  SilosThanksRoute: SilosThanksRoute,
+}
+
+const SilosRouteWithChildren = SilosRoute._addFileChildren(SilosRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
@@ -352,7 +381,7 @@ const rootRouteChildren: RootRouteChildren = {
   Q2Route: Q2RouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
-  SilosRoute: SilosRoute,
+  SilosRoute: SilosRouteWithChildren,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
