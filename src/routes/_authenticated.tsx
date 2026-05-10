@@ -25,7 +25,17 @@ function AuthenticatedLayout() {
 
   useEffect(() => {
     // Auto-link any pending Stripe subscription to this user (idempotent).
-    claim({ data: undefined as never }).catch((e) => console.warn("claim check failed", e));
+    // Wrapped to swallow any thrown Response/Error so a transient auth hiccup
+    // never blank-screens the portal.
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) return;
+        await claim({ data: undefined as never });
+      } catch (e) {
+        console.warn("claim check failed", e);
+      }
+    })();
   }, [claim]);
 
   return (
