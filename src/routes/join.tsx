@@ -47,7 +47,6 @@ function JoinPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <PaymentTestModeBanner />
       <MarketingHeader />
 
       <main className="container-prose py-16">
