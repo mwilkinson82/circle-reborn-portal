@@ -21,6 +21,12 @@ function AuthenticatedLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const crumb = pathname.replace(/^\/portal\/?/, "") || "Dashboard";
   const title = crumb.charAt(0).toUpperCase() + crumb.slice(1).replace(/-/g, " ");
+  const claim = useServerFn(claimMyPendingSubscription);
+
+  useEffect(() => {
+    // Auto-link any pending Stripe subscription to this user (idempotent).
+    claim({ data: undefined as never }).catch((e) => console.warn("claim check failed", e));
+  }, [claim]);
 
   return (
     <SidebarProvider>
