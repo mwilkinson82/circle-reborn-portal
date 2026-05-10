@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as JoinRouteImport } from './routes/join'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -54,6 +55,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Q2ThanksRoute = Q2ThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => Q2Route,
+} as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -76,10 +82,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
-  '/q2': typeof Q2Route
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/q2/thanks': typeof Q2ThanksRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -87,10 +94,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
-  '/q2': typeof Q2Route
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/q2/thanks': typeof Q2ThanksRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -100,10 +108,11 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
-  '/q2': typeof Q2Route
+  '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/q2/thanks': typeof Q2ThanksRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/q2/thanks'
     | '/portal/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/q2/thanks'
     | '/portal'
     | '/api/public/payments/webhook'
   id:
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/q2/thanks'
     | '/_authenticated/portal/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
@@ -149,7 +161,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
-  Q2Route: typeof Q2Route
+  Q2Route: typeof Q2RouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -207,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/q2/thanks': {
+      id: '/q2/thanks'
+      path: '/thanks'
+      fullPath: '/q2/thanks'
+      preLoaderRoute: typeof Q2ThanksRouteImport
+      parentRoute: typeof Q2Route
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -243,12 +262,22 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface Q2RouteChildren {
+  Q2ThanksRoute: typeof Q2ThanksRoute
+}
+
+const Q2RouteChildren: Q2RouteChildren = {
+  Q2ThanksRoute: Q2ThanksRoute,
+}
+
+const Q2RouteWithChildren = Q2Route._addFileChildren(Q2RouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
-  Q2Route: Q2Route,
+  Q2Route: Q2RouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
