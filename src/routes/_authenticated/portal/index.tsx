@@ -93,7 +93,7 @@ function DashboardPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </div>
           <ul className="mt-5 divide-y divide-hairline">
-            {announcements.map((a) => (
+            {announcements.map((a: typeof announcements[number]) => (
               <li key={a.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-start gap-2">
                   {a.pinned && <Pin className="h-3.5 w-3.5 text-amber mt-1 shrink-0" />}
@@ -125,7 +125,7 @@ function DashboardPage() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {featuredTemplates.map((t, i) => (
+          {featuredTemplates.map((t: typeof featuredTemplates[number], i: number) => (
             <motion.div
               key={t.id}
               initial={{ opacity: 0, y: 8 }}
