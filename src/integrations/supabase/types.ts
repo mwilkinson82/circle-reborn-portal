@@ -14,16 +14,245 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      announcements: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link_label: string | null
+          link_url: string | null
+          pinned: boolean
+          published: boolean
+          published_at: string
+          title: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link_label?: string | null
+          link_url?: string | null
+          pinned?: boolean
+          published?: boolean
+          published_at?: string
+          title: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link_label?: string | null
+          link_url?: string | null
+          pinned?: boolean
+          published?: boolean
+          published_at?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      members: {
+        Row: {
+          current_period_end: string | null
+          id: string
+          joined_at: string
+          plan: string | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          current_period_end?: string | null
+          id?: string
+          joined_at?: string
+          plan?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          current_period_end?: string | null
+          id?: string
+          joined_at?: string
+          plan?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          company: string | null
+          created_at: string
+          display_name: string | null
+          headline: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          company?: string | null
+          created_at?: string
+          display_name?: string | null
+          headline?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      replays: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number | null
+          id: string
+          published: boolean
+          recorded_at: string
+          tags: string[]
+          thumbnail_url: string | null
+          title: string
+          video_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          published?: boolean
+          recorded_at?: string
+          tags?: string[]
+          thumbnail_url?: string | null
+          title: string
+          video_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number | null
+          id?: string
+          published?: boolean
+          recorded_at?: string
+          tags?: string[]
+          thumbnail_url?: string | null
+          title?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
+      templates: {
+        Row: {
+          badge: string | null
+          category: Database["public"]["Enums"]["template_category"]
+          created_at: string
+          description: string
+          download_url: string | null
+          featured: boolean
+          file_type: string
+          highlights: string[]
+          id: string
+          long_description: string | null
+          pages: string | null
+          published: boolean
+          title: string
+        }
+        Insert: {
+          badge?: string | null
+          category: Database["public"]["Enums"]["template_category"]
+          created_at?: string
+          description: string
+          download_url?: string | null
+          featured?: boolean
+          file_type?: string
+          highlights?: string[]
+          id?: string
+          long_description?: string | null
+          pages?: string | null
+          published?: boolean
+          title: string
+        }
+        Update: {
+          badge?: string | null
+          category?: Database["public"]["Enums"]["template_category"]
+          created_at?: string
+          description?: string
+          download_url?: string | null
+          featured?: boolean
+          file_type?: string
+          highlights?: string[]
+          id?: string
+          long_description?: string | null
+          pages?: string | null
+          published?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "member" | "beta"
+      subscription_status:
+        | "trialing"
+        | "active"
+        | "past_due"
+        | "canceled"
+        | "incomplete"
+      template_category:
+        | "proposals"
+        | "contracts"
+        | "sales"
+        | "operations"
+        | "finance"
+        | "estimating"
+        | "contractor_circle"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +379,24 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "member", "beta"],
+      subscription_status: [
+        "trialing",
+        "active",
+        "past_due",
+        "canceled",
+        "incomplete",
+      ],
+      template_category: [
+        "proposals",
+        "contracts",
+        "sales",
+        "operations",
+        "finance",
+        "estimating",
+        "contractor_circle",
+      ],
+    },
   },
 } as const
