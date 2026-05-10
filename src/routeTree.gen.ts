@@ -18,6 +18,7 @@ import { Route as EstimatingRouteImport } from './routes/estimating'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as Q2ThanksRouteImport } from './routes/q2.thanks'
+import { Route as EstimatingThanksRouteImport } from './routes/estimating.thanks'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -66,6 +67,11 @@ const Q2ThanksRoute = Q2ThanksRouteImport.update({
   path: '/thanks',
   getParentRoute: () => Q2Route,
 } as any)
+const EstimatingThanksRoute = EstimatingThanksRouteImport.update({
+  id: '/thanks',
+  path: '/thanks',
+  getParentRoute: () => EstimatingRoute,
+} as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -86,26 +92,28 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/estimating': typeof EstimatingRoute
+  '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/estimating': typeof EstimatingRoute
+  '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -114,13 +122,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
-  '/estimating': typeof EstimatingRoute
+  '/estimating': typeof EstimatingRouteWithChildren
   '/join': typeof JoinRoute
   '/login': typeof LoginRoute
   '/q2': typeof Q2RouteWithChildren
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -136,6 +145,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/estimating/thanks'
     | '/q2/thanks'
     | '/portal/'
     | '/api/public/payments/webhook'
@@ -149,6 +159,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/estimating/thanks'
     | '/q2/thanks'
     | '/portal'
     | '/api/public/payments/webhook'
@@ -163,6 +174,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/checkout/return'
+    | '/estimating/thanks'
     | '/q2/thanks'
     | '/_authenticated/portal/'
     | '/api/public/payments/webhook'
@@ -171,7 +183,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
-  EstimatingRoute: typeof EstimatingRoute
+  EstimatingRoute: typeof EstimatingRouteWithChildren
   JoinRoute: typeof JoinRoute
   LoginRoute: typeof LoginRoute
   Q2Route: typeof Q2RouteWithChildren
@@ -246,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Q2ThanksRouteImport
       parentRoute: typeof Q2Route
     }
+    '/estimating/thanks': {
+      id: '/estimating/thanks'
+      path: '/thanks'
+      fullPath: '/estimating/thanks'
+      preLoaderRoute: typeof EstimatingThanksRouteImport
+      parentRoute: typeof EstimatingRoute
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -282,6 +301,18 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
   AuthenticatedRouteChildren,
 )
 
+interface EstimatingRouteChildren {
+  EstimatingThanksRoute: typeof EstimatingThanksRoute
+}
+
+const EstimatingRouteChildren: EstimatingRouteChildren = {
+  EstimatingThanksRoute: EstimatingThanksRoute,
+}
+
+const EstimatingRouteWithChildren = EstimatingRoute._addFileChildren(
+  EstimatingRouteChildren,
+)
+
 interface Q2RouteChildren {
   Q2ThanksRoute: typeof Q2ThanksRoute
 }
@@ -295,7 +326,7 @@ const Q2RouteWithChildren = Q2Route._addFileChildren(Q2RouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
-  EstimatingRoute: EstimatingRoute,
+  EstimatingRoute: EstimatingRouteWithChildren,
   JoinRoute: JoinRoute,
   LoginRoute: LoginRoute,
   Q2Route: Q2RouteWithChildren,
