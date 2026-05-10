@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MarketingHeader } from "@/components/marketing-shell";
-import { PaymentTestModeBanner } from "@/components/payment-test-mode-banner";
 import { StripeEmbeddedCheckout } from "@/components/stripe-embedded-checkout";
+import { NEW_SIGNUP_PRICE_ID } from "@/lib/stripe";
 import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/join")({
