@@ -4,22 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
-  BarChart3,
-  Building2,
   Calendar,
   CalendarPlus,
   CheckCircle2,
   ClipboardList,
-  ClipboardCheck,
   DollarSign,
   FileText,
   Hammer,
-  Network,
   MessageSquareText,
   PlayCircle,
   Ruler,
-  ShieldCheck,
-  TrendingUp,
   Users,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -39,38 +33,6 @@ const LIVE_CALL_EXCEPTIONS: Record<string, { movedTo: Date; note: string }> = {
     note: "Moved for Mother's Day weekend.",
   },
 };
-
-const memberPillars = [
-  {
-    icon: Calendar,
-    label: "Live calls",
-    detail: "Bi-weekly strategy, bid review, and operating-system work with Marshall.",
-  },
-  {
-    icon: PlayCircle,
-    label: "Replay library",
-    detail: "Recorded sessions with the decision context preserved for later review.",
-  },
-  {
-    icon: MessageSquareText,
-    label: "Community",
-    detail: "Daily contractor conversation stays in Discord where members already gather.",
-  },
-  {
-    icon: FileText,
-    label: "Templates",
-    detail: "Contracts, SOPs, scorecards, scripts, and frameworks members can put to work.",
-  },
-];
-
-const alpSystemComponents = [
-  { label: "Vision", detail: "V/TO, core focus, targets, and quarterly rocks." },
-  { label: "People", detail: "Accountability chart, seats, GWC, and right-person fit." },
-  { label: "Data", detail: "Scorecards, leading indicators, ownership, and weekly goals." },
-  { label: "Issues", detail: "IDS discipline for root-cause decisions and action items." },
-  { label: "Process", detail: "Core processes, SOPs, FBA, and repeatable execution." },
-  { label: "Traction", detail: "L10 pulse, rocks, to-dos, and operating cadence." },
-];
 
 const commandCenterTools = [
   {
@@ -112,37 +74,6 @@ const commandCenterTools = [
     eyebrow: "Pricing",
     value: "Price with memory",
     hint: "Items, assemblies, unit costs, and labor rates",
-  },
-];
-
-const businessSystemTools = [
-  {
-    to: "/portal/alp-os",
-    icon: ClipboardCheck,
-    label: "Operating System Library",
-    eyebrow: "Use now",
-    body: "Build the company layer: V/TO, accountability, scorecards, SOPs, processes, rocks, and weekly cadence.",
-  },
-  {
-    to: "/portal/alp-os",
-    icon: BarChart3,
-    label: "Scorecard and KPI Builder",
-    eyebrow: "Build next",
-    body: "The future dashboard starts here: leading indicators, owner assignment, targets, and weekly visibility.",
-  },
-  {
-    to: "/portal/alp-os",
-    icon: Network,
-    label: "Accountability Chart",
-    eyebrow: "Build next",
-    body: "Clarify seats, roles, ownership, and right-person/right-seat decisions as the company scales.",
-  },
-  {
-    to: "/portal/replays",
-    icon: TrendingUp,
-    label: "Scale and Exit Path",
-    eyebrow: "Member guidance",
-    body: "Replay-backed guidance for margin, systems, leadership depth, and building a business that can transfer.",
   },
 ];
 
@@ -266,7 +197,7 @@ function DashboardPage() {
     <div className="container-prose space-y-8 py-6 sm:py-8">
       <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
+      <section className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
         <NextLiveCallPanel
           nextCallDate={nextCallDate}
           calendarUrl={calendarUrl}
@@ -280,18 +211,11 @@ function DashboardPage() {
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <OperatingSystemPanel />
-        <MemberValuePanel />
-      </section>
-
-      <BusinessSystemPanel />
-
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Specialist tools"
-          title="Use the project tools when the work calls for them"
-          body="ConstructLine, Basis, Baseline, and the pricing libraries are powerful specialist tools. They support estimating, scheduling, and bid continuity when that is the problem in front of you."
+          eyebrow="Member workspaces"
+          title="Choose the workspace for the job in front of you"
+          body="Start with ALP OS when you are building the business. Use ConstructLine, Basis, Baseline, and the pricing libraries when the work is a live pursuit, estimate, schedule, or cost question."
         />
         <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-5">
           {commandCenterTools.map((tool) => (
@@ -324,21 +248,21 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="grid gap-8 border border-hairline bg-background p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:p-10"
+      className="grid gap-6 border border-hairline bg-background p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
     >
       <div>
         <p className="font-mono text-xs uppercase tracking-wider text-amber">
           Contractor Circle home
         </p>
-        <h1 className="mt-4 max-w-4xl font-display text-4xl leading-tight sm:text-5xl lg:text-6xl">
+        <h1 className="mt-3 max-w-4xl font-display text-4xl leading-tight sm:text-5xl">
           Build the company, <span className="text-amber">{firstName}</span>.
         </h1>
-        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
           Contractor Circle is the business operating room: live guidance, replayed judgment,
           community context, templates, and ALP tools for contractors who want scale, systems,
           profit, and optionality.
         </p>
-        <div className="mt-8 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
+        <div className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
           <HomeSignal
             label="Next call"
             value={format(nextCallDate, "MMM d")}
@@ -357,13 +281,13 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
         </div>
       </div>
 
-      <div className="flex flex-col justify-between border border-hairline bg-secondary p-5">
+      <div className="flex flex-col justify-between border border-hairline bg-secondary p-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
             Start here
           </p>
-          <h2 className="mt-3 font-display text-2xl leading-tight">Your next useful move</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <h2 className="mt-2 font-display text-xl leading-tight">Your next useful move</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             This is not a data dashboard yet. It is the home base for getting guidance, using the
             operating system, and putting the tools to work.
           </p>
@@ -537,137 +461,6 @@ function CommunityPanel({ communityUrl }: { communityUrl: string | null }) {
         </a>
       </Button>
     </Card>
-  );
-}
-
-function OperatingSystemPanel() {
-  return (
-    <Card className="overflow-hidden border-hairline bg-foreground p-0 text-background">
-      <div className="grid gap-px bg-background/10 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-        <div className="bg-foreground p-6 sm:p-8">
-          <div className="flex h-12 w-12 items-center justify-center border border-background/10 bg-background text-foreground">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <p className="mt-7 font-mono text-xs uppercase tracking-wider text-amber">
-            Flagship member system
-          </p>
-          <h2 className="mt-3 max-w-xl font-display text-4xl leading-tight">
-            ALP Operating System
-          </h2>
-          <p className="mt-4 max-w-xl text-sm leading-relaxed text-background/68">
-            The commercially durable promise of Contractor Circle is not another folder of
-            documents. It is a company operating system: vision, accountability, numbers, issues,
-            processes, and weekly traction in one place.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Button asChild variant="secondary" className="bg-background text-foreground">
-              <Link to="/portal/alp-os">
-                Open OS library <ArrowUpRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
-            >
-              <Link to="/portal/replays">
-                Watch OS sessions <PlayCircle className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid gap-px bg-background/10 sm:grid-cols-2">
-          {alpSystemComponents.map((item) => (
-            <div key={item.label} className="bg-foreground p-5">
-              <p className="font-display text-xl leading-tight text-background">{item.label}</p>
-              <p className="mt-2 text-xs leading-relaxed text-background/60">{item.detail}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Card>
-  );
-}
-
-function MemberValuePanel() {
-  return (
-    <Card className="border-hairline p-6">
-      <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-        Member value
-      </p>
-      <h2 className="mt-2 font-display text-2xl leading-tight">Why members come back</h2>
-      <div className="mt-5 divide-y divide-hairline">
-        {memberPillars.map((pillar) => (
-          <div key={pillar.label} className="flex gap-3 py-4 first:pt-0 last:pb-0">
-            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-hairline bg-secondary text-amber">
-              <pillar.icon className="h-4 w-4" />
-            </span>
-            <div>
-              <h3 className="font-medium leading-tight">{pillar.label}</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{pillar.detail}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  );
-}
-
-function BusinessSystemPanel() {
-  return (
-    <section className="space-y-4">
-      <div className="flex items-start gap-3">
-        <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center border border-hairline bg-secondary text-amber">
-          <Building2 className="h-5 w-5" />
-        </span>
-        <SectionHeader
-          eyebrow="Business growth tools"
-          title="The tools should help owners scale, not just estimate"
-          body="The highest-value path for most members is learning how to make more money, install systems, build leadership depth, and create a company that can run with less owner drag."
-        />
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-        {businessSystemTools.map((tool) => (
-          <GrowthToolCard key={tool.label} {...tool} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function GrowthToolCard({
-  to,
-  icon: Icon,
-  label,
-  eyebrow,
-  body,
-}: {
-  to: string;
-  icon: IconComponent;
-  label: string;
-  eyebrow: string;
-  body: string;
-}) {
-  return (
-    <Link
-      to={to}
-      className="group flex min-h-56 flex-col justify-between border border-hairline bg-background p-5 transition-colors hover:border-foreground/25 hover:bg-secondary"
-    >
-      <div>
-        <div className="flex items-start justify-between gap-4">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">{eyebrow}</p>
-          <Icon className="h-5 w-5 shrink-0 text-amber" />
-        </div>
-        <h3 className="mt-5 font-display text-2xl leading-tight">{label}</h3>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
-      </div>
-      <div className="mt-6 flex items-center gap-2 text-sm font-medium">
-        Open path
-        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </div>
-    </Link>
   );
 }
 
