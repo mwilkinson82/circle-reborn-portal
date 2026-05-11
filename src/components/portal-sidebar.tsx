@@ -10,6 +10,9 @@ import {
   Shield,
   LogOut,
   Hammer,
+  Wrench,
+  Users,
+  ExternalLink,
 } from "lucide-react";
 import {
   Sidebar,
