@@ -4,6 +4,7 @@ import {
   PlayCircle,
   FileText,
   ClipboardCheck,
+  ClipboardList,
   Calendar,
   Ruler,
   BookOpen,
@@ -29,14 +30,24 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/use-auth";
 
-const main = [
+type NavItem = {
+  title: string;
+  url: string;
+  icon: typeof Home;
+};
+
+const companyOs: NavItem[] = [
   { title: "Home", url: "/portal", icon: Home },
   { title: "AOS", url: "/portal/alp-os", icon: ClipboardCheck },
+  { title: "Prepare for Call", url: "/portal/call-prep", icon: ClipboardList },
+];
+
+const guidance: NavItem[] = [
   { title: "Call Library", url: "/portal/replays", icon: PlayCircle },
   { title: "Templates", url: "/portal/templates", icon: FileText },
 ];
 
-const tools = [
+const tools: NavItem[] = [
   { title: "ConstructLine Hub", url: "/portal/constructline", icon: Wrench },
   { title: "Basis (Takeoffs)", url: "/portal/takeoff", icon: Ruler },
   { title: "Baseline (Scheduler)", url: "/portal/scheduler", icon: Calendar },
@@ -44,7 +55,7 @@ const tools = [
   { title: "Trade Rate Library", url: "/portal/labor-library", icon: Users },
 ];
 
-const account = [
+const account: NavItem[] = [
   { title: "Profile", url: "/portal/account", icon: UserCircle },
   { title: "Admin", url: "/portal/admin", icon: Shield },
 ];
@@ -58,7 +69,7 @@ export function PortalSidebar() {
   const isActive = (url: string) =>
     pathname === url || (url !== "/portal" && pathname.startsWith(url));
 
-  const renderItems = (items: typeof main) =>
+  const renderItems = (items: NavItem[]) =>
     items.map((item) => (
       <SidebarMenuItem key={item.url}>
         <SidebarMenuButton
@@ -101,15 +112,22 @@ export function PortalSidebar() {
 
       <SidebarContent className="gap-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Circle</SidebarGroupLabel>
+          <SidebarGroupLabel>Company OS</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>{renderItems(main)}</SidebarMenu>
+            <SidebarMenu>{renderItems(companyOs)}</SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        <SidebarGroup>
+          <SidebarGroupLabel>Guidance</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>{renderItems(guidance)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-1.5">
-            Tools
+            Field Tools
             {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
           </SidebarGroupLabel>
           <SidebarGroupContent>

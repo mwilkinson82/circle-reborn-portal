@@ -13,7 +13,6 @@ import {
   Hammer,
   PlayCircle,
   Ruler,
-  Users,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getDashboard } from "@/lib/dashboard.functions";
@@ -169,15 +168,8 @@ function DashboardPage() {
 
   if (loading || isLoading || !data) return <DashboardSkeleton />;
 
-  const {
-    profile,
-    replays,
-    featuredTemplates,
-    announcements,
-    liveCallTopic,
-    liveCallCalendarUrl,
-    communityUrl,
-  } = data;
+  const { profile, replays, featuredTemplates, announcements, liveCallTopic, liveCallCalendarUrl } =
+    data;
   const latest = replays[0];
   const displayName = profile?.display_name ?? "Builder";
   const firstName = displayName.split(" ")[0] || "Builder";
@@ -204,14 +196,13 @@ function DashboardPage() {
         liveCallUrl={liveCallUrl}
         topic={liveCallTopic}
         latest={latest}
-        communityUrl={communityUrl}
       />
 
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Enter the right room"
-          title="Choose the workspace for the job in front of you"
-          body="Start with AOS when you are building the business. Use ConstructLine, Basis, Baseline, and the pricing libraries when the work is a live pursuit, estimate, schedule, or cost question."
+          eyebrow="Support tools"
+          title="Use field tools when the work calls for them"
+          body="AOS is the home base. ConstructLine, Basis, Baseline, and the pricing libraries support live pursuits, estimates, schedules, and cost questions when that is the problem in front of you."
         />
         <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-5">
           {commandCenterTools.map((tool) => (
@@ -254,9 +245,9 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
           Build the company <span className="text-amber">behind</span> the projects.
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Contractor Circle is the operating room for the company behind the projects. Get live
-          judgment, peer pressure, templates, and tools to build scale, systems, profit, and
-          optionality.
+          Contractor Circle gives you live guidance, peer pressure, and AOS to turn stuck decisions
+          into structure. Bring the problems here, pressure-test them with Marshall, and build the
+          company machine one week at a time.
         </p>
       </div>
 
@@ -332,8 +323,8 @@ function NextMoveCard({ nextCallDate }: { nextCallDate: Date }) {
               variant="outline"
               className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
-              <Link to="/portal/replays">
-                Watch latest replay <PlayCircle className="ml-2 h-4 w-4" />
+              <Link to="/portal/call-prep">
+                Prepare call issue <ClipboardList className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -350,7 +341,6 @@ function OperatingPriorities({
   liveCallUrl,
   topic,
   latest,
-  communityUrl,
 }: {
   nextCallDate: Date;
   calendarUrl: string;
@@ -364,7 +354,6 @@ function OperatingPriorities({
         tags?: string[] | null;
       }
     | undefined;
-  communityUrl: string | null;
 }) {
   return (
     <section className="space-y-3">
@@ -422,6 +411,28 @@ function OperatingPriorities({
         </Card>
 
         <Link
+          to="/portal/call-prep"
+          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+        >
+          <div>
+            <div className="flex items-start justify-between gap-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Prepare the issue
+              </p>
+              <ClipboardList className="h-5 w-5 shrink-0 text-amber" />
+            </div>
+            <h2 className="mt-3 font-display text-xl leading-tight">What needs pressure?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Turn a people, cash, sales, production, or systems problem into a call-ready issue.
+            </p>
+          </div>
+          <span className="mt-4 inline-flex items-center text-sm font-medium">
+            Prepare for call
+            <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </Link>
+
+        <Link
           to="/portal/replays"
           className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
         >
@@ -449,30 +460,6 @@ function OperatingPriorities({
             </span>
           </div>
         </Link>
-
-        <a
-          href={communityUrl ?? "https://discord.com/app"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
-        >
-          <div>
-            <div className="flex items-start justify-between gap-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Get peer pressure
-              </p>
-              <Users className="h-5 w-5 shrink-0 text-amber" />
-            </div>
-            <h2 className="mt-3 font-display text-xl leading-tight">Discord</h2>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Ask the room. Get unstuck faster and move forward.
-            </p>
-          </div>
-          <span className="mt-4 inline-flex items-center text-sm font-medium">
-            Open Discord
-            <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-          </span>
-        </a>
 
         <CompanyBuildPath />
       </div>
