@@ -102,3 +102,36 @@ export const getDashboard = createServerFn({ method: "GET" })
       announcements: announcementsRes.data ?? [],
     };
   });
+
+export const getReplayLibrary = createServerFn({ method: "GET" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const { data } = await supabase
+      .from("replays")
+      .select(
+        "id, title, description, duration_minutes, recorded_at, tags, thumbnail_url, video_url",
+      )
+      .eq("published", true)
+      .order("recorded_at", { ascending: false })
+      .limit(24);
+
+    return data ?? [];
+  });
+
+export const getTemplateLibrary = createServerFn({ method: "GET" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const { data } = await supabase
+      .from("templates")
+      .select(
+        "id, title, description, long_description, category, badge, pages, file_type, highlights, download_url, featured, created_at",
+      )
+      .eq("published", true)
+      .order("featured", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(48);
+
+    return data ?? [];
+  });
