@@ -3,6 +3,7 @@ import {
   Home,
   PlayCircle,
   FileText,
+  ClipboardCheck,
   Calendar,
   Ruler,
   BookOpen,
@@ -31,6 +32,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 const main = [
   { title: "Home", url: "/portal", icon: Home },
+  { title: "ALP OS", url: "/portal/alp-os", icon: ClipboardCheck },
   { title: "Replays", url: "/portal/replays", icon: PlayCircle },
   { title: "Templates", url: "/portal/templates", icon: FileText },
 ];

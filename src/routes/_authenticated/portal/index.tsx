@@ -74,7 +74,7 @@ const alpSystemComponents = [
 
 const commandCenterTools = [
   {
-    to: "/portal/templates",
+    to: "/portal/alp-os",
     icon: ClipboardList,
     label: "ALP Operating System",
     eyebrow: "Company system",
@@ -117,21 +117,21 @@ const commandCenterTools = [
 
 const businessSystemTools = [
   {
-    to: "/portal/templates",
+    to: "/portal/alp-os",
     icon: ClipboardCheck,
     label: "Operating System Library",
     eyebrow: "Use now",
     body: "Build the company layer: V/TO, accountability, scorecards, SOPs, processes, rocks, and weekly cadence.",
   },
   {
-    to: "/portal/templates",
+    to: "/portal/alp-os",
     icon: BarChart3,
     label: "Scorecard and KPI Builder",
     eyebrow: "Build next",
     body: "The future dashboard starts here: leading indicators, owner assignment, targets, and weekly visibility.",
   },
   {
-    to: "/portal/templates",
+    to: "/portal/alp-os",
     icon: Network,
     label: "Accountability Chart",
     eyebrow: "Build next",
@@ -370,7 +370,7 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
         </div>
         <div className="mt-6 grid gap-2">
           <Button asChild>
-            <Link to="/portal/templates">
+            <Link to="/portal/alp-os">
               Open ALP OS <ArrowUpRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
@@ -561,7 +561,7 @@ function OperatingSystemPanel() {
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Button asChild variant="secondary" className="bg-background text-foreground">
-              <Link to="/portal/templates">
+              <Link to="/portal/alp-os">
                 Open OS library <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>

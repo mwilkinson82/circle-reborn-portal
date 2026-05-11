@@ -32,6 +32,7 @@ import { Route as AuthenticatedPortalReplaysRouteImport } from './routes/_authen
 import { Route as AuthenticatedPortalLaborLibraryRouteImport } from './routes/_authenticated/portal/labor-library'
 import { Route as AuthenticatedPortalCostLibraryRouteImport } from './routes/_authenticated/portal/cost-library'
 import { Route as AuthenticatedPortalConstructlineRouteImport } from './routes/_authenticated/portal/constructline'
+import { Route as AuthenticatedPortalAlpOsRouteImport } from './routes/_authenticated/portal/alp-os'
 import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal/admin'
 import { Route as AuthenticatedPortalAccountRouteImport } from './routes/_authenticated/portal/account'
 import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
@@ -161,6 +162,12 @@ const AuthenticatedPortalConstructlineRoute =
     path: '/portal/constructline',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalAlpOsRoute =
+  AuthenticatedPortalAlpOsRouteImport.update({
+    id: '/portal/alp-os',
+    path: '/portal/alp-os',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedPortalAdminRoute =
   AuthenticatedPortalAdminRouteImport.update({
     id: '/portal/admin',
@@ -215,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/silos/thanks': typeof SilosThanksRoute
   '/portal/account': typeof AuthenticatedPortalAccountRoute
   '/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
+  '/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
   '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
@@ -244,6 +252,7 @@ export interface FileRoutesByTo {
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
   '/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
   '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
@@ -276,6 +285,7 @@ export interface FileRoutesById {
   '/silos/thanks': typeof SilosThanksRoute
   '/_authenticated/portal/account': typeof AuthenticatedPortalAccountRoute
   '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
+  '/_authenticated/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/_authenticated/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/_authenticated/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
   '/_authenticated/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
@@ -308,6 +318,7 @@ export interface FileRouteTypes {
     | '/silos/thanks'
     | '/portal/account'
     | '/portal/admin'
+    | '/portal/alp-os'
     | '/portal/constructline'
     | '/portal/cost-library'
     | '/portal/labor-library'
@@ -337,6 +348,7 @@ export interface FileRouteTypes {
     | '/q2/thanks'
     | '/silos/thanks'
     | '/portal/account'
+    | '/portal/alp-os'
     | '/portal/constructline'
     | '/portal/cost-library'
     | '/portal/labor-library'
@@ -368,6 +380,7 @@ export interface FileRouteTypes {
     | '/silos/thanks'
     | '/_authenticated/portal/account'
     | '/_authenticated/portal/admin'
+    | '/_authenticated/portal/alp-os'
     | '/_authenticated/portal/constructline'
     | '/_authenticated/portal/cost-library'
     | '/_authenticated/portal/labor-library'
@@ -560,6 +573,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalConstructlineRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/alp-os': {
+      id: '/_authenticated/portal/alp-os'
+      path: '/portal/alp-os'
+      fullPath: '/portal/alp-os'
+      preLoaderRoute: typeof AuthenticatedPortalAlpOsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/portal/admin': {
       id: '/_authenticated/portal/admin'
       path: '/portal/admin'
@@ -628,6 +648,7 @@ const AuthenticatedPortalAdminRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedPortalAccountRoute: typeof AuthenticatedPortalAccountRoute
   AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRouteWithChildren
+  AuthenticatedPortalAlpOsRoute: typeof AuthenticatedPortalAlpOsRoute
   AuthenticatedPortalConstructlineRoute: typeof AuthenticatedPortalConstructlineRoute
   AuthenticatedPortalCostLibraryRoute: typeof AuthenticatedPortalCostLibraryRoute
   AuthenticatedPortalLaborLibraryRoute: typeof AuthenticatedPortalLaborLibraryRoute
@@ -641,6 +662,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPortalAccountRoute: AuthenticatedPortalAccountRoute,
   AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRouteWithChildren,
+  AuthenticatedPortalAlpOsRoute: AuthenticatedPortalAlpOsRoute,
   AuthenticatedPortalConstructlineRoute: AuthenticatedPortalConstructlineRoute,
   AuthenticatedPortalCostLibraryRoute: AuthenticatedPortalCostLibraryRoute,
   AuthenticatedPortalLaborLibraryRoute: AuthenticatedPortalLaborLibraryRoute,

@@ -24,7 +24,10 @@ export const Route = createFileRoute("/_authenticated")({
 function AuthenticatedLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const crumb = pathname.replace(/^\/portal\/?/, "") || "Home";
-  const title = crumb.charAt(0).toUpperCase() + crumb.slice(1).replace(/-/g, " ");
+  const title =
+    crumb === "alp-os"
+      ? "ALP OS"
+      : crumb.charAt(0).toUpperCase() + crumb.slice(1).replace(/-/g, " ");
   const { user, loading, signOut } = useAuth();
   const checkAccess = useServerFn(getMyMembershipAccess);
 
