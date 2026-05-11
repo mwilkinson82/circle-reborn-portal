@@ -27,7 +27,7 @@ function SignupPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -37,6 +37,11 @@ function SignupPage() {
     });
     setLoading(false);
     if (error) return toast.error(error.message);
+    if (data.user && data.user.identities?.length === 0) {
+      toast.info("That email already has an account. Use Forgot password to set or change your password.");
+      navigate({ to: "/reset-password" });
+      return;
+    }
     toast.success("Check your email to confirm.");
     navigate({ to: "/login" });
   };
