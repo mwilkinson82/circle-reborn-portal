@@ -20,7 +20,11 @@ function ResetPasswordPage() {
   useEffect(() => {
     if (typeof window !== "undefined" && window.location.hash.includes("type=recovery")) {
       setMode("update");
+      return;
     }
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setMode("update");
+    });
   }, []);
 
   const requestReset = async (e: FormEvent) => {
@@ -52,7 +56,7 @@ function ResetPasswordPage() {
             ALP<span className="text-amber">.</span>
           </Link>
           <h1 className="font-display text-3xl mt-8">
-            {mode === "request" ? "Reset your password" : "Set a new password"}
+            {mode === "request" ? "Reset your password" : "Set a password"}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "request"

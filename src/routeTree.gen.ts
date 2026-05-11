@@ -30,6 +30,7 @@ import { Route as AuthenticatedPortalTakeoffRouteImport } from './routes/_authen
 import { Route as AuthenticatedPortalSchedulerRouteImport } from './routes/_authenticated/portal/scheduler'
 import { Route as AuthenticatedPortalReplaysRouteImport } from './routes/_authenticated/portal/replays'
 import { Route as AuthenticatedPortalCostLibraryRouteImport } from './routes/_authenticated/portal/cost-library'
+import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal/admin'
 import { Route as AuthenticatedPortalAccountRouteImport } from './routes/_authenticated/portal/account'
 import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -145,6 +146,12 @@ const AuthenticatedPortalCostLibraryRoute =
     path: '/portal/cost-library',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalAdminRoute =
+  AuthenticatedPortalAdminRouteImport.update({
+    id: '/portal/admin',
+    path: '/portal/admin',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedPortalAccountRoute =
   AuthenticatedPortalAccountRouteImport.update({
     id: '/portal/account',
@@ -153,9 +160,9 @@ const AuthenticatedPortalAccountRoute =
   } as any)
 const AuthenticatedPortalAdminIndexRoute =
   AuthenticatedPortalAdminIndexRouteImport.update({
-    id: '/portal/admin/',
-    path: '/portal/admin/',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalAdminRoute,
   } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -165,9 +172,9 @@ const ApiPublicPaymentsWebhookRoute =
   } as any)
 const AuthenticatedPortalAdminBackfillRoute =
   AuthenticatedPortalAdminBackfillRouteImport.update({
-    id: '/portal/admin/backfill',
-    path: '/portal/admin/backfill',
-    getParentRoute: () => AuthenticatedRoute,
+    id: '/backfill',
+    path: '/backfill',
+    getParentRoute: () => AuthenticatedPortalAdminRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -186,6 +193,7 @@ export interface FileRoutesByFullPath {
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
   '/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
   '/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
@@ -240,6 +248,7 @@ export interface FileRoutesById {
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
   '/_authenticated/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/_authenticated/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
   '/_authenticated/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/_authenticated/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
@@ -268,6 +277,7 @@ export interface FileRouteTypes {
     | '/q2/thanks'
     | '/silos/thanks'
     | '/portal/account'
+    | '/portal/admin'
     | '/portal/cost-library'
     | '/portal/replays'
     | '/portal/scheduler'
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/q2/thanks'
     | '/silos/thanks'
     | '/_authenticated/portal/account'
+    | '/_authenticated/portal/admin'
     | '/_authenticated/portal/cost-library'
     | '/_authenticated/portal/replays'
     | '/_authenticated/portal/scheduler'
@@ -496,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalCostLibraryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/admin': {
+      id: '/_authenticated/portal/admin'
+      path: '/portal/admin'
+      fullPath: '/portal/admin'
+      preLoaderRoute: typeof AuthenticatedPortalAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/portal/account': {
       id: '/_authenticated/portal/account'
       path: '/portal/account'
@@ -505,10 +523,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/portal/admin/': {
       id: '/_authenticated/portal/admin/'
-      path: '/portal/admin'
+      path: '/'
       fullPath: '/portal/admin/'
       preLoaderRoute: typeof AuthenticatedPortalAdminIndexRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedPortalAdminRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -519,36 +537,51 @@ declare module '@tanstack/react-router' {
     }
     '/_authenticated/portal/admin/backfill': {
       id: '/_authenticated/portal/admin/backfill'
-      path: '/portal/admin/backfill'
+      path: '/backfill'
       fullPath: '/portal/admin/backfill'
       preLoaderRoute: typeof AuthenticatedPortalAdminBackfillRouteImport
-      parentRoute: typeof AuthenticatedRoute
+      parentRoute: typeof AuthenticatedPortalAdminRoute
     }
   }
 }
 
+interface AuthenticatedPortalAdminRouteChildren {
+  AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
+  AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
+}
+
+const AuthenticatedPortalAdminRouteChildren: AuthenticatedPortalAdminRouteChildren =
+  {
+    AuthenticatedPortalAdminBackfillRoute:
+      AuthenticatedPortalAdminBackfillRoute,
+    AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
+  }
+
+const AuthenticatedPortalAdminRouteWithChildren =
+  AuthenticatedPortalAdminRoute._addFileChildren(
+    AuthenticatedPortalAdminRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedPortalAccountRoute: typeof AuthenticatedPortalAccountRoute
+  AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRouteWithChildren
   AuthenticatedPortalCostLibraryRoute: typeof AuthenticatedPortalCostLibraryRoute
   AuthenticatedPortalReplaysRoute: typeof AuthenticatedPortalReplaysRoute
   AuthenticatedPortalSchedulerRoute: typeof AuthenticatedPortalSchedulerRoute
   AuthenticatedPortalTakeoffRoute: typeof AuthenticatedPortalTakeoffRoute
   AuthenticatedPortalTemplatesRoute: typeof AuthenticatedPortalTemplatesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
-  AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
-  AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPortalAccountRoute: AuthenticatedPortalAccountRoute,
+  AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRouteWithChildren,
   AuthenticatedPortalCostLibraryRoute: AuthenticatedPortalCostLibraryRoute,
   AuthenticatedPortalReplaysRoute: AuthenticatedPortalReplaysRoute,
   AuthenticatedPortalSchedulerRoute: AuthenticatedPortalSchedulerRoute,
   AuthenticatedPortalTakeoffRoute: AuthenticatedPortalTakeoffRoute,
   AuthenticatedPortalTemplatesRoute: AuthenticatedPortalTemplatesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
-  AuthenticatedPortalAdminBackfillRoute: AuthenticatedPortalAdminBackfillRoute,
-  AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
