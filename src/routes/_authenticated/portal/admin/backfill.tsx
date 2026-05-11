@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { backfillExistingSubscriptions } from "@/lib/membership.functions";
+import { backfillExistingSubscriptions, getMyAdminStatus } from "@/lib/membership.functions";
 import { useAuth } from "@/hooks/use-auth";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/portal/admin/backfill")({
   component: BackfillPage,
@@ -14,39 +13,17 @@ export const Route = createFileRoute("/_authenticated/portal/admin/backfill")({
 function BackfillPage() {
   const { user, loading } = useAuth();
   const run = useServerFn(backfillExistingSubscriptions);
+  const checkAdmin = useServerFn(getMyAdminStatus);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ imported: number; claimed: number; unclaimed: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
-  const [accessError, setAccessError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (loading) return;
-    if (!user) {
-      setIsAdmin(false);
-      setAccessError("You are not signed in on this browser session.");
-      return;
-    }
-    setIsAdmin(null);
-    setAccessError(null);
-    supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) {
-          setAccessError(error.message);
-          setIsAdmin(false);
-          return;
-        }
-        setIsAdmin(!!data?.some((r) => r.role === "admin"));
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [loading, user]);
+  const adminStatus = useQuery({
+    queryKey: ["admin-status", user?.id],
+    queryFn: () => checkAdmin(),
+    enabled: !!user && !loading,
+    retry: 1,
+  });
 
   const onRun = async () => {
     setRunning(true);
@@ -61,13 +38,19 @@ function BackfillPage() {
     }
   };
 
-  if (loading || isAdmin === null) return <div className="p-10 text-sm text-muted-foreground">Checking admin access…</div>;
-  if (!isAdmin) {
+  if (loading || adminStatus.isLoading || adminStatus.isFetching) {
+    return <div className="p-10 text-sm text-muted-foreground">Checking admin access…</div>;
+  }
+
+  if (!user || adminStatus.isError || !adminStatus.data?.isAdmin) {
     return (
       <div className="container-prose py-12 space-y-4">
         <h1 className="font-display text-3xl">Admin access required</h1>
         <p className="text-sm text-muted-foreground">
-          {accessError ?? "This signed-in account does not have the admin role."}
+          {adminStatus.data?.error ??
+            (adminStatus.data?.email
+              ? `${adminStatus.data.email} is signed in, but admin access could not be verified.`
+              : "You are not signed in on this browser session.")}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button asChild><Link to="/login">Sign in again</Link></Button>
