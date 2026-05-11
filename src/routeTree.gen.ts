@@ -26,6 +26,7 @@ import { Route as ConstructlineLoginRouteImport } from './routes/constructline.l
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
 import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal/admin'
+import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedPortalAdminBackfillRouteImport } from './routes/_authenticated/portal/admin/backfill'
 
@@ -115,6 +116,12 @@ const AuthenticatedPortalAdminRoute =
     path: '/portal/admin',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalAdminIndexRoute =
+  AuthenticatedPortalAdminIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalAdminRoute,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -147,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -163,10 +171,10 @@ export interface FileRoutesByTo {
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
-  '/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/portal/admin': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -189,6 +197,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/_authenticated/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/portal/'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/portal/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -227,10 +237,10 @@ export interface FileRouteTypes {
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
-    | '/portal/admin'
     | '/portal'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/portal/admin'
   id:
     | '__root__'
     | '/'
@@ -252,6 +262,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/_authenticated/portal/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -390,6 +401,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/admin/': {
+      id: '/_authenticated/portal/admin/'
+      path: '/'
+      fullPath: '/portal/admin/'
+      preLoaderRoute: typeof AuthenticatedPortalAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalAdminRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -409,12 +427,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedPortalAdminRouteChildren {
   AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
+  AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
 }
 
 const AuthenticatedPortalAdminRouteChildren: AuthenticatedPortalAdminRouteChildren =
   {
     AuthenticatedPortalAdminBackfillRoute:
       AuthenticatedPortalAdminBackfillRoute,
+    AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
   }
 
 const AuthenticatedPortalAdminRouteWithChildren =
@@ -497,3 +517,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
