@@ -25,6 +25,13 @@ import { Route as EstimatingThanksRouteImport } from './routes/estimating.thanks
 import { Route as ConstructlineLoginRouteImport } from './routes/constructline.login'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal/index'
+import { Route as AuthenticatedPortalTemplatesRouteImport } from './routes/_authenticated/portal/templates'
+import { Route as AuthenticatedPortalTakeoffRouteImport } from './routes/_authenticated/portal/takeoff'
+import { Route as AuthenticatedPortalSchedulerRouteImport } from './routes/_authenticated/portal/scheduler'
+import { Route as AuthenticatedPortalReplaysRouteImport } from './routes/_authenticated/portal/replays'
+import { Route as AuthenticatedPortalCostLibraryRouteImport } from './routes/_authenticated/portal/cost-library'
+import { Route as AuthenticatedPortalAccountRouteImport } from './routes/_authenticated/portal/account'
+import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedPortalAdminBackfillRouteImport } from './routes/_authenticated/portal/admin/backfill'
 
@@ -108,6 +115,48 @@ const AuthenticatedPortalIndexRoute =
     path: '/portal/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalTemplatesRoute =
+  AuthenticatedPortalTemplatesRouteImport.update({
+    id: '/portal/templates',
+    path: '/portal/templates',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalTakeoffRoute =
+  AuthenticatedPortalTakeoffRouteImport.update({
+    id: '/portal/takeoff',
+    path: '/portal/takeoff',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalSchedulerRoute =
+  AuthenticatedPortalSchedulerRouteImport.update({
+    id: '/portal/scheduler',
+    path: '/portal/scheduler',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalReplaysRoute =
+  AuthenticatedPortalReplaysRouteImport.update({
+    id: '/portal/replays',
+    path: '/portal/replays',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalCostLibraryRoute =
+  AuthenticatedPortalCostLibraryRouteImport.update({
+    id: '/portal/cost-library',
+    path: '/portal/cost-library',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalAccountRoute =
+  AuthenticatedPortalAccountRouteImport.update({
+    id: '/portal/account',
+    path: '/portal/account',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalAdminIndexRoute =
+  AuthenticatedPortalAdminIndexRouteImport.update({
+    id: '/portal/admin/',
+    path: '/portal/admin/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
     id: '/api/public/payments/webhook',
@@ -136,9 +185,16 @@ export interface FileRoutesByFullPath {
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
+  '/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/replays': typeof AuthenticatedPortalReplaysRoute
+  '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
+  '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
+  '/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -155,9 +211,16 @@ export interface FileRoutesByTo {
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
+  '/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/replays': typeof AuthenticatedPortalReplaysRoute
+  '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
+  '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
+  '/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/portal/admin': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -176,9 +239,16 @@ export interface FileRoutesById {
   '/estimating/thanks': typeof EstimatingThanksRoute
   '/q2/thanks': typeof Q2ThanksRoute
   '/silos/thanks': typeof SilosThanksRoute
+  '/_authenticated/portal/account': typeof AuthenticatedPortalAccountRoute
+  '/_authenticated/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/_authenticated/portal/replays': typeof AuthenticatedPortalReplaysRoute
+  '/_authenticated/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
+  '/_authenticated/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
+  '/_authenticated/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/_authenticated/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -197,9 +267,16 @@ export interface FileRouteTypes {
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
+    | '/portal/account'
+    | '/portal/cost-library'
+    | '/portal/replays'
+    | '/portal/scheduler'
+    | '/portal/takeoff'
+    | '/portal/templates'
     | '/portal/'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/portal/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -216,9 +293,16 @@ export interface FileRouteTypes {
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
+    | '/portal/account'
+    | '/portal/cost-library'
+    | '/portal/replays'
+    | '/portal/scheduler'
+    | '/portal/takeoff'
+    | '/portal/templates'
     | '/portal'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/portal/admin'
   id:
     | '__root__'
     | '/'
@@ -236,9 +320,16 @@ export interface FileRouteTypes {
     | '/estimating/thanks'
     | '/q2/thanks'
     | '/silos/thanks'
+    | '/_authenticated/portal/account'
+    | '/_authenticated/portal/cost-library'
+    | '/_authenticated/portal/replays'
+    | '/_authenticated/portal/scheduler'
+    | '/_authenticated/portal/takeoff'
+    | '/_authenticated/portal/templates'
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/backfill'
     | '/api/public/payments/webhook'
+    | '/_authenticated/portal/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -370,6 +461,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/templates': {
+      id: '/_authenticated/portal/templates'
+      path: '/portal/templates'
+      fullPath: '/portal/templates'
+      preLoaderRoute: typeof AuthenticatedPortalTemplatesRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/takeoff': {
+      id: '/_authenticated/portal/takeoff'
+      path: '/portal/takeoff'
+      fullPath: '/portal/takeoff'
+      preLoaderRoute: typeof AuthenticatedPortalTakeoffRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/scheduler': {
+      id: '/_authenticated/portal/scheduler'
+      path: '/portal/scheduler'
+      fullPath: '/portal/scheduler'
+      preLoaderRoute: typeof AuthenticatedPortalSchedulerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/replays': {
+      id: '/_authenticated/portal/replays'
+      path: '/portal/replays'
+      fullPath: '/portal/replays'
+      preLoaderRoute: typeof AuthenticatedPortalReplaysRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/cost-library': {
+      id: '/_authenticated/portal/cost-library'
+      path: '/portal/cost-library'
+      fullPath: '/portal/cost-library'
+      preLoaderRoute: typeof AuthenticatedPortalCostLibraryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/account': {
+      id: '/_authenticated/portal/account'
+      path: '/portal/account'
+      fullPath: '/portal/account'
+      preLoaderRoute: typeof AuthenticatedPortalAccountRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/admin/': {
+      id: '/_authenticated/portal/admin/'
+      path: '/portal/admin'
+      fullPath: '/portal/admin/'
+      preLoaderRoute: typeof AuthenticatedPortalAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
       path: '/api/public/payments/webhook'
@@ -388,13 +528,27 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedPortalAccountRoute: typeof AuthenticatedPortalAccountRoute
+  AuthenticatedPortalCostLibraryRoute: typeof AuthenticatedPortalCostLibraryRoute
+  AuthenticatedPortalReplaysRoute: typeof AuthenticatedPortalReplaysRoute
+  AuthenticatedPortalSchedulerRoute: typeof AuthenticatedPortalSchedulerRoute
+  AuthenticatedPortalTakeoffRoute: typeof AuthenticatedPortalTakeoffRoute
+  AuthenticatedPortalTemplatesRoute: typeof AuthenticatedPortalTemplatesRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
+  AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedPortalAccountRoute: AuthenticatedPortalAccountRoute,
+  AuthenticatedPortalCostLibraryRoute: AuthenticatedPortalCostLibraryRoute,
+  AuthenticatedPortalReplaysRoute: AuthenticatedPortalReplaysRoute,
+  AuthenticatedPortalSchedulerRoute: AuthenticatedPortalSchedulerRoute,
+  AuthenticatedPortalTakeoffRoute: AuthenticatedPortalTakeoffRoute,
+  AuthenticatedPortalTemplatesRoute: AuthenticatedPortalTemplatesRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalAdminBackfillRoute: AuthenticatedPortalAdminBackfillRoute,
+  AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -462,3 +616,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

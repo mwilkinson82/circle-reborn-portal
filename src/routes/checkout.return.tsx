@@ -14,9 +14,18 @@ export const Route = createFileRoute("/checkout/return")({
 });
 
 const NEXT = [
-  { t: "Sign in to the portal", d: "Use the email you checked out with — your member account is already provisioned." },
-  { t: "Catch the next live call", d: "Call schedule and dial-in are pinned at the top of your dashboard." },
-  { t: "Pull a template", d: "Start with the SOV pack or the MSA library — both are in the templates room." },
+  {
+    t: "Create or sign in to your portal account",
+    d: "Use the same email you checked out with so the portal can attach your Stripe membership automatically.",
+  },
+  {
+    t: "Catch the next live call",
+    d: "Call schedule and dial-in are pinned at the top of your dashboard.",
+  },
+  {
+    t: "Pull a template",
+    d: "Start with the SOV pack or the MSA library — both are in the templates room.",
+  },
 ];
 
 function WelcomePage() {
@@ -36,7 +45,8 @@ function WelcomePage() {
               Welcome to <span className="italic text-amber">the room</span>.
             </h1>
             <p className="mt-6 text-lg text-muted-foreground leading-relaxed">
-              Your membership is active. A receipt is on its way to your inbox. Here's what to do next.
+              Your payment is complete. A receipt is on its way to your inbox. Here's what to do
+              next.
             </p>
 
             <ol className="mt-12 divide-y divide-hairline border-y border-hairline">
@@ -53,7 +63,9 @@ function WelcomePage() {
 
             <div className="mt-10 flex flex-wrap gap-3">
               <Button asChild size="lg">
-                <Link to="/portal">Open the portal <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                <Link to="/portal">
+                  Open the portal <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
               <Button asChild size="lg" variant="ghost">
                 <Link to="/login">Sign in</Link>
@@ -67,10 +79,16 @@ function WelcomePage() {
         ) : (
           <div className="max-w-xl">
             <h1 className="font-display text-4xl">No checkout session found.</h1>
-            <p className="mt-4 text-muted-foreground">If you completed payment but landed here, sign in and your membership will be active.</p>
+            <p className="mt-4 text-muted-foreground">
+              If you completed payment but landed here, sign in and your membership will be active.
+            </p>
             <div className="mt-8 flex gap-3">
-              <Button asChild><Link to="/login">Sign in</Link></Button>
-              <Button asChild variant="ghost"><Link to="/join">Try again</Link></Button>
+              <Button asChild>
+                <Link to="/login">Sign in</Link>
+              </Button>
+              <Button asChild variant="ghost">
+                <Link to="/join">Try again</Link>
+              </Button>
             </div>
           </div>
         )}

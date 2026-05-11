@@ -8,7 +8,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ALP Contractor Circle — The room serious contractors build in" },
-      { name: "description", content: "Weekly live calls with Marshall Wilkinson, a working library of templates, and operating tools built on $2.5B of executed work. For GCs scaling from $5M to $50M." },
+      {
+        name: "description",
+        content:
+          "Weekly live calls with Marshall Wilkinson, a working library of templates, and operating tools built on $2.5B of executed work. For GCs scaling from $5M to $50M.",
+      },
       { property: "og:title", content: "ALP Contractor Circle" },
       { property: "og:description", content: "The operating room for serious contractors." },
     ],
@@ -17,15 +21,39 @@ export const Route = createFileRoute("/")({
 });
 
 const VALUE = [
-  { k: "01", t: "Live working calls", d: "Marshall walks live bids, contracts, and operating decisions every week. You bring real work; the room sharpens it." },
-  { k: "02", t: "Templates that ship", d: "SOVs, MSAs, scope sheets, scripts. Versioned and downloaded — built on real projects, not theory." },
-  { k: "03", t: "ConstructLine tools", d: "Scheduler, takeoff, and cost library tuned for residential and light commercial. Members get the working beta." },
+  {
+    k: "01",
+    t: "Live working calls",
+    d: "Marshall walks live bids, contracts, and operating decisions every week. You bring real work; the room sharpens it.",
+  },
+  {
+    k: "02",
+    t: "Templates that ship",
+    d: "SOVs, MSAs, scope sheets, scripts. Versioned and downloaded — built on real projects, not theory.",
+  },
+  {
+    k: "03",
+    t: "ConstructLine tools",
+    d: "Scheduler, takeoff, and cost library tuned for residential and light commercial. Members get the working beta.",
+  },
 ];
 
 const TESTIMONIALS = [
-  { q: "Three calls in and we restructured how we bid. Closed two jobs we would have walked from.", a: "Cole D.", r: "GC, $9M revenue, Texas" },
-  { q: "The templates alone paid for the year. We stopped writing scopes from scratch.", a: "Jenna R.", r: "PM, design-build, Colorado" },
-  { q: "Marshall doesn't pull punches. The room calls out the things your team won't.", a: "Aaron M.", r: "Owner, $24M revenue, Pacific NW" },
+  {
+    q: "Three calls in and we restructured how we bid. Closed two jobs we would have walked from.",
+    a: "Cole D.",
+    r: "GC, $9M revenue, Texas",
+  },
+  {
+    q: "The templates alone paid for the year. We stopped writing scopes from scratch.",
+    a: "Jenna R.",
+    r: "PM, design-build, Colorado",
+  },
+  {
+    q: "Marshall doesn't pull punches. The room calls out the things your team won't.",
+    a: "Aaron M.",
+    r: "Owner, $24M revenue, Pacific NW",
+  },
 ];
 
 const INCLUDED = [
@@ -38,11 +66,26 @@ const INCLUDED = [
 ];
 
 const FAQ = [
-  { q: "Who is this for?", a: "GCs and design-build firms running between $5M and $50M in revenue who are tired of operating from gut and want a working system." },
-  { q: "What's the time commitment?", a: "One live call per week (90 minutes). Replays if you can't make it. Templates are pull-as-you-need." },
-  { q: "Can I cancel?", a: "Yes — month-to-month. Cancel from your account page anytime. We don't do retention calls." },
-  { q: "Do I get the ConstructLine tools?", a: "Yes. Members get full beta access to the scheduler, takeoff, and cost library while we build them out." },
-  { q: "Is there a refund?", a: "If your first call doesn't justify the month, email us and we'll refund it. One time, no fine print." },
+  {
+    q: "Who is this for?",
+    a: "GCs and design-build firms running between $5M and $50M in revenue who are tired of operating from gut and want a working system.",
+  },
+  {
+    q: "What's the time commitment?",
+    a: "One live call per week (90 minutes). Replays if you can't make it. Templates are pull-as-you-need.",
+  },
+  {
+    q: "Can I cancel?",
+    a: "Yes — month-to-month. Cancel from your account page anytime. We don't do retention calls.",
+  },
+  {
+    q: "Do I get the ConstructLine tools?",
+    a: "Yes. Members get full beta access to the scheduler, takeoff, and cost library while we build them out.",
+  },
+  {
+    q: "Is there a refund?",
+    a: "If your first call doesn't justify the month, email us and we'll refund it. One time, no fine print.",
+  },
 ];
 
 function LandingPage() {
@@ -63,15 +106,20 @@ function LandingPage() {
             Contractor Circle · Members only
           </span>
           <h1 className="font-display text-5xl sm:text-7xl mt-6 leading-[1.05]">
-            The room <span className="text-amber italic">serious</span><br />
+            The room <span className="text-amber italic">serious</span>
+            <br />
             contractors build in.
           </h1>
           <p className="mt-8 text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            Weekly live calls with Marshall Wilkinson. A working library of templates, scripts, and operating systems pulled straight from $2.5B in built work. No fluff, no funnels — a private room for GCs scaling from $5M to $50M.
+            Weekly live calls with Marshall Wilkinson. A working library of templates, scripts, and
+            operating systems pulled straight from $2.5B in built work. No fluff, no funnels — a
+            private room for GCs scaling from $5M to $50M.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
-              <Link to="/join">Join the Circle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/join">
+                Join the Circle <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <Link to="/login">Member sign in</Link>
@@ -94,7 +142,9 @@ function LandingPage() {
           ].map((s) => (
             <div key={s.l}>
               <p className="font-display text-3xl tabular-nums">{s.n}</p>
-              <p className="mt-1 text-xs font-mono uppercase tracking-wider text-muted-foreground">{s.l}</p>
+              <p className="mt-1 text-xs font-mono uppercase tracking-wider text-muted-foreground">
+                {s.l}
+              </p>
             </div>
           ))}
         </div>
@@ -103,10 +153,13 @@ function LandingPage() {
       {/* VALUE */}
       <section className="container-prose py-24">
         <div className="max-w-2xl mb-16">
-          <p className="font-mono text-xs uppercase tracking-wider text-amber">What's in the room</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-amber">
+            What's in the room
+          </p>
           <h2 className="font-display text-4xl sm:text-5xl mt-4">Operating, not coaching.</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            We don't sell mindset. The Circle is a working room — calls, files, and tools that move real numbers on real jobs.
+            We don't sell mindset. The Circle is a working room — calls, files, and tools that move
+            real numbers on real jobs.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-px bg-hairline border border-hairline">
@@ -134,7 +187,9 @@ function LandingPage() {
                 <blockquote className="mt-4 text-base leading-relaxed">{t.q}</blockquote>
                 <figcaption className="mt-6 pt-6 border-t border-hairline">
                   <p className="font-medium">{t.a}</p>
-                  <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground mt-1">{t.r}</p>
+                  <p className="text-xs font-mono uppercase tracking-wider text-muted-foreground mt-1">
+                    {t.r}
+                  </p>
                 </figcaption>
               </figure>
             ))}
@@ -153,18 +208,26 @@ function LandingPage() {
         </div>
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-2 border border-hairline bg-elevated p-10">
-            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">Circle membership</p>
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+              Circle membership
+            </p>
             <p className="mt-6 font-display text-6xl tabular-nums">
               $497<span className="text-2xl text-muted-foreground font-sans">/mo</span>
             </p>
             <p className="mt-2 text-sm text-muted-foreground">Billed monthly · USD</p>
             <Button asChild size="lg" className="w-full mt-8">
-              <Link to="/join">Join the Circle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/join">
+                Join the Circle <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
-            <p className="mt-4 text-xs text-muted-foreground text-center">First-call money back, no questions.</p>
+            <p className="mt-4 text-xs text-muted-foreground text-center">
+              First-call money back, no questions.
+            </p>
           </div>
           <div className="md:col-span-3 border border-hairline p-10">
-            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-6">Included</p>
+            <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-6">
+              Included
+            </p>
             <ul className="space-y-4">
               {INCLUDED.map((i) => (
                 <li key={i} className="flex items-start gap-3">
@@ -189,7 +252,9 @@ function LandingPage() {
               <details key={f.q} className="group py-6">
                 <summary className="flex items-center justify-between cursor-pointer list-none">
                   <span className="font-display text-lg">{f.q}</span>
-                  <span className="font-mono text-amber group-open:rotate-45 transition-transform">+</span>
+                  <span className="font-mono text-amber group-open:rotate-45 transition-transform">
+                    +
+                  </span>
                 </summary>
                 <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{f.a}</p>
               </details>
@@ -202,12 +267,15 @@ function LandingPage() {
       <section className="border-t border-hairline bg-foreground text-background">
         <div className="container-prose py-24 text-center">
           <h2 className="font-display text-4xl sm:text-6xl max-w-3xl mx-auto leading-tight">
-            Stop operating from gut.<br />
+            Stop operating from gut.
+            <br />
             <span className="italic text-amber">Start running plays.</span>
           </h2>
           <div className="mt-10 flex justify-center gap-3">
             <Button asChild size="lg" variant="secondary">
-              <Link to="/join">Join the Circle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/join">
+                Join the Circle <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
           </div>
         </div>

@@ -84,7 +84,9 @@ export function LeadMagnetPage({
           className="border border-hairline bg-elevated p-8 sm:p-10 sticky top-8"
         >
           <h2 className="font-display text-2xl">Where should we send it?</h2>
-          <p className="text-sm text-muted-foreground mt-1">No spam. Cancel anytime in one click.</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            No spam. Cancel anytime in one click.
+          </p>
 
           <div className="mt-6 space-y-4">
             <div className="space-y-2">
@@ -129,7 +131,10 @@ export function LeadMagnetPage({
           </Button>
 
           <p className="mt-4 text-xs text-muted-foreground text-center">
-            Already a member? <Link to="/login" className="text-amber hover:underline">Sign in</Link>
+            Already a member?{" "}
+            <Link to="/login" className="text-amber hover:underline">
+              Sign in
+            </Link>
           </p>
         </form>
       </main>
@@ -171,13 +176,18 @@ export function LeadThankYou({ title, body, downloadUrl, downloadLabel }: LeadTh
         </div>
 
         <div className="mt-16 border-t border-hairline pt-10">
-          <p className="font-mono text-xs uppercase tracking-wider text-amber mb-3">While you're here</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-amber mb-3">
+            While you're here
+          </p>
           <h3 className="font-display text-2xl">Want the full operating room?</h3>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-            The Circle gets you weekly live calls with Marshall, the full template library, and the ConstructLine beta tools.
+            The Circle gets you weekly live calls with Marshall, the full template library, and the
+            ConstructLine beta tools.
           </p>
           <Button asChild className="mt-6">
-            <Link to="/join">Join the Circle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            <Link to="/join">
+              Join the Circle <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
           </Button>
         </div>
       </main>

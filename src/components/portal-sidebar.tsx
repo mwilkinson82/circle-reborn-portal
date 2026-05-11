@@ -1,5 +1,16 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, PlayCircle, FileText, Calendar, Ruler, BookOpen, UserCircle, Shield, LogOut, Hammer } from "lucide-react";
+import {
+  LayoutDashboard,
+  PlayCircle,
+  FileText,
+  Calendar,
+  Ruler,
+  BookOpen,
+  UserCircle,
+  Shield,
+  LogOut,
+  Hammer,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -38,7 +49,8 @@ export function PortalSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const { signOut, user } = useAuth();
 
-  const isActive = (url: string) => pathname === url || (url !== "/portal" && pathname.startsWith(url));
+  const isActive = (url: string) =>
+    pathname === url || (url !== "/portal" && pathname.startsWith(url));
 
   const renderItems = (items: typeof main) =>
     items.map((item) => (

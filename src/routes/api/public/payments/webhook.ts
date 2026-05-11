@@ -20,7 +20,7 @@ async function upsertSubscription(sub: Stripe.Subscription) {
     try {
       const customer = await stripe.customers.retrieve(customerId);
       if (customer && !customer.deleted) {
-        userId = userId ?? ((customer.metadata?.userId as string | undefined) ?? undefined);
+        userId = userId ?? (customer.metadata?.userId as string | undefined) ?? undefined;
         customerEmail = customer.email ?? null;
       }
     } catch (e) {
@@ -31,46 +31,44 @@ async function upsertSubscription(sub: Stripe.Subscription) {
   // If still no user, try to match a registered user by email
   if (!userId && customerEmail) {
     const { data: matched } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
-    const user = matched?.users.find((u) => u.email?.toLowerCase() === customerEmail!.toLowerCase());
+    const user = matched?.users.find(
+      (u) => u.email?.toLowerCase() === customerEmail!.toLowerCase(),
+    );
     if (user) userId = user.id;
   }
 
   // Always upsert into subscriptions, even without a user (so backfill works)
-  const { error } = await supabaseAdmin
-    .from("subscriptions")
-    .upsert(
-      {
-        user_id: userId ?? null,
-        environment: "live",
-        stripe_customer_id: customerId,
-        stripe_subscription_id: sub.id,
-        price_id: priceId,
-        product_id: productId,
-        status: sub.status,
-        current_period_end: periodEndIso,
-        cancel_at_period_end: sub.cancel_at_period_end,
-        metadata: (sub.metadata ?? {}) as Record<string, string>,
-      },
-      { onConflict: "stripe_subscription_id" },
-    );
+  const { error } = await supabaseAdmin.from("subscriptions").upsert(
+    {
+      user_id: userId ?? null,
+      environment: "live",
+      stripe_customer_id: customerId,
+      stripe_subscription_id: sub.id,
+      price_id: priceId,
+      product_id: productId,
+      status: sub.status,
+      current_period_end: periodEndIso,
+      cancel_at_period_end: sub.cancel_at_period_end,
+      metadata: (sub.metadata ?? {}) as Record<string, string>,
+    },
+    { onConflict: "stripe_subscription_id" },
+  );
 
   if (error) console.error("subscriptions upsert error", error);
 
   // If unclaimed, also write/update a pending_claims row so the member can self-claim
   if (!userId && customerEmail) {
-    await supabaseAdmin
-      .from("pending_claims")
-      .upsert(
-        {
-          email: customerEmail,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: sub.id,
-          price_id: priceId ?? "",
-          status: sub.status,
-          current_period_end: periodEndIso,
-        },
-        { onConflict: "stripe_subscription_id" },
-      );
+    await supabaseAdmin.from("pending_claims").upsert(
+      {
+        email: customerEmail,
+        stripe_customer_id: customerId,
+        stripe_subscription_id: sub.id,
+        price_id: priceId ?? "",
+        status: sub.status,
+        current_period_end: periodEndIso,
+      },
+      { onConflict: "stripe_subscription_id" },
+    );
     return;
   }
 
@@ -85,7 +83,9 @@ async function upsertSubscription(sub: Stripe.Subscription) {
       ? "active"
       : sub.status === "past_due"
         ? "past_due"
-        : sub.status === "canceled" || sub.status === "incomplete_expired" || sub.status === "unpaid"
+        : sub.status === "canceled" ||
+            sub.status === "incomplete_expired" ||
+            sub.status === "unpaid"
           ? "canceled"
           : "trialing";
 
@@ -113,11 +113,7 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
 
         let event: Stripe.Event;
         try {
-          event = await stripe.webhooks.constructEventAsync(
-            payload,
-            signature,
-            getWebhookSecret(),
-          );
+          event = await stripe.webhooks.constructEventAsync(payload, signature, getWebhookSecret());
         } catch (err) {
           console.error("Webhook signature verification failed", err);
           return new Response("Invalid signature", { status: 400 });
@@ -128,7 +124,10 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
             case "checkout.session.completed": {
               const session = event.data.object as Stripe.Checkout.Session;
               if (session.mode === "subscription" && session.subscription) {
-                const subId = typeof session.subscription === "string" ? session.subscription : session.subscription.id;
+                const subId =
+                  typeof session.subscription === "string"
+                    ? session.subscription
+                    : session.subscription.id;
                 const sub = await stripe.subscriptions.retrieve(subId);
                 await upsertSubscription(sub);
               }

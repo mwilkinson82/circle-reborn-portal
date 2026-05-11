@@ -4,6 +4,18 @@ import { createStripeClient } from "@/lib/stripe.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachAuthHeader } from "@/lib/auth-client-middleware";
 
+function assertAllowedCheckoutPrice(priceId: string) {
+  const allowed = new Set(
+    [process.env.STRIPE_NEW_PRICE_ID, process.env.VITE_STRIPE_NEW_PRICE_ID].filter(Boolean),
+  );
+  if (allowed.size === 0) {
+    throw new Error("Checkout price is not configured");
+  }
+  if (!allowed.has(priceId)) {
+    throw new Error("Checkout price is not available for public signup");
+  }
+}
+
 async function resolveOrCreateCustomer(
   stripe: Stripe,
   options: { email?: string; userId?: string },
@@ -38,28 +50,32 @@ async function resolveOrCreateCustomer(
 }
 
 export const createCheckoutSession = createServerFn({ method: "POST" })
-  .inputValidator((data: {
-    priceId: string;
-    quantity?: number;
-    customerEmail?: string;
-    userId?: string;
-    returnUrl: string;
-  }) => {
-    if (!/^price_[a-zA-Z0-9]+$/.test(data.priceId)) throw new Error("Invalid priceId");
-    return data;
-  })
+  .inputValidator(
+    (data: {
+      priceId: string;
+      quantity?: number;
+      customerEmail?: string;
+      userId?: string;
+      returnUrl: string;
+    }) => {
+      if (!/^price_[a-zA-Z0-9]+$/.test(data.priceId)) throw new Error("Invalid priceId");
+      return data;
+    },
+  )
   .handler(async ({ data }) => {
+    assertAllowedCheckoutPrice(data.priceId);
     const stripe = createStripeClient();
     const stripePrice = await stripe.prices.retrieve(data.priceId);
     if (!stripePrice.active) throw new Error("Price is not active");
     const isRecurring = stripePrice.type === "recurring";
 
-    const customerId = data.customerEmail || data.userId
-      ? await resolveOrCreateCustomer(stripe, {
-          email: data.customerEmail,
-          userId: data.userId,
-        })
-      : undefined;
+    const customerId =
+      data.customerEmail || data.userId
+        ? await resolveOrCreateCustomer(stripe, {
+            email: data.customerEmail,
+            userId: data.userId,
+          })
+        : undefined;
 
     const session = await stripe.checkout.sessions.create({
       line_items: [{ price: stripePrice.id, quantity: data.quantity || 1 }],

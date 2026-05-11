@@ -42,7 +42,9 @@ function SignupPage() {
   };
 
   const onGoogle = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/portal" });
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin + "/portal",
+    });
     if (result.error) toast.error(result.error.message ?? "Sign-up failed");
     if (!result.redirected && !result.error) navigate({ to: "/portal" });
   };
@@ -51,11 +53,15 @@ function SignupPage() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8">
         <div>
-          <Link to="/" className="font-display text-2xl tracking-tight">ALP<span className="text-amber">.</span></Link>
+          <Link to="/" className="font-display text-2xl tracking-tight">
+            ALP<span className="text-amber">.</span>
+          </Link>
           <h1 className="font-display text-3xl mt-8">Create your account</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Already a member?{" "}
-            <Link to="/login" className="text-foreground underline underline-offset-4">Sign in</Link>
+            <Link to="/login" className="text-foreground underline underline-offset-4">
+              Sign in
+            </Link>
           </p>
         </div>
 
@@ -65,7 +71,9 @@ function SignupPage() {
 
         <div className="relative text-center">
           <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
-          <span className="relative bg-background px-3 text-xs uppercase tracking-wider text-muted-foreground">or</span>
+          <span className="relative bg-background px-3 text-xs uppercase tracking-wider text-muted-foreground">
+            or
+          </span>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -75,11 +83,24 @@ function SignupPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+            <Input
+              id="password"
+              type="password"
+              required
+              minLength={8}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Creating…" : "Create account"}

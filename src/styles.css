@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap");
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -9,8 +10,6 @@
  * Warm off-white canvas, deep ink, single burnt-amber accent.
  * Display: Fraunces (serif). Body: Geist (grotesque). Tabular numerals on data.
  */
-
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap");
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -181,14 +180,19 @@
     font-feature-settings: "ss01", "cv11";
   }
 
-  h1, h2, h3, h4 {
+  h1,
+  h2,
+  h3,
+  h4 {
     font-family: var(--font-display);
     font-optical-sizing: auto;
     letter-spacing: -0.015em;
   }
 
   /* Tabular numerals everywhere data lives */
-  .tabular-nums, table, [data-tabular] {
+  .tabular-nums,
+  table,
+  [data-tabular] {
     font-variant-numeric: tabular-nums;
   }
 }

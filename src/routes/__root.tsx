@@ -75,17 +75,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ALP Contractor Circle" },
-      { name: "description", content: "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team." },
+      {
+        name: "description",
+        content:
+          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+      },
       { name: "author", content: "Altitude Logic Pressure" },
       { property: "og:title", content: "ALP Contractor Circle" },
-      { property: "og:description", content: "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team." },
+      {
+        property: "og:description",
+        content:
+          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@ALPcontractor" },
       { name: "twitter:title", content: "ALP Contractor Circle" },
-      { name: "twitter:description", content: "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png" },
+      {
+        name: "twitter:description",
+        content:
+          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png",
+      },
     ],
     links: [
       {

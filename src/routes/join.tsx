@@ -14,7 +14,10 @@ export const Route = createFileRoute("/join")({
   head: () => ({
     meta: [
       { title: "Join the Circle — ALP Contractor Circle" },
-      { name: "description", content: "Membership to the ALP Contractor Circle. $497/month, cancel anytime." },
+      {
+        name: "description",
+        content: "Membership to the ALP Contractor Circle. $497/month, cancel anytime.",
+      },
       { property: "og:title", content: "Join the ALP Contractor Circle" },
     ],
   }),
@@ -50,7 +53,10 @@ function JoinPage() {
       <MarketingHeader />
 
       <main className="container-prose py-16">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-10">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-10"
+        >
           <ArrowLeft className="h-4 w-4" /> Back
         </Link>
 
@@ -80,7 +86,8 @@ function JoinPage() {
             </ul>
 
             <p className="mt-10 text-xs text-muted-foreground leading-relaxed">
-              First-call money back, no questions. By continuing you agree to be billed monthly until you cancel from your account page.
+              First-call money back, no questions. By continuing you agree to be billed monthly
+              until you cancel from your account page.
             </p>
           </aside>
 
@@ -93,9 +100,7 @@ function JoinPage() {
                 <div>
                   <h2 className="font-display text-2xl">Your details</h2>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {user
-                      ? "Confirm your email and we'll start checkout."
-                      : "Already a member? "}
+                    {user ? "Confirm your email and we'll start checkout." : "Already a member? "}
                     {!user && (
                       <Link to="/login" className="text-amber underline-offset-4 hover:underline">
                         Sign in
@@ -128,7 +133,8 @@ function JoinPage() {
               <div className="space-y-3">
                 <h2 className="font-display text-2xl">Checkout coming online</h2>
                 <p className="text-sm text-muted-foreground">
-                  We're finalizing the new public membership price. Drop us a note at hello@constructline.io and we'll get you in.
+                  We're finalizing the new public membership price. Drop us a note at
+                  hello@constructline.io and we'll get you in.
                 </p>
               </div>
             ) : (

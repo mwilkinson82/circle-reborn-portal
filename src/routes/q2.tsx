@@ -5,7 +5,10 @@ export const Route = createFileRoute("/q2")({
   head: () => ({
     meta: [
       { title: "The Q2 Playbook — ALP" },
-      { name: "description", content: "The exact 90-day operating plan we run from April to June. Free." },
+      {
+        name: "description",
+        content: "The exact 90-day operating plan we run from April to June. Free.",
+      },
       { property: "og:title", content: "The Q2 Playbook — ALP" },
     ],
   }),
@@ -13,7 +16,11 @@ export const Route = createFileRoute("/q2")({
     <LeadMagnetPage
       source="q2"
       eyebrow="Free playbook · 24 pages"
-      title={<>The <span className="italic text-amber">Q2</span> playbook.</>}
+      title={
+        <>
+          The <span className="italic text-amber">Q2</span> playbook.
+        </>
+      }
       intro="The 90-day operating plan we run from April to June — bidding rhythm, hiring windows, cash flow waypoints. The same calendar we use to push a Q1 backlog through summer."
       bullets={[
         "Week-by-week bidding cadence",

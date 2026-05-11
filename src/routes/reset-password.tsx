@@ -48,7 +48,9 @@ function ResetPasswordPage() {
     <div className="min-h-screen flex items-center justify-center p-6">
       <div className="w-full max-w-sm space-y-8">
         <div>
-          <Link to="/" className="font-display text-2xl tracking-tight">ALP<span className="text-amber">.</span></Link>
+          <Link to="/" className="font-display text-2xl tracking-tight">
+            ALP<span className="text-amber">.</span>
+          </Link>
           <h1 className="font-display text-3xl mt-8">
             {mode === "request" ? "Reset your password" : "Set a new password"}
           </h1>
@@ -63,7 +65,13 @@ function ResetPasswordPage() {
           <form onSubmit={requestReset} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Sending…" : "Send reset link"}
@@ -73,7 +81,14 @@ function ResetPasswordPage() {
           <form onSubmit={updatePassword} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="password">New password</Label>
-              <Input id="password" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+              <Input
+                id="password"
+                type="password"
+                required
+                minLength={8}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Updating…" : "Update password"}
@@ -81,7 +96,9 @@ function ResetPasswordPage() {
           </form>
         )}
 
-        <Link to="/login" className="block text-sm text-muted-foreground hover:text-foreground">← Back to sign in</Link>
+        <Link to="/login" className="block text-sm text-muted-foreground hover:text-foreground">
+          ← Back to sign in
+        </Link>
       </div>
     </div>
   );

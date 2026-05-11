@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type Stripe from "stripe";
 import { createStripeClient } from "@/lib/stripe.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -30,21 +31,24 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
     let cursor: string | undefined = undefined;
 
     while (true) {
-      const page: any = await stripe.subscriptions.list({
+      const page = await stripe.subscriptions.list({
         status: "all",
         limit: 100,
         ...(cursor && { starting_after: cursor }),
         expand: ["data.customer"],
       });
 
-      for (const sub of page.data as any[]) {
+      for (const sub of page.data) {
         if (!["active", "trialing", "past_due"].includes(sub.status)) continue;
 
         const item = sub.items.data[0];
         const priceId = item?.price?.id ?? null;
         const productId = typeof item?.price?.product === "string" ? item.price.product : null;
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
-        const customer = typeof sub.customer === "object" && !sub.customer.deleted ? sub.customer : null;
+        const customer =
+          typeof sub.customer === "object" && !sub.customer.deleted
+            ? (sub.customer as Stripe.Customer)
+            : null;
         const customerEmail: string | null = customer?.email ?? null;
         const periodEndUnix = item?.current_period_end ?? null;
         const periodEndIso = periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null;
@@ -52,8 +56,13 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
         // Try to match an existing user by email
         let matchedUserId: string | null = null;
         if (customerEmail) {
-          const { data: usersPage } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
-          const u = usersPage?.users.find((x) => x.email?.toLowerCase() === customerEmail.toLowerCase());
+          const { data: usersPage } = await supabaseAdmin.auth.admin.listUsers({
+            page: 1,
+            perPage: 200,
+          });
+          const u = usersPage?.users.find(
+            (x) => x.email?.toLowerCase() === customerEmail.toLowerCase(),
+          );
           if (u) matchedUserId = u.id;
         }
 
@@ -119,7 +128,7 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
   .middleware([attachAuthHeader, requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { userId, claims } = context;
-    const email = (claims as any)?.email as string | undefined;
+    const email = (claims as { email?: string } | undefined)?.email;
     if (!email) return { claimed: false, reason: "no email on session" };
 
     const { data: pendings } = await supabaseAdmin

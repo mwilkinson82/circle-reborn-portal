@@ -15,13 +15,23 @@ export function MarketingHeader() {
           </span>
         </Link>
         <nav className="hidden md:flex items-center gap-8 text-sm">
-          <Link to="/" hash="pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            to="/"
+            hash="pricing"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             Pricing
           </Link>
-          <Link to="/constructline" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            to="/constructline"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             ConstructLine
           </Link>
-          <Link to="/estimating" className="text-muted-foreground hover:text-foreground transition-colors">
+          <Link
+            to="/estimating"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
             Free tools
           </Link>
         </nav>
@@ -56,24 +66,58 @@ export function MarketingFooter() {
           </p>
         </div>
         <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">Circle</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">
+            Circle
+          </p>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/" hash="pricing" className="hover:text-amber">Pricing</Link></li>
-            <li><Link to="/join" className="hover:text-amber">Join</Link></li>
-            <li><Link to="/login" className="hover:text-amber">Member sign in</Link></li>
+            <li>
+              <Link to="/" hash="pricing" className="hover:text-amber">
+                Pricing
+              </Link>
+            </li>
+            <li>
+              <Link to="/join" className="hover:text-amber">
+                Join
+              </Link>
+            </li>
+            <li>
+              <Link to="/login" className="hover:text-amber">
+                Member sign in
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">Tools</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">
+            Tools
+          </p>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/constructline" className="hover:text-amber">ConstructLine</Link></li>
-            <li><Link to="/estimating" className="hover:text-amber">Estimating checklist</Link></li>
-            <li><Link to="/silos" className="hover:text-amber">Three silos guide</Link></li>
-            <li><Link to="/q2" className="hover:text-amber">Q2 playbook</Link></li>
+            <li>
+              <Link to="/constructline" className="hover:text-amber">
+                ConstructLine
+              </Link>
+            </li>
+            <li>
+              <Link to="/estimating" className="hover:text-amber">
+                Estimating checklist
+              </Link>
+            </li>
+            <li>
+              <Link to="/silos" className="hover:text-amber">
+                Three silos guide
+              </Link>
+            </li>
+            <li>
+              <Link to="/q2" className="hover:text-amber">
+                Q2 playbook
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">Company</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground mb-4">
+            Company
+          </p>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li>Altitude Logic Pressure</li>
             <li>Marshall Wilkinson</li>

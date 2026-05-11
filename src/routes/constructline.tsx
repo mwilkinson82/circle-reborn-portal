@@ -8,7 +8,11 @@ export const Route = createFileRoute("/constructline")({
   head: () => ({
     meta: [
       { title: "ConstructLine — Operating tools for residential & light commercial GCs" },
-      { name: "description", content: "Scheduler, takeoff, and cost library tuned for the way GCs actually work. In private beta with Circle members." },
+      {
+        name: "description",
+        content:
+          "Scheduler, takeoff, and cost library tuned for the way GCs actually work. In private beta with Circle members.",
+      },
       { property: "og:title", content: "ConstructLine — by ALP" },
     ],
   }),
@@ -16,9 +20,21 @@ export const Route = createFileRoute("/constructline")({
 });
 
 const TOOLS = [
-  { i: Calendar, t: "Scheduler", d: "CPM under the hood, plain language on top. Drag a job, the dependent dates move. Reports that read like an owner update, not a Gantt dump." },
-  { i: Calculator, t: "Takeoff", d: "Mark up plans on screen, AI extracts the line items, answers go straight to your estimate template. No double entry." },
-  { i: Database, t: "Cost & Labor Library", d: "Your real numbers, versioned. Pull a unit price into a bid in two clicks. Update once, every active estimate sees it." },
+  {
+    i: Calendar,
+    t: "Scheduler",
+    d: "CPM under the hood, plain language on top. Drag a job, the dependent dates move. Reports that read like an owner update, not a Gantt dump.",
+  },
+  {
+    i: Calculator,
+    t: "Takeoff",
+    d: "Mark up plans on screen, AI extracts the line items, answers go straight to your estimate template. No double entry.",
+  },
+  {
+    i: Database,
+    t: "Cost & Labor Library",
+    d: "Your real numbers, versioned. Pull a unit price into a bid in two clicks. Update once, every active estimate sees it.",
+  },
 ];
 
 function ConstructLineLanding() {
@@ -38,15 +54,19 @@ function ConstructLineLanding() {
             ConstructLine · Private beta
           </span>
           <h1 className="font-display text-5xl sm:text-7xl mt-6 leading-[1.05]">
-            Operating tools<br />
+            Operating tools
+            <br />
             for the <span className="text-amber italic">field</span>.
           </h1>
           <p className="mt-8 text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            Scheduler, takeoff, and a real cost library — built for residential and light commercial GCs and tuned by the way actual jobs run, not how software vendors think they should.
+            Scheduler, takeoff, and a real cost library — built for residential and light commercial
+            GCs and tuned by the way actual jobs run, not how software vendors think they should.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link to="/constructline/login">Beta sign in <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link to="/constructline/login">
+                Beta sign in <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
             <Button asChild size="lg" variant="ghost">
               <Link to="/join">Join the Circle to access the beta</Link>
@@ -74,7 +94,9 @@ function ConstructLineLanding() {
           Members get full access while we build it out. Feedback shapes what ships next.
         </p>
         <Button asChild size="lg" className="mt-8">
-          <Link to="/join">Join the Circle <ArrowRight className="ml-2 h-4 w-4" /></Link>
+          <Link to="/join">
+            Join the Circle <ArrowRight className="ml-2 h-4 w-4" />
+          </Link>
         </Button>
       </section>
 

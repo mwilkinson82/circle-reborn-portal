@@ -15,7 +15,11 @@ function BackfillPage() {
   const { user } = useAuth();
   const run = useServerFn(backfillExistingSubscriptions);
   const [running, setRunning] = useState(false);
-  const [result, setResult] = useState<{ imported: number; claimed: number; unclaimed: number } | null>(null);
+  const [result, setResult] = useState<{
+    imported: number;
+    claimed: number;
+    unclaimed: number;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
 
@@ -41,8 +45,14 @@ function BackfillPage() {
     }
   };
 
-  if (isAdmin === null) return <div className="p-10 text-sm text-muted-foreground">Checking access…</div>;
-  if (!isAdmin) return <div className="p-10"><h1 className="font-display text-2xl">Admin only</h1></div>;
+  if (isAdmin === null)
+    return <div className="p-10 text-sm text-muted-foreground">Checking access…</div>;
+  if (!isAdmin)
+    return (
+      <div className="p-10">
+        <h1 className="font-display text-2xl">Admin only</h1>
+      </div>
+    );
 
   return (
     <div className="container-prose py-12 space-y-8">
@@ -50,9 +60,9 @@ function BackfillPage() {
         <p className="font-mono text-xs uppercase tracking-wider text-amber">Admin · One-time</p>
         <h1 className="font-display text-3xl mt-2">Backfill existing Stripe subscriptions</h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-prose">
-          Pulls every active, trialing, and past-due subscription from your connected Stripe account.
-          For each one, links it to a registered user (matched by email) or stages it as a pending claim
-          so the member can self-claim by signing up. Safe to re-run.
+          Pulls every active, trialing, and past-due subscription from your connected Stripe
+          account. For each one, links it to a registered user (matched by email) or stages it as a
+          pending claim so the member can self-claim by signing up. Safe to re-run.
         </p>
       </div>
 
@@ -60,13 +70,26 @@ function BackfillPage() {
         {running ? "Running…" : "Run backfill"}
       </Button>
 
-      {error && <div className="border border-destructive/50 bg-destructive/10 text-destructive p-4 text-sm">{error}</div>}
+      {error && (
+        <div className="border border-destructive/50 bg-destructive/10 text-destructive p-4 text-sm">
+          {error}
+        </div>
+      )}
 
       {result && (
         <div className="border border-hairline bg-elevated p-6 space-y-2 text-sm">
-          <div className="flex justify-between"><span className="text-muted-foreground">Total imported</span><span className="font-mono">{result.imported}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Linked to existing users</span><span className="font-mono">{result.claimed}</span></div>
-          <div className="flex justify-between"><span className="text-muted-foreground">Awaiting member signup</span><span className="font-mono">{result.unclaimed}</span></div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Total imported</span>
+            <span className="font-mono">{result.imported}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Linked to existing users</span>
+            <span className="font-mono">{result.claimed}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Awaiting member signup</span>
+            <span className="font-mono">{result.unclaimed}</span>
+          </div>
         </div>
       )}
     </div>

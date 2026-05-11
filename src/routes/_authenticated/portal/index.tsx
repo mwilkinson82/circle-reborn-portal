@@ -2,7 +2,16 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Calendar, FileText, PlayCircle, Pin, Hammer, Ruler, BookOpen } from "lucide-react";
+import {
+  ArrowUpRight,
+  Calendar,
+  FileText,
+  PlayCircle,
+  Pin,
+  Hammer,
+  Ruler,
+  BookOpen,
+} from "lucide-react";
 import { getDashboard } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
@@ -14,17 +23,26 @@ import { formatDistanceToNow } from "date-fns";
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
   component: DashboardPage,
-  errorComponent: ({ error, reset }) => {
-    const router = useRouter();
-    return (
-      <div className="container-prose py-20 text-center space-y-4">
-        <h1 className="font-display text-3xl">Couldn't load your dashboard</h1>
-        <p className="text-sm text-muted-foreground">{error.message || "Please try again."}</p>
-        <Button onClick={() => { router.invalidate(); reset(); }}>Try again</Button>
-      </div>
-    );
-  },
+  errorComponent: DashboardError,
 });
+
+function DashboardError({ error, reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+  return (
+    <div className="container-prose py-20 text-center space-y-4">
+      <h1 className="font-display text-3xl">Couldn't load your dashboard</h1>
+      <p className="text-sm text-muted-foreground">{error.message || "Please try again."}</p>
+      <Button
+        onClick={() => {
+          router.invalidate();
+          reset();
+        }}
+      >
+        Try again
+      </Button>
+    </div>
+  );
+}
 
 function DashboardPage() {
   const { user, loading } = useAuth();
@@ -41,7 +59,9 @@ function DashboardPage() {
   const { profile, member, replays, featuredTemplates, announcements } = data;
   const latest = replays[0];
   const memberSince = member?.joined_at ? new Date(member.joined_at) : null;
-  const days = memberSince ? Math.max(1, Math.floor((Date.now() - memberSince.getTime()) / 86400000)) : 0;
+  const days = memberSince
+    ? Math.max(1, Math.floor((Date.now() - memberSince.getTime()) / 86400000))
+    : 0;
 
   return (
     <div className="container-prose py-10 space-y-12">
@@ -54,13 +74,21 @@ function DashboardPage() {
       >
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-muted-foreground">{new Date().toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}</p>
+            <p className="text-sm text-muted-foreground">
+              {new Date().toLocaleDateString(undefined, {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
             <h1 className="font-display text-4xl sm:text-5xl mt-1">
-              Welcome back, <span className="text-amber">{profile?.display_name?.split(" ")[0] ?? "Builder"}</span>.
+              Welcome back,{" "}
+              <span className="text-amber">
+                {profile?.display_name?.split(" ")[0] ?? "Builder"}
+              </span>
+              .
             </h1>
-            {profile?.headline && (
-              <p className="mt-2 text-muted-foreground">{profile.headline}</p>
-            )}
+            {profile?.headline && <p className="mt-2 text-muted-foreground">{profile.headline}</p>}
           </div>
           <Button asChild variant="outline">
             <Link to="/portal/account">View profile</Link>
@@ -93,9 +121,13 @@ function DashboardPage() {
               </div>
             </div>
             <div className="p-6 flex items-center justify-between gap-6">
-              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">{latest.description}</p>
+              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
+                {latest.description}
+              </p>
               <Button asChild>
-                <Link to="/portal/replays">Watch <ArrowUpRight className="ml-1 h-4 w-4" /></Link>
+                <Link to="/portal/replays">
+                  Watch <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Link>
               </Button>
             </div>
           </Card>
@@ -107,13 +139,15 @@ function DashboardPage() {
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </div>
           <ul className="mt-5 divide-y divide-hairline">
-            {announcements.map((a: typeof announcements[number]) => (
+            {announcements.map((a: (typeof announcements)[number]) => (
               <li key={a.id} className="py-3 first:pt-0 last:pb-0">
                 <div className="flex items-start gap-2">
                   {a.pinned && <Pin className="h-3.5 w-3.5 text-amber mt-1 shrink-0" />}
                   <div className="min-w-0">
                     <p className="text-sm font-medium leading-tight">{a.title}</p>
-                    {a.body && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{a.body}</p>}
+                    {a.body && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{a.body}</p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-1">
                       {formatDistanceToNow(new Date(a.published_at), { addSuffix: true })}
                     </p>
@@ -133,13 +167,20 @@ function DashboardPage() {
         <div className="flex items-end justify-between">
           <div>
             <h2 className="font-display text-2xl">Featured templates</h2>
-            <p className="text-sm text-muted-foreground mt-1">Pulled from the library — used on real bids.</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Pulled from the library — used on real bids.
+            </p>
           </div>
-          <Link to="/portal/templates" className="text-sm text-foreground underline underline-offset-4">All templates</Link>
+          <Link
+            to="/portal/templates"
+            className="text-sm text-foreground underline underline-offset-4"
+          >
+            All templates
+          </Link>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
-          {featuredTemplates.map((t: typeof featuredTemplates[number], i: number) => (
+          {featuredTemplates.map((t: (typeof featuredTemplates)[number], i: number) => (
             <motion.div
               key={t.id}
               initial={{ opacity: 0, y: 8 }}
@@ -148,13 +189,21 @@ function DashboardPage() {
             >
               <Card className="p-6 h-full border-hairline hover:border-foreground/30 transition-colors">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="font-mono text-[10px] uppercase">{t.category}</Badge>
-                  {t.badge && <span className="text-[10px] uppercase tracking-wider text-amber">{t.badge}</span>}
+                  <Badge variant="outline" className="font-mono text-[10px] uppercase">
+                    {t.category}
+                  </Badge>
+                  {t.badge && (
+                    <span className="text-[10px] uppercase tracking-wider text-amber">
+                      {t.badge}
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-display text-xl mt-4 leading-tight">{t.title}</h3>
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-3">{t.description}</p>
                 <div className="mt-6 flex items-center justify-between text-xs text-muted-foreground">
-                  <span className="font-mono uppercase">{t.file_type} {t.pages && `· ${t.pages}`}</span>
+                  <span className="font-mono uppercase">
+                    {t.file_type} {t.pages && `· ${t.pages}`}
+                  </span>
                   <FileText className="h-4 w-4" />
                 </div>
               </Card>
@@ -169,7 +218,12 @@ function DashboardPage() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-hairline border border-hairline">
           <QuickLink to="/portal/scheduler" icon={Calendar} label="Scheduler" hint="CPM + Gantt" />
           <QuickLink to="/portal/takeoff" icon={Ruler} label="Takeoffs" hint="AI-assisted" />
-          <QuickLink to="/portal/cost-library" icon={BookOpen} label="Cost Library" hint="Regional unit costs" />
+          <QuickLink
+            to="/portal/cost-library"
+            icon={BookOpen}
+            label="Cost Library"
+            hint="Regional unit costs"
+          />
           <QuickLink to="/portal/replays" icon={Hammer} label="Replays" hint="Live call archive" />
         </div>
       </section>
@@ -186,7 +240,17 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function QuickLink({ to, icon: Icon, label, hint }: { to: string; icon: typeof Calendar; label: string; hint: string }) {
+function QuickLink({
+  to,
+  icon: Icon,
+  label,
+  hint,
+}: {
+  to: string;
+  icon: typeof Calendar;
+  label: string;
+  hint: string;
+}) {
   return (
     <Link to={to} className="bg-background p-6 hover:bg-secondary transition-colors group">
       <div className="flex items-start justify-between">
