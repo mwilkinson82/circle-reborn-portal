@@ -1,6 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { isConfiguredAdminEmail } from "@/lib/admin-access";
+import {
+  circleReplayCatalog,
+  circleTemplateCatalog,
+  shouldUseReplayCatalogFallback,
+  shouldUseTemplateCatalogFallback,
+} from "@/lib/library-catalog";
 import { titleCase } from "@/lib/membership-plan";
 import { attachAuthHeader } from "./auth-client-middleware";
 
@@ -94,11 +100,18 @@ export const getDashboard = createServerFn({ method: "GET" })
         }
       : memberRes.data;
 
+    const dashboardReplays = replaysRes.data ?? [];
+    const dashboardTemplates = templatesRes.data ?? [];
+
     return {
       profile,
       member,
-      replays: replaysRes.data ?? [],
-      featuredTemplates: templatesRes.data ?? [],
+      replays: shouldUseReplayCatalogFallback(dashboardReplays)
+        ? circleReplayCatalog.slice(0, 4)
+        : dashboardReplays,
+      featuredTemplates: shouldUseTemplateCatalogFallback(dashboardTemplates)
+        ? circleTemplateCatalog.filter((template) => template.featured).slice(0, 3)
+        : dashboardTemplates,
       announcements: announcementsRes.data ?? [],
     };
   });
@@ -116,7 +129,8 @@ export const getReplayLibrary = createServerFn({ method: "GET" })
       .order("recorded_at", { ascending: false })
       .limit(24);
 
-    return data ?? [];
+    const replays = data ?? [];
+    return shouldUseReplayCatalogFallback(replays) ? circleReplayCatalog : replays;
   });
 
 export const getTemplateLibrary = createServerFn({ method: "GET" })
@@ -133,5 +147,6 @@ export const getTemplateLibrary = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false })
       .limit(48);
 
-    return data ?? [];
+    const templates = data ?? [];
+    return shouldUseTemplateCatalogFallback(templates) ? circleTemplateCatalog : templates;
   });
