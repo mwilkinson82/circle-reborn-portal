@@ -178,7 +178,8 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
       await supabaseAdmin
         .from("members")
         .update({
-          status: isComped || p.status === "active" || p.status === "trialing" ? "active" : "past_due",
+          status:
+            isComped || p.status === "active" || p.status === "trialing" ? "active" : "past_due",
           plan: p.price_id ?? (isComped ? "comped" : null),
           stripe_customer_id: p.stripe_customer_id,
           stripe_subscription_id: p.stripe_subscription_id,
