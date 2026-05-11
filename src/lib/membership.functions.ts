@@ -4,6 +4,30 @@ import { createStripeClient } from "@/lib/stripe.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachAuthHeader } from "@/lib/auth-client-middleware";
+import { isFoundingPlan } from "@/lib/membership-plan";
+
+function normalizeClaimStatus(status: string | null | undefined) {
+  return (status ?? "").trim().toLowerCase();
+}
+
+function isActiveManualClaim(status: string | null | undefined) {
+  return ["active", "trialing", "comped", "manual", "founding"].includes(
+    normalizeClaimStatus(status),
+  );
+}
+
+function resolveClaimedMemberStatus(
+  status: string | null | undefined,
+): "active" | "past_due" | "canceled" {
+  const normalized = normalizeClaimStatus(status);
+  if (isActiveManualClaim(status)) return "active";
+  if (normalized === "past_due") return "past_due";
+  return "canceled";
+}
+
+function isFoundingClaim(priceId: string | null | undefined, status: string | null | undefined) {
+  return isFoundingPlan(priceId) || normalizeClaimStatus(status) === "founding";
+}
 
 /**
  * Admin-only: list every active/past_due/trialing subscription in the connected
@@ -91,6 +115,8 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
               stripe_customer_id: customerId,
               stripe_subscription_id: sub.id,
               current_period_end: periodEndIso,
+              is_founding: isFoundingPlan(priceId),
+              is_comped: false,
             })
             .eq("user_id", matchedUserId);
           claimed++;
@@ -165,6 +191,7 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
     let claimedCount = 0;
     for (const p of pendings) {
       const isComped = !p.stripe_subscription_id;
+      const status = resolveClaimedMemberStatus(p.status);
 
       // Link the subscription to this user (only if there is one)
       if (p.stripe_subscription_id) {
@@ -178,13 +205,12 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
       await supabaseAdmin
         .from("members")
         .update({
-          status:
-            isComped || p.status === "active" || p.status === "trialing" ? "active" : "past_due",
+          status,
           plan: p.price_id ?? (isComped ? "comped" : null),
           stripe_customer_id: p.stripe_customer_id,
           stripe_subscription_id: p.stripe_subscription_id,
           current_period_end: p.current_period_end,
-          is_founding: true,
+          is_founding: isFoundingClaim(p.price_id, p.status),
           is_comped: isComped,
         })
         .eq("user_id", userId);

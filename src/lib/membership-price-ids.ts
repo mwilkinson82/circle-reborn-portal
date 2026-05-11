@@ -1,0 +1,9 @@
+export const LEGACY_FOUNDING_PLAN_KEY = "founding_member";
+
+export const GRANDFATHERED_PRICE_IDS = [
+  "price_1TDR3aJdDAUSVXbNZOY6EXF3",
+  "price_1TDR3aJdDAUSVXbNWVzFLblo",
+  "price_1TC5NlJdDAUSVXbNPThxV7uS",
+];
+
+export const FOUNDING_PLAN_KEYS = [LEGACY_FOUNDING_PLAN_KEY, ...GRANDFATHERED_PRICE_IDS];

@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { GRANDFATHERED_PRICE_IDS } from "@/lib/membership-price-ids";
 
 const getEnv = (key: string): string => {
   const value = process.env[key];
@@ -25,15 +26,9 @@ export function getWebhookSecret(env: StripeEnv): string {
 }
 
 /**
- * Stripe price IDs grandfathered for the original 18 Contractor Circle members.
- * These rotate-in via backfill; new signups use STRIPE_NEW_PRICE_ID.
+ * Legacy Stripe price IDs for existing Contractor Circle subscriptions.
+ * These rotate in via backfill; new signups use STRIPE_NEW_PRICE_ID.
  */
-export const GRANDFATHERED_PRICE_IDS = [
-  "price_1TDR3aJdDAUSVXbNZOY6EXF3",
-  "price_1TDR3aJdDAUSVXbNWVzFLblo",
-  "price_1TC5NlJdDAUSVXbNPThxV7uS",
-];
-
 export function isGrandfatheredPrice(priceId: string | null | undefined): boolean {
   return !!priceId && GRANDFATHERED_PRICE_IDS.includes(priceId);
 }

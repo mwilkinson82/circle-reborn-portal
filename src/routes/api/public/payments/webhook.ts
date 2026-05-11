@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type Stripe from "stripe";
 import { createStripeClient, getWebhookSecret, type StripeEnv } from "@/lib/stripe.server";
+import { isFoundingPlan } from "@/lib/membership-plan";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 async function upsertSubscription(sub: Stripe.Subscription, env: StripeEnv) {
@@ -97,6 +98,8 @@ async function upsertSubscription(sub: Stripe.Subscription, env: StripeEnv) {
       stripe_customer_id: customerId,
       stripe_subscription_id: sub.id,
       current_period_end: periodEndIso,
+      is_founding: isFoundingPlan(priceId),
+      is_comped: false,
     })
     .eq("user_id", userId);
 }

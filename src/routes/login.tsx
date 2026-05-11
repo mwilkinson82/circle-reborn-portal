@@ -1,11 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
+import { MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -19,27 +17,19 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const onDiscord = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) return toast.error(error.message);
-    toast.success("Welcome back.");
-    navigate({ to: "/portal" });
-  };
-
-  const onGoogle = async () => {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/portal",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "discord",
+      options: {
+        redirectTo: window.location.origin + "/portal",
+        scopes: "identify email",
+      },
     });
-    if (result.error) toast.error(result.error.message ?? "Sign-in failed");
-    if (!result.redirected && !result.error) navigate({ to: "/portal" });
+    setLoading(false);
+    if (error) toast.error(error.message);
   };
 
   return (
@@ -68,57 +58,25 @@ function LoginPage() {
           <div>
             <h1 className="font-display text-3xl">Sign in</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              New here?{" "}
-              <Link to="/signup" className="text-foreground underline underline-offset-4">
-                Create an account
+              Circle access is tied to your Discord community identity.
+            </p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Not a member yet?{" "}
+              <Link to="/join" className="text-foreground underline underline-offset-4">
+                Join the Circle
               </Link>
             </p>
           </div>
 
-          <Button variant="outline" className="w-full" onClick={onGoogle}>
-            Continue with Google
+          <Button className="w-full" onClick={onDiscord} disabled={loading}>
+            <MessageCircle className="mr-2 h-4 w-4" />
+            {loading ? "Opening Discord…" : "Continue with Discord"}
           </Button>
 
-          <div className="relative text-center">
-            <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
-            <span className="relative bg-background px-3 text-xs uppercase tracking-wider text-muted-foreground">
-              or
-            </span>
-          </div>
-
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/reset-password"
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Forgot?
-                </Link>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in…" : "Sign in"}
-            </Button>
-          </form>
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            Use the Discord account connected to your Contractor Circle membership. If Discord asks
+            for an account, create one there and continue.
+          </p>
         </div>
       </div>
     </div>
