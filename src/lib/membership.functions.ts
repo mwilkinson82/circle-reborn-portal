@@ -55,6 +55,12 @@ type ConfiguredAdminResult = {
   error?: string | null;
 };
 
+type AccessTestResult = {
+  memberEmail: string;
+  blockedEmail: string;
+  preparedAt: string;
+};
+
 type MembershipRecord = {
   status: string | null;
   plan: string | null;
@@ -264,6 +270,25 @@ async function ensureConfiguredAdminAccessForUser(
   return { applied: true };
 }
 
+async function isUserAdmin(userId: string, email: string | null | undefined) {
+  if (isConfiguredAdminEmail(email)) return true;
+
+  const { data: roles, error } = await supabaseAdmin
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", userId);
+
+  if (error) throw error;
+  return !!roles?.some((r) => r.role === "admin");
+}
+
+function createPlusAlias(email: string, tag: string) {
+  const [localPart, domain] = email.split("@");
+  if (!localPart || !domain) throw new Error("Admin email is not valid.");
+  const cleanLocal = localPart.split("+")[0];
+  return `${cleanLocal}+${tag}@${domain}`.toLowerCase();
+}
+
 /**
  * Admin-only: list every active/past_due/trialing subscription in the connected
  * Stripe account and write them into `subscriptions` + `pending_claims`.
@@ -275,11 +300,8 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
     const { userId } = context;
 
     // Verify admin role
-    const { data: roles } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-    if (!roles?.some((r) => r.role === "admin")) {
+    const email = (context.claims as { email?: string } | undefined)?.email ?? null;
+    if (!(await isUserAdmin(userId, email))) {
       throw new Error("Admin access required");
     }
 
@@ -386,25 +408,72 @@ export const getMyAdminStatus = createServerFn({ method: "GET" })
     const { userId, claims } = context;
     const email = (claims as { email?: string } | undefined)?.email;
 
-    if (isConfiguredAdminEmail(email)) {
-      return { isAdmin: true, email: email ?? null, error: null };
-    }
-
-    const { data: roles, error } = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId);
-
-    if (error) {
+    try {
+      return {
+        isAdmin: await isUserAdmin(userId, email),
+        email: email ?? null,
+        error: null,
+      };
+    } catch (error) {
       console.error("Admin status check failed", error);
       return { isAdmin: false, email: email ?? null, error: "Unable to verify admin access." };
     }
+  });
 
-    return {
-      isAdmin: !!roles?.some((r) => r.role === "admin"),
-      email: email ?? null,
-      error: null,
-    };
+export const prepareAccessTest = createServerFn({ method: "POST" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }): Promise<AccessTestResult> => {
+    const { userId, claims } = context;
+    const claimEmail = (claims as { email?: string } | undefined)?.email ?? null;
+    const { data: authUserRes, error: authUserError } =
+      await supabaseAdmin.auth.admin.getUserById(userId);
+    if (authUserError) throw authUserError;
+
+    const email = resolveAuthEmail(authUserRes?.user, claimEmail);
+    if (!(await isUserAdmin(userId, email))) {
+      throw new Error("Admin access required");
+    }
+
+    const preparedAt = new Date().toISOString();
+    const stamp = preparedAt.replace(/\D/g, "").slice(0, 12);
+    const memberEmail = createPlusAlias(email ?? "", `circle-member-${stamp}`);
+    const blockedEmail = createPlusAlias(email ?? "", `circle-blocked-${stamp}`);
+
+    const { data: existingClaim, error: existingError } = await supabaseAdmin
+      .from("pending_claims")
+      .select("id")
+      .ilike("email", memberEmail)
+      .is("stripe_subscription_id", null)
+      .maybeSingle();
+    if (existingError) throw existingError;
+
+    if (existingClaim?.id) {
+      const { error } = await supabaseAdmin
+        .from("pending_claims")
+        .update({
+          status: "comped",
+          price_id: "comped",
+          claimed_at: null,
+          claimed_by: null,
+        })
+        .eq("id", existingClaim.id);
+      if (error) throw error;
+    } else {
+      const { error } = await supabaseAdmin.from("pending_claims").insert({
+        email: memberEmail,
+        status: "comped",
+        price_id: "comped",
+      });
+      if (error) throw error;
+    }
+
+    const { error: blockedCleanupError } = await supabaseAdmin
+      .from("pending_claims")
+      .delete()
+      .ilike("email", blockedEmail);
+    if (blockedCleanupError) throw blockedCleanupError;
+
+    return { memberEmail, blockedEmail, preparedAt };
   });
 
 export const getMyMembershipAccess = createServerFn({ method: "GET" })

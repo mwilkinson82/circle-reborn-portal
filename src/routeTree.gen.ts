@@ -37,6 +37,7 @@ import { Route as AuthenticatedPortalAccountRouteImport } from './routes/_authen
 import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 import { Route as AuthenticatedPortalAdminBackfillRouteImport } from './routes/_authenticated/portal/admin/backfill'
+import { Route as AuthenticatedPortalAdminAccessTestRouteImport } from './routes/_authenticated/portal/admin/access-test'
 
 const SilosRoute = SilosRouteImport.update({
   id: '/silos',
@@ -190,6 +191,12 @@ const AuthenticatedPortalAdminBackfillRoute =
     path: '/backfill',
     getParentRoute: () => AuthenticatedPortalAdminRoute,
   } as any)
+const AuthenticatedPortalAdminAccessTestRoute =
+  AuthenticatedPortalAdminAccessTestRouteImport.update({
+    id: '/access-test',
+    path: '/access-test',
+    getParentRoute: () => AuthenticatedPortalAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
   '/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
@@ -244,6 +252,7 @@ export interface FileRoutesByTo {
   '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
   '/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/admin': typeof AuthenticatedPortalAdminIndexRoute
@@ -275,6 +284,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
   '/_authenticated/portal/templates': typeof AuthenticatedPortalTemplatesRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/_authenticated/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/portal/takeoff'
     | '/portal/templates'
     | '/portal/'
+    | '/portal/admin/access-test'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
     | '/portal/admin/'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/portal/takeoff'
     | '/portal/templates'
     | '/portal'
+    | '/portal/admin/access-test'
     | '/portal/admin/backfill'
     | '/api/public/payments/webhook'
     | '/portal/admin'
@@ -364,6 +376,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/takeoff'
     | '/_authenticated/portal/templates'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/admin/access-test'
     | '/_authenticated/portal/admin/backfill'
     | '/api/public/payments/webhook'
     | '/_authenticated/portal/admin/'
@@ -582,16 +595,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalAdminBackfillRouteImport
       parentRoute: typeof AuthenticatedPortalAdminRoute
     }
+    '/_authenticated/portal/admin/access-test': {
+      id: '/_authenticated/portal/admin/access-test'
+      path: '/access-test'
+      fullPath: '/portal/admin/access-test'
+      preLoaderRoute: typeof AuthenticatedPortalAdminAccessTestRouteImport
+      parentRoute: typeof AuthenticatedPortalAdminRoute
+    }
   }
 }
 
 interface AuthenticatedPortalAdminRouteChildren {
+  AuthenticatedPortalAdminAccessTestRoute: typeof AuthenticatedPortalAdminAccessTestRoute
   AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
   AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
 }
 
 const AuthenticatedPortalAdminRouteChildren: AuthenticatedPortalAdminRouteChildren =
   {
+    AuthenticatedPortalAdminAccessTestRoute:
+      AuthenticatedPortalAdminAccessTestRoute,
     AuthenticatedPortalAdminBackfillRoute:
       AuthenticatedPortalAdminBackfillRoute,
     AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
