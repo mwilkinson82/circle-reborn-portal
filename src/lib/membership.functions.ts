@@ -55,6 +55,40 @@ type MembershipRecord = {
   is_founding: boolean | null;
 };
 
+type AuthUserLike = {
+  email?: string | null;
+  user_metadata?: Record<string, unknown> | null;
+  app_metadata?: Record<string, unknown> | null;
+  identities?: Array<{
+    identity_data?: Record<string, unknown> | null;
+  }> | null;
+};
+
+function getStringValue(source: Record<string, unknown> | null | undefined, key: string) {
+  const value = source?.[key];
+  return typeof value === "string" && value.trim() ? value.trim() : null;
+}
+
+function resolveAuthEmail(user: AuthUserLike | null | undefined, fallbackEmail?: string | null) {
+  const directEmail =
+    fallbackEmail?.trim() ||
+    user?.email?.trim() ||
+    getStringValue(user?.user_metadata, "email") ||
+    getStringValue(user?.user_metadata, "email_address") ||
+    getStringValue(user?.app_metadata, "email");
+
+  if (directEmail) return directEmail;
+
+  for (const identity of user?.identities ?? []) {
+    const identityEmail =
+      getStringValue(identity.identity_data, "email") ||
+      getStringValue(identity.identity_data, "email_address");
+    if (identityEmail) return identityEmail;
+  }
+
+  return null;
+}
+
 function hasPortalAccess(
   member: Pick<MembershipRecord, "status" | "is_comped"> | null | undefined,
   isAdmin: boolean,
@@ -327,7 +361,14 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
   .middleware([attachAuthHeader, requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { userId, claims } = context;
-    const email = (claims as { email?: string } | undefined)?.email ?? null;
+    const claimEmail = (claims as { email?: string } | undefined)?.email ?? null;
+    const { data: authUserRes, error: authUserError } =
+      await supabaseAdmin.auth.admin.getUserById(userId);
+    if (authUserError) {
+      console.error("Auth user lookup failed during membership check", authUserError);
+    }
+
+    const email = resolveAuthEmail(authUserRes?.user, claimEmail);
 
     const claim = await claimPendingSubscriptionForUser(userId, email);
 
