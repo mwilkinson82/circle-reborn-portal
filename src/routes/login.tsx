@@ -5,6 +5,8 @@ import { Lock, Mail, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -52,7 +54,8 @@ function LoginPage() {
     toast.success("Check your email for a secure sign-in link.");
   };
 
-  const onPassword = async () => {
+  const onPassword = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const normalizedEmail = email.trim().toLowerCase();
     if (!normalizedEmail || !password) {
       toast.error("Enter your membership email and password.");
@@ -114,7 +117,8 @@ function LoginPage() {
           <div>
             <h1 className="font-display text-3xl">Sign in</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Use the email tied to your paid or comped Contractor Circle membership.
+              Use the email tied to your paid or comped Contractor Circle membership. Password is
+              the fastest path into the portal.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Not a member yet?{" "}
@@ -124,56 +128,89 @@ function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-3" onSubmit={onEmail}>
-            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
-              Membership email
-            </label>
-            <Input
-              type="email"
-              autoComplete="email"
-              value={email}
-              onChange={(event) => {
-                setEmail(event.target.value);
-                setEmailSent(false);
-              }}
-              placeholder="you@company.com"
-            />
-            <Input
-              type="password"
-              autoComplete="current-password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="Password"
-            />
-            <Button
-              className="w-full"
-              type="button"
-              variant="default"
-              disabled={passwordLoading}
-              onClick={onPassword}
-            >
-              <Lock className="mr-2 h-4 w-4" />
-              {passwordLoading ? "Signing in..." : "Sign in with password"}
-            </Button>
-            <Button className="w-full" type="submit" disabled={emailLoading}>
-              <Mail className="mr-2 h-4 w-4" />
-              {emailLoading ? "Sending link…" : "Email me a secure login link"}
-            </Button>
-            <div className="flex justify-end">
-              <Link
-                to="/reset-password"
-                className="text-xs text-muted-foreground underline underline-offset-4"
-              >
-                Reset password
-              </Link>
-            </div>
-            {emailSent ? (
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Open the link from this browser and the portal will match that email against the
-                active Circle roster.
-              </p>
-            ) : null}
-          </form>
+          <Tabs defaultValue="password" className="space-y-5">
+            <TabsList className="grid h-auto w-full grid-cols-2 rounded-none bg-secondary p-1">
+              <TabsTrigger value="password" className="rounded-none">
+                Password
+              </TabsTrigger>
+              <TabsTrigger value="magic-link" className="rounded-none">
+                Email link
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="password" className="mt-0">
+              <form className="space-y-4" onSubmit={onPassword}>
+                <div className="space-y-2">
+                  <Label htmlFor="member-email">Membership email</Label>
+                  <Input
+                    id="member-email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      setEmailSent(false);
+                    }}
+                    placeholder="you@company.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="member-password">Password</Label>
+                  <Input
+                    id="member-password"
+                    type="password"
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    placeholder="Password"
+                  />
+                </div>
+                <Button className="w-full" type="submit" disabled={passwordLoading}>
+                  <Lock className="mr-2 h-4 w-4" />
+                  {passwordLoading ? "Signing in..." : "Sign in with password"}
+                </Button>
+                <div className="flex justify-between gap-4 text-xs text-muted-foreground">
+                  <Link to="/reset-password" className="underline underline-offset-4">
+                    Set or reset password
+                  </Link>
+                  <span>Recommended</span>
+                </div>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="magic-link" className="mt-0">
+              <form className="space-y-4" onSubmit={onEmail}>
+                <div className="space-y-2">
+                  <Label htmlFor="magic-email">Membership email</Label>
+                  <Input
+                    id="magic-email"
+                    type="email"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      setEmailSent(false);
+                    }}
+                    placeholder="you@company.com"
+                  />
+                </div>
+                <Button className="w-full" type="submit" disabled={emailLoading}>
+                  <Mail className="mr-2 h-4 w-4" />
+                  {emailLoading ? "Sending link..." : "Email me a secure login link"}
+                </Button>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Email links are useful when you do not have a password yet, but inbox delivery can
+                  rate-limit. Password sign-in is better for day-to-day portal access.
+                </p>
+                {emailSent ? (
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Open the link from this browser and the portal will match that email against the
+                    active Circle roster.
+                  </p>
+                ) : null}
+              </form>
+            </TabsContent>
+          </Tabs>
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
