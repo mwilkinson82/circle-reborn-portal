@@ -15,6 +15,29 @@ function normalizeEmailForMatch(email: string | null | undefined) {
   return (email ?? "").trim().toLowerCase();
 }
 
+function canonicalEmailForMatch(email: string | null | undefined) {
+  const normalized = normalizeEmailForMatch(email);
+  const [localPart, domain] = normalized.split("@");
+  if (!localPart || !domain) return normalized;
+
+  if (domain === "gmail.com" || domain === "googlemail.com") {
+    const localWithoutAlias = localPart.split("+")[0] ?? localPart;
+    return `${localWithoutAlias.replace(/\./g, "")}@gmail.com`;
+  }
+
+  return normalized;
+}
+
+function emailsMatchForClaim(left: string | null | undefined, right: string | null | undefined) {
+  const normalizedLeft = normalizeEmailForMatch(left);
+  const normalizedRight = normalizeEmailForMatch(right);
+
+  return (
+    normalizedLeft === normalizedRight ||
+    canonicalEmailForMatch(normalizedLeft) === canonicalEmailForMatch(normalizedRight)
+  );
+}
+
 function isActiveManualClaim(status: string | null | undefined) {
   return ["active", "trialing", "comped", "manual", "founding"].includes(
     normalizeClaimStatus(status),
@@ -193,8 +216,8 @@ async function claimPendingSubscriptionForUser(
     .limit(1000);
 
   if (pendingError) throw pendingError;
-  const matchingPendings = (pendings ?? []).filter(
-    (pending) => normalizeEmailForMatch(pending.email) === normalizedEmail,
+  const matchingPendings = (pendings ?? []).filter((pending) =>
+    emailsMatchForClaim(pending.email, normalizedEmail),
   );
 
   if (matchingPendings.length === 0) return { claimed: false, reason: "no pending claim" };
