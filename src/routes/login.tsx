@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Mail, MessageCircle } from "lucide-react";
+import { Lock, Mail, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,9 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
   const [discordLoading, setDiscordLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
@@ -48,6 +50,29 @@ function LoginPage() {
 
     setEmailSent(true);
     toast.success("Check your email for a secure sign-in link.");
+  };
+
+  const onPassword = async () => {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !password) {
+      toast.error("Enter your membership email and password.");
+      return;
+    }
+
+    setPasswordLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    });
+    setPasswordLoading(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success("Signed in.");
+    window.location.assign("/portal");
   };
 
   const onDiscord = async () => {
@@ -113,10 +138,35 @@ function LoginPage() {
               }}
               placeholder="you@company.com"
             />
+            <Input
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Password"
+            />
+            <Button
+              className="w-full"
+              type="button"
+              variant="default"
+              disabled={passwordLoading}
+              onClick={onPassword}
+            >
+              <Lock className="mr-2 h-4 w-4" />
+              {passwordLoading ? "Signing in..." : "Sign in with password"}
+            </Button>
             <Button className="w-full" type="submit" disabled={emailLoading}>
               <Mail className="mr-2 h-4 w-4" />
               {emailLoading ? "Sending link…" : "Email me a secure login link"}
             </Button>
+            <div className="flex justify-end">
+              <Link
+                to="/reset-password"
+                className="text-xs text-muted-foreground underline underline-offset-4"
+              >
+                Reset password
+              </Link>
+            </div>
             {emailSent ? (
               <p className="text-xs leading-relaxed text-muted-foreground">
                 Open the link from this browser and the portal will match that email against the
