@@ -87,6 +87,8 @@ export type Database = {
         Row: {
           current_period_end: string | null
           id: string
+          is_comped: boolean
+          is_founding: boolean
           joined_at: string
           plan: string | null
           status: Database["public"]["Enums"]["subscription_status"]
@@ -98,6 +100,8 @@ export type Database = {
         Insert: {
           current_period_end?: string | null
           id?: string
+          is_comped?: boolean
+          is_founding?: boolean
           joined_at?: string
           plan?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
@@ -109,6 +113,8 @@ export type Database = {
         Update: {
           current_period_end?: string | null
           id?: string
+          is_comped?: boolean
+          is_founding?: boolean
           joined_at?: string
           plan?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
@@ -127,10 +133,10 @@ export type Database = {
           current_period_end: string | null
           email: string
           id: string
-          price_id: string
+          price_id: string | null
           status: string
-          stripe_customer_id: string
-          stripe_subscription_id: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
         }
         Insert: {
           claimed_at?: string | null
@@ -139,10 +145,10 @@ export type Database = {
           current_period_end?: string | null
           email: string
           id?: string
-          price_id: string
+          price_id?: string | null
           status: string
-          stripe_customer_id: string
-          stripe_subscription_id: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
         }
         Update: {
           claimed_at?: string | null
@@ -151,10 +157,10 @@ export type Database = {
           current_period_end?: string | null
           email?: string
           id?: string
-          price_id?: string
+          price_id?: string | null
           status?: string
-          stripe_customer_id?: string
-          stripe_subscription_id?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
         }
         Relationships: []
       }
