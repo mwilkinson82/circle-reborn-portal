@@ -10,7 +10,6 @@ import {
   UserCircle,
   Shield,
   LogOut,
-  Hammer,
   Wrench,
   Users,
   ExternalLink,
@@ -79,8 +78,13 @@ export function PortalSidebar() {
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <SidebarHeader className="border-b border-sidebar-border p-3">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background">
-            <Hammer className="h-4 w-4" />
+          <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-foreground">
+            <img
+              src="/favicon-32x32.png"
+              alt=""
+              className="h-full w-full object-cover"
+              aria-hidden="true"
+            />
           </span>
           {!collapsed && (
             <span>

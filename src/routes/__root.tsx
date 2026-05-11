@@ -12,6 +12,9 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 
+const SITE_URL = "https://circle-reborn-portal.vercel.app";
+const CONTRACTOR_CIRCLE_IMAGE_URL = `${SITE_URL}/contractor-circle-icon.png`;
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -98,19 +101,38 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png",
+        content: CONTRACTOR_CIRCLE_IMAGE_URL,
       },
       {
         name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e8ea15da-1bfb-4d4f-8a38-7fa2521fb409/id-preview-9a105ecf--f21dd645-94eb-4c88-b321-a95377d70cb7.lovable.app-1778450546769.png",
+        content: CONTRACTOR_CIRCLE_IMAGE_URL,
       },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
+      {
+        rel: "manifest",
+        href: "/site.webmanifest",
       },
     ],
   }),
