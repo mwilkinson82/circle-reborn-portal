@@ -110,6 +110,29 @@ export const backfillExistingSubscriptions = createServerFn({ method: "POST" })
     return { imported, claimed, unclaimed };
   });
 
+export const getMyAdminStatus = createServerFn({ method: "GET" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId, claims } = context;
+    const email = (claims as any)?.email as string | undefined;
+
+    const { data: roles, error } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Admin status check failed", error);
+      return { isAdmin: false, email: email ?? null, error: "Unable to verify admin access." };
+    }
+
+    return {
+      isAdmin: !!roles?.some((r) => r.role === "admin"),
+      email: email ?? null,
+      error: null,
+    };
+  });
+
 /**
  * Called automatically when an authenticated user lands in the portal.
  * Looks up pending_claims by their email, links the subscription to the user,
