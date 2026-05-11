@@ -60,7 +60,11 @@ export function PortalSidebar() {
   const renderItems = (items: typeof main) =>
     items.map((item) => (
       <SidebarMenuItem key={item.url}>
-        <SidebarMenuButton asChild isActive={isActive(item.url)}>
+        <SidebarMenuButton
+          asChild
+          isActive={isActive(item.url)}
+          className="h-9 rounded-sm data-[active=true]:bg-foreground data-[active=true]:text-background"
+        >
           <Link to={item.url} className="flex items-center gap-3">
             <item.icon className="h-4 w-4 shrink-0" />
             {!collapsed && <span>{item.title}</span>}
@@ -70,23 +74,28 @@ export function PortalSidebar() {
     ));
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border">
-        <Link to="/" className="flex items-center gap-2 px-2 py-2">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+      <SidebarHeader className="border-b border-sidebar-border p-3">
+        <Link to="/" className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background">
             <Hammer className="h-4 w-4" />
           </span>
           {!collapsed && (
-            <span className="font-display text-lg tracking-tight">
-              ALP<span className="text-amber">.</span>
+            <span>
+              <span className="block font-display text-lg leading-none tracking-tight">
+                ALP<span className="text-amber">.</span>
+              </span>
+              <span className="mt-1 block font-mono text-[10px] uppercase tracking-wider text-sidebar-foreground/55">
+                Contractor Circle
+              </span>
             </span>
           )}
         </Link>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="gap-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Member</SidebarGroupLabel>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(main)}</SidebarMenu>
           </SidebarGroupContent>
@@ -94,7 +103,7 @@ export function PortalSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-1.5">
-            ConstructLine
+            ConstructLine tools
             {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -103,7 +112,7 @@ export function PortalSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Account</SidebarGroupLabel>
+          <SidebarGroupLabel>Admin</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(account)}</SidebarMenu>
           </SidebarGroupContent>

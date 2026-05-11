@@ -76,13 +76,25 @@ function AuthenticatedLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="flex min-h-screen w-full bg-background">
         <PortalSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center gap-3 border-b border-hairline px-4 sticky top-0 bg-background/80 backdrop-blur z-10">
-            <SidebarTrigger />
-            <div className="text-sm text-muted-foreground">
-              <span className="text-foreground font-medium">{title}</span>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-hairline bg-background/88 px-4 backdrop-blur">
+            <div className="flex min-w-0 items-center gap-3">
+              <SidebarTrigger className="shrink-0" />
+              <div className="min-w-0">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  ALP Contractor Circle
+                </p>
+                <p className="truncate text-sm font-medium text-foreground">{title}</p>
+              </div>
+            </div>
+            <div className="hidden items-center gap-3 text-xs text-muted-foreground md:flex">
+              <span className="inline-flex items-center gap-1.5 border border-hairline bg-elevated px-2.5 py-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-amber" />
+                {formatMembershipPlan(access.data.member?.plan)}
+              </span>
+              <span className="max-w-56 truncate">{user?.email}</span>
             </div>
           </header>
           <main className="flex-1">

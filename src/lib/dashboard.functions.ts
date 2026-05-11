@@ -14,6 +14,34 @@ function getLiveCallUrl() {
   return process.env.CIRCLE_LIVE_CALL_URL?.trim() || null;
 }
 
+function getLiveCallTopic() {
+  return (
+    process.env.CIRCLE_NEXT_CALL_TOPIC?.trim() ||
+    "Live coaching, bid review, and operating-system office hours"
+  );
+}
+
+function getCommunityUrl() {
+  return process.env.CIRCLE_DISCORD_URL?.trim() || null;
+}
+
+function newestReplayCatalog() {
+  return [...circleReplayCatalog].sort(
+    (a, b) => new Date(b.recorded_at).getTime() - new Date(a.recorded_at).getTime(),
+  );
+}
+
+function dashboardTemplateFallback() {
+  const priorityIds = ["legacy-template-20", "legacy-template-34", "legacy-template-25"];
+  const priority = priorityIds
+    .map((id) => circleTemplateCatalog.find((template) => template.id === id))
+    .filter((template): template is (typeof circleTemplateCatalog)[number] => Boolean(template));
+
+  return priority.length >= 3
+    ? priority
+    : circleTemplateCatalog.filter((template) => template.featured).slice(0, 3);
+}
+
 function friendlyNameFromEmail(email: string | null | undefined) {
   if (!email) return null;
   const local = email.split("@")[0];
@@ -111,11 +139,13 @@ export const getDashboard = createServerFn({ method: "GET" })
       profile,
       member,
       liveCallUrl: getLiveCallUrl(),
+      liveCallTopic: getLiveCallTopic(),
+      communityUrl: getCommunityUrl(),
       replays: shouldUseReplayCatalogFallback(dashboardReplays)
-        ? circleReplayCatalog.slice(0, 4)
+        ? newestReplayCatalog().slice(0, 4)
         : dashboardReplays,
       featuredTemplates: shouldUseTemplateCatalogFallback(dashboardTemplates)
-        ? circleTemplateCatalog.filter((template) => template.featured).slice(0, 3)
+        ? dashboardTemplateFallback()
         : dashboardTemplates,
       announcements: announcementsRes.data ?? [],
     };
@@ -135,7 +165,7 @@ export const getReplayLibrary = createServerFn({ method: "GET" })
       .limit(24);
 
     const replays = data ?? [];
-    return shouldUseReplayCatalogFallback(replays) ? circleReplayCatalog : replays;
+    return shouldUseReplayCatalogFallback(replays) ? newestReplayCatalog() : replays;
   });
 
 export const getTemplateLibrary = createServerFn({ method: "GET" })
