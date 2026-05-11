@@ -195,7 +195,7 @@ function DashboardPage() {
     });
 
   return (
-    <div className="container-prose space-y-8 py-6 sm:py-8">
+    <div className="mx-auto max-w-[82rem] space-y-8 px-5 py-5 sm:px-6 sm:py-7 2xl:max-w-[88rem]">
       <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
       <OperatingPriorities
@@ -244,9 +244,11 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="grid gap-8 py-4 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-center"
+      className="relative isolate grid overflow-hidden py-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-center lg:gap-10"
     >
-      <div className="max-w-3xl">
+      <HeroSketchLayer />
+
+      <div className="relative z-10 max-w-3xl py-8 sm:py-10">
         <GreetingLine firstName={firstName} />
         <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.03] sm:text-6xl">
           Build the company <span className="text-amber">behind</span> the projects.
@@ -258,8 +260,29 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
         </p>
       </div>
 
-      <NextMoveCard nextCallDate={nextCallDate} />
+      <div className="relative z-10">
+        <NextMoveCard nextCallDate={nextCallDate} />
+      </div>
     </motion.section>
+  );
+}
+
+function HeroSketchLayer() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute -bottom-16 -left-28 -top-16 z-0 hidden w-[72%] overflow-hidden sm:block lg:w-[66%]"
+    >
+      <img
+        src="/contractor-circle-hero-sketch.jpg"
+        alt=""
+        className="h-full w-full object-cover object-left-top opacity-45 mix-blend-multiply grayscale-[18%]"
+      />
+      <div className="absolute inset-y-0 right-0 w-2/3 bg-gradient-to-r from-background/0 via-background/75 to-background" />
+      <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-background via-background/70 to-background/0" />
+      <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-background via-background/75 to-background/0" />
+      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-background/0" />
+    </div>
   );
 }
 
@@ -348,108 +371,108 @@ function OperatingPriorities({
       <p className="font-mono text-xs uppercase tracking-wider text-amber">
         Today's operating priorities
       </p>
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_16rem]">
-        <div className="grid gap-3 md:grid-cols-3">
-          <Card className="overflow-hidden border-hairline p-0">
-            <div className="grid h-full grid-cols-[7rem_minmax(0,1fr)]">
-              <div className="flex flex-col justify-between bg-amber-soft p-4">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
-                  Next live room
-                </p>
-                <div>
-                  <p className="font-display text-5xl leading-none tabular-nums">
-                    {format(nextCallDate, "d")}
-                  </p>
-                  <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
-                    {format(nextCallDate, "MMM")}
-                  </p>
-                </div>
-                <Badge className="w-fit bg-foreground text-background">5:00 PM ET</Badge>
-              </div>
-              <div className="flex min-w-0 flex-col justify-between p-4">
-                <div>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                    Live call
-                  </p>
-                  <h2 className="mt-2 line-clamp-3 font-display text-xl leading-tight">{topic}</h2>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                    Bring a bid, people issue, or systems gap.
-                  </p>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
-                    {liveCallUrl ? (
-                      <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
-                        Join live call <ArrowUpRight className="ml-2 h-4 w-4" />
-                      </a>
-                    ) : (
-                      <span>Zoom pending</span>
-                    )}
-                  </Button>
-                  <Button asChild variant="outline" size="sm">
-                    <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
-                      <CalendarPlus className="mr-2 h-4 w-4" />
-                      Add
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Link
-            to="/portal/replays"
-            className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
-          >
-            <div>
-              <div className="flex items-start justify-between gap-4">
-                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Latest judgment
-                </p>
-                <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
-              </div>
-              <h2 className="mt-3 line-clamp-3 font-display text-xl leading-tight">
-                {latest?.title ?? "Replay library"}
-              </h2>
-              <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
-                {latest?.description ??
-                  "Recorded calls preserve the strategy, bid review, and operating-system decisions for later review."}
+      <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.35fr)_minmax(14rem,0.85fr)_minmax(14rem,0.85fr)_16rem]">
+        <Card className="overflow-hidden border-hairline p-0 lg:col-span-2 xl:col-span-1">
+          <div className="grid h-full min-h-52 grid-cols-[8rem_minmax(0,1fr)]">
+            <div className="flex flex-col justify-between bg-amber-soft p-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
+                Next live room
               </p>
-            </div>
-            <div className="mt-4 flex items-center gap-2">
-              <Badge variant="secondary">
-                {latest?.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
+              <div>
+                <p className="font-display text-5xl leading-none tabular-nums">
+                  {format(nextCallDate, "d")}
+                </p>
+                <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+                  {format(nextCallDate, "MMM")}
+                </p>
+              </div>
+              <Badge className="w-fit whitespace-nowrap bg-foreground text-background">
+                5:00 PM ET
               </Badge>
-              <span className="ml-auto inline-flex items-center text-xs font-medium">
-                Watch replay <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
-              </span>
             </div>
-          </Link>
-
-          <a
-            href={communityUrl ?? "https://discord.com/app"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
-          >
-            <div>
-              <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 flex-col justify-between p-4">
+              <div>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Get peer pressure
+                  Live call
                 </p>
-                <Users className="h-5 w-5 shrink-0 text-amber" />
+                <h2 className="mt-2 line-clamp-2 font-display text-2xl leading-tight">{topic}</h2>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  Bring a bid, people issue, or systems gap.
+                </p>
               </div>
-              <h2 className="mt-3 font-display text-xl leading-tight">Discord</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Ask the room. Get unstuck faster and move forward.
-              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
+                  {liveCallUrl ? (
+                    <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
+                      Join call <ArrowUpRight className="ml-2 h-4 w-4" />
+                    </a>
+                  ) : (
+                    <span>Zoom pending</span>
+                  )}
+                </Button>
+                <Button asChild variant="outline" size="sm">
+                  <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
+                    <CalendarPlus className="mr-2 h-4 w-4" />
+                    Calendar
+                  </a>
+                </Button>
+              </div>
             </div>
-            <span className="mt-4 inline-flex items-center text-sm font-medium">
-              Open Discord
-              <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </div>
+        </Card>
+
+        <Link
+          to="/portal/replays"
+          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+        >
+          <div>
+            <div className="flex items-start justify-between gap-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Latest judgment
+              </p>
+              <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
+            </div>
+            <h2 className="mt-3 line-clamp-3 font-display text-xl leading-tight">
+              {latest?.title ?? "Replay library"}
+            </h2>
+            <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+              {latest?.description ??
+                "Recorded calls preserve the strategy, bid review, and operating-system decisions for later review."}
+            </p>
+          </div>
+          <div className="mt-4 flex items-center gap-2">
+            <Badge variant="secondary">
+              {latest?.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
+            </Badge>
+            <span className="ml-auto inline-flex items-center text-xs font-medium">
+              Watch replay <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
             </span>
-          </a>
-        </div>
+          </div>
+        </Link>
+
+        <a
+          href={communityUrl ?? "https://discord.com/app"}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+        >
+          <div>
+            <div className="flex items-start justify-between gap-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Get peer pressure
+              </p>
+              <Users className="h-5 w-5 shrink-0 text-amber" />
+            </div>
+            <h2 className="mt-3 font-display text-xl leading-tight">Discord</h2>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Ask the room. Get unstuck faster and move forward.
+            </p>
+          </div>
+          <span className="mt-4 inline-flex items-center text-sm font-medium">
+            Open Discord
+            <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+          </span>
+        </a>
 
         <CompanyBuildPath />
       </div>
