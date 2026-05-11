@@ -197,7 +197,7 @@ function DashboardPage() {
     <div className="container-prose space-y-8 py-6 sm:py-8">
       <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
-      <section className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)_minmax(18rem,0.85fr)]">
         <NextLiveCallPanel
           nextCallDate={nextCallDate}
           calendarUrl={calendarUrl}
@@ -205,10 +205,8 @@ function DashboardPage() {
           topic={liveCallTopic}
         />
 
-        <div className="grid gap-5">
-          {latest && <LatestReplayCard latest={latest} />}
-          <CommunityPanel communityUrl={communityUrl} />
-        </div>
+        {latest && <LatestReplayCard latest={latest} />}
+        <CommunityPanel communityUrl={communityUrl} />
       </section>
 
       <section className="space-y-4">
@@ -333,8 +331,8 @@ function NextLiveCallPanel({
   topic: string;
 }) {
   return (
-    <Card className="overflow-hidden border-hairline p-0">
-      <div className="grid gap-px bg-hairline lg:grid-cols-[12rem_minmax(0,1fr)]">
+    <Card className="h-full overflow-hidden border-hairline p-0">
+      <div className="grid h-full gap-px bg-hairline sm:grid-cols-[11rem_minmax(0,1fr)]">
         <div className="flex flex-col justify-between bg-amber-soft p-6">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-amber">Next live call</p>
@@ -401,7 +399,7 @@ function LatestReplayCard({
   };
 }) {
   return (
-    <Card className="border-hairline p-6">
+    <Card className="flex h-full flex-col border-hairline p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
@@ -437,7 +435,7 @@ function LatestReplayCard({
 
 function CommunityPanel({ communityUrl }: { communityUrl: string | null }) {
   return (
-    <Card className="border-hairline p-6">
+    <Card className="flex h-full flex-col border-hairline p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
