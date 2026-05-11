@@ -4,17 +4,22 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
+  BarChart3,
+  Building2,
   Calendar,
   CalendarPlus,
   CheckCircle2,
+  ClipboardList,
   ClipboardCheck,
   DollarSign,
   FileText,
   Hammer,
+  Network,
   MessageSquareText,
   PlayCircle,
   Ruler,
   ShieldCheck,
+  TrendingUp,
   Users,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
@@ -24,7 +29,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatMembershipPlan, titleCase } from "@/lib/membership-plan";
 
 const BIWEEKLY_CALL_INTERVAL_MS = 14 * 86400000;
 const LIVE_CALL_DURATION_MS = 90 * 60 * 1000;
@@ -71,11 +75,11 @@ const alpSystemComponents = [
 const commandCenterTools = [
   {
     to: "/portal/templates",
-    icon: ClipboardCheck,
+    icon: ClipboardList,
     label: "ALP Operating System",
-    eyebrow: "Flagship system",
-    value: "Build the company",
-    hint: "V/TO, accountability, scorecard, process, KPIs",
+    eyebrow: "Company system",
+    value: "Scale the business",
+    hint: "Vision, accountability, process, KPIs",
   },
   {
     to: "/portal/constructline",
@@ -108,6 +112,37 @@ const commandCenterTools = [
     eyebrow: "Pricing",
     value: "Price with memory",
     hint: "Items, assemblies, unit costs, and labor rates",
+  },
+];
+
+const businessSystemTools = [
+  {
+    to: "/portal/templates",
+    icon: ClipboardCheck,
+    label: "Operating System Library",
+    eyebrow: "Use now",
+    body: "Build the company layer: V/TO, accountability, scorecards, SOPs, processes, rocks, and weekly cadence.",
+  },
+  {
+    to: "/portal/templates",
+    icon: BarChart3,
+    label: "Scorecard and KPI Builder",
+    eyebrow: "Build next",
+    body: "The future dashboard starts here: leading indicators, owner assignment, targets, and weekly visibility.",
+  },
+  {
+    to: "/portal/templates",
+    icon: Network,
+    label: "Accountability Chart",
+    eyebrow: "Build next",
+    body: "Clarify seats, roles, ownership, and right-person/right-seat decisions as the company scales.",
+  },
+  {
+    to: "/portal/replays",
+    icon: TrendingUp,
+    label: "Scale and Exit Path",
+    eyebrow: "Member guidance",
+    body: "Replay-backed guidance for margin, systems, leadership depth, and building a business that can transfer.",
   },
 ];
 
@@ -167,7 +202,7 @@ function buildCalendarUrl({
 }
 
 export const Route = createFileRoute("/_authenticated/portal/")({
-  head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
+  head: () => ({ meta: [{ title: "Home — ALP Contractor Circle" }] }),
   component: DashboardPage,
   errorComponent: DashboardError,
 });
@@ -176,7 +211,7 @@ function DashboardError({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   return (
     <div className="container-prose space-y-4 py-20 text-center">
-      <h1 className="font-display text-3xl">Couldn't load your dashboard</h1>
+      <h1 className="font-display text-3xl">Couldn't load your home base</h1>
       <p className="text-sm text-muted-foreground">{error.message || "Please try again."}</p>
       <Button
         onClick={() => {
@@ -204,7 +239,6 @@ function DashboardPage() {
 
   const {
     profile,
-    member,
     replays,
     featuredTemplates,
     announcements,
@@ -215,10 +249,6 @@ function DashboardPage() {
   const latest = replays[0];
   const displayName = profile?.display_name ?? "Builder";
   const firstName = displayName.split(" ")[0] || "Builder";
-  const memberSince = member?.joined_at ? new Date(member.joined_at) : null;
-  const days = memberSince
-    ? Math.max(1, Math.floor((Date.now() - memberSince.getTime()) / 86400000))
-    : 0;
   const nextCallDate = getNextCallDate();
   const liveCallUrl = data.liveCallUrl;
   const calendarUrl =
@@ -233,52 +263,8 @@ function DashboardPage() {
     });
 
   return (
-    <div className="container-prose space-y-7 py-6 sm:py-8">
-      <motion.section
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="overflow-hidden border border-hairline bg-foreground text-background"
-      >
-        <div className="grid gap-px bg-background/10 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <div className="bg-foreground p-6 sm:p-8 lg:p-10">
-            <p className="font-mono text-xs uppercase tracking-wider text-amber">
-              Contractor Circle member area
-            </p>
-            <h1 className="mt-4 max-w-4xl font-display text-4xl leading-tight sm:text-5xl lg:text-6xl">
-              Welcome to Contractor Circle, <span className="text-amber">{firstName}</span>.
-            </h1>
-            <p className="mt-5 max-w-2xl text-sm leading-relaxed text-background/68 sm:text-base">
-              This is the operating room for live consulting, replayed judgment, community
-              conversation, proven templates, and proprietary ALP tools built from real construction
-              execution.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild variant="secondary" className="bg-background text-foreground">
-                <Link to="/portal/templates">
-                  Open ALP OS <ArrowUpRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
-              >
-                <Link to="/portal/replays">
-                  Watch replays <PlayCircle className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid gap-px bg-background/10 sm:grid-cols-2 lg:grid-cols-1">
-            <Stat label="Membership" value={titleCase(member?.status ?? "trialing")} tone="dark" />
-            <Stat label="Plan" value={formatMembershipPlan(member?.plan)} tone="dark" />
-            <Stat label="Days inside" value={String(days)} tone="dark" />
-            <Stat label="Replay archive" value={`${replays.length}+`} tone="dark" />
-          </div>
-        </div>
-      </motion.section>
+    <div className="container-prose space-y-8 py-6 sm:py-8">
+      <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
       <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_23rem]">
         <NextLiveCallPanel
@@ -299,11 +285,13 @@ function DashboardPage() {
         <MemberValuePanel />
       </section>
 
+      <BusinessSystemPanel />
+
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Proprietary tools"
-          title="Build the company, then run the work"
-          body="ALP OS is the company layer. ConstructLine, Basis, Baseline, and the pricing libraries are the pursuit and project layer."
+          eyebrow="Specialist tools"
+          title="Use the project tools when the work calls for them"
+          body="ConstructLine, Basis, Baseline, and the pricing libraries are powerful specialist tools. They support estimating, scheduling, and bid continuity when that is the problem in front of you."
         />
         <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-5">
           {commandCenterTools.map((tool) => (
@@ -330,32 +318,81 @@ function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: strin
   );
 }
 
-function Stat({
-  label,
-  value,
-  tone = "light",
-}: {
-  label: string;
-  value: string;
-  tone?: "light" | "dark";
-}) {
-  const dark = tone === "dark";
+function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCallDate: Date }) {
   return (
-    <div className={dark ? "bg-foreground p-5" : "bg-background p-5"}>
-      <p
-        className={`text-xs uppercase tracking-wider ${
-          dark ? "text-background/50" : "text-muted-foreground"
-        }`}
-      >
+    <motion.section
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="grid gap-8 border border-hairline bg-background p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:p-10"
+    >
+      <div>
+        <p className="font-mono text-xs uppercase tracking-wider text-amber">
+          Contractor Circle home
+        </p>
+        <h1 className="mt-4 max-w-4xl font-display text-4xl leading-tight sm:text-5xl lg:text-6xl">
+          Build the company, <span className="text-amber">{firstName}</span>.
+        </h1>
+        <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Contractor Circle is the business operating room: live guidance, replayed judgment,
+          community context, templates, and ALP tools for contractors who want scale, systems,
+          profit, and optionality.
+        </p>
+        <div className="mt-8 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
+          <HomeSignal
+            label="Next call"
+            value={format(nextCallDate, "MMM d")}
+            detail="Bring a bid, a people issue, or a systems gap."
+          />
+          <HomeSignal
+            label="Core system"
+            value="ALP OS"
+            detail="Vision, accountability, scorecards, process, KPIs."
+          />
+          <HomeSignal
+            label="Daily room"
+            value="Discord"
+            detail="Questions, context, peer review, and member conversation."
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col justify-between border border-hairline bg-secondary p-5">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Start here
+          </p>
+          <h2 className="mt-3 font-display text-2xl leading-tight">Your next useful move</h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            This is not a data dashboard yet. It is the home base for getting guidance, using the
+            operating system, and putting the tools to work.
+          </p>
+        </div>
+        <div className="mt-6 grid gap-2">
+          <Button asChild>
+            <Link to="/portal/templates">
+              Open ALP OS <ArrowUpRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link to="/portal/replays">
+              Watch replays <PlayCircle className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </motion.section>
+  );
+}
+
+function HomeSignal({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="bg-background p-4">
+      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
         {label}
       </p>
-      <p
-        className={`mt-2 font-display text-2xl tabular-nums ${
-          dark ? "text-background" : "text-foreground"
-        }`}
-      >
-        {value}
-      </p>
+      <p className="mt-2 font-display text-2xl leading-tight">{value}</p>
+      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{detail}</p>
     </div>
   );
 }
@@ -574,6 +611,63 @@ function MemberValuePanel() {
         ))}
       </div>
     </Card>
+  );
+}
+
+function BusinessSystemPanel() {
+  return (
+    <section className="space-y-4">
+      <div className="flex items-start gap-3">
+        <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center border border-hairline bg-secondary text-amber">
+          <Building2 className="h-5 w-5" />
+        </span>
+        <SectionHeader
+          eyebrow="Business growth tools"
+          title="The tools should help owners scale, not just estimate"
+          body="The highest-value path for most members is learning how to make more money, install systems, build leadership depth, and create a company that can run with less owner drag."
+        />
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {businessSystemTools.map((tool) => (
+          <GrowthToolCard key={tool.label} {...tool} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function GrowthToolCard({
+  to,
+  icon: Icon,
+  label,
+  eyebrow,
+  body,
+}: {
+  to: string;
+  icon: IconComponent;
+  label: string;
+  eyebrow: string;
+  body: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group flex min-h-56 flex-col justify-between border border-hairline bg-background p-5 transition-colors hover:border-foreground/25 hover:bg-secondary"
+    >
+      <div>
+        <div className="flex items-start justify-between gap-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">{eyebrow}</p>
+          <Icon className="h-5 w-5 shrink-0 text-amber" />
+        </div>
+        <h3 className="mt-5 font-display text-2xl leading-tight">{label}</h3>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
+      </div>
+      <div className="mt-6 flex items-center gap-2 text-sm font-medium">
+        Open path
+        <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      </div>
+    </Link>
   );
 }
 

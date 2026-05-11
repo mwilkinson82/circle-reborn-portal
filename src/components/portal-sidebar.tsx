@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
-  LayoutDashboard,
+  Home,
   PlayCircle,
   FileText,
   Calendar,
@@ -30,7 +30,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 
 const main = [
-  { title: "Dashboard", url: "/portal", icon: LayoutDashboard },
+  { title: "Home", url: "/portal", icon: Home },
   { title: "Replays", url: "/portal/replays", icon: PlayCircle },
   { title: "Templates", url: "/portal/templates", icon: FileText },
 ];
@@ -95,7 +95,7 @@ export function PortalSidebar() {
 
       <SidebarContent className="gap-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel>Member area</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(main)}</SidebarMenu>
           </SidebarGroupContent>
@@ -103,7 +103,7 @@ export function PortalSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-1.5">
-            ConstructLine tools
+            Contractor tools
             {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
           </SidebarGroupLabel>
           <SidebarGroupContent>
