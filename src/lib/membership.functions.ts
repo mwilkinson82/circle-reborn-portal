@@ -164,21 +164,27 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
 
     let claimedCount = 0;
     for (const p of pendings) {
-      // Link the subscription to this user
-      await supabaseAdmin
-        .from("subscriptions")
-        .update({ user_id: userId })
-        .eq("stripe_subscription_id", p.stripe_subscription_id);
+      const isComped = !p.stripe_subscription_id;
+
+      // Link the subscription to this user (only if there is one)
+      if (p.stripe_subscription_id) {
+        await supabaseAdmin
+          .from("subscriptions")
+          .update({ user_id: userId })
+          .eq("stripe_subscription_id", p.stripe_subscription_id);
+      }
 
       // Mirror to members
       await supabaseAdmin
         .from("members")
         .update({
-          status: p.status === "active" || p.status === "trialing" ? "active" : "past_due",
-          plan: p.price_id,
+          status: isComped || p.status === "active" || p.status === "trialing" ? "active" : "past_due",
+          plan: p.price_id ?? (isComped ? "comped" : null),
           stripe_customer_id: p.stripe_customer_id,
           stripe_subscription_id: p.stripe_subscription_id,
           current_period_end: p.current_period_end,
+          is_founding: true,
+          is_comped: isComped,
         })
         .eq("user_id", userId);
 
