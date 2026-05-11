@@ -31,8 +31,8 @@ import { useAuth } from "@/hooks/use-auth";
 
 const main = [
   { title: "Home", url: "/portal", icon: Home },
-  { title: "ALP OS", url: "/portal/alp-os", icon: ClipboardCheck },
-  { title: "Replays", url: "/portal/replays", icon: PlayCircle },
+  { title: "AOS", url: "/portal/alp-os", icon: ClipboardCheck },
+  { title: "Call Library", url: "/portal/replays", icon: PlayCircle },
   { title: "Templates", url: "/portal/templates", icon: FileText },
 ];
 
@@ -45,7 +45,7 @@ const tools = [
 ];
 
 const account = [
-  { title: "Account", url: "/portal/account", icon: UserCircle },
+  { title: "Profile", url: "/portal/account", icon: UserCircle },
   { title: "Admin", url: "/portal/admin", icon: Shield },
 ];
 
@@ -101,7 +101,7 @@ export function PortalSidebar() {
 
       <SidebarContent className="gap-1 py-2">
         <SidebarGroup>
-          <SidebarGroupLabel>Member area</SidebarGroupLabel>
+          <SidebarGroupLabel>Circle</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(main)}</SidebarMenu>
           </SidebarGroupContent>
@@ -109,7 +109,7 @@ export function PortalSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className="flex items-center gap-1.5">
-            Contractor tools
+            Tools
             {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
           </SidebarGroupLabel>
           <SidebarGroupContent>

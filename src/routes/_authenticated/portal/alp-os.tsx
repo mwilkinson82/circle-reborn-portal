@@ -5,11 +5,9 @@ import {
   ArrowUpRight,
   BarChart3,
   CheckCircle2,
-  ClipboardCheck,
   Download,
   FileText,
   Network,
-  ShieldCheck,
   Target,
   TrendingUp,
 } from "lucide-react";
@@ -19,9 +17,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AosMark } from "@/components/aos-mark";
 
 export const Route = createFileRoute("/_authenticated/portal/alp-os")({
-  head: () => ({ meta: [{ title: "ALP OS — Contractor Circle" }] }),
+  head: () => ({ meta: [{ title: "AOS — Contractor Circle" }] }),
   component: AlpOsPage,
 });
 
@@ -80,7 +79,7 @@ const futureTools = [
   {
     label: "Scorecard builder",
     status: "Next",
-    body: "Turn weekly measurables into a living company dashboard once members start entering ALP OS data.",
+    body: "Turn weekly measurables into a living company dashboard once members start entering AOS data.",
   },
   {
     label: "Accountability chart builder",
@@ -133,19 +132,15 @@ function AlpOsPage() {
     <div className="container-prose space-y-8 py-8 sm:py-10">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="border border-hairline bg-foreground p-6 text-background sm:p-8 lg:p-10">
-          <div className="flex h-12 w-12 items-center justify-center border border-background/10 bg-background text-foreground">
-            <ShieldCheck className="h-6 w-6" />
-          </div>
-          <p className="mt-7 font-mono text-xs uppercase tracking-wider text-amber">
-            ALP Operating System
-          </p>
+          <AosMark className="w-20" imageClassName="w-12 rounded-xl" showRings={false} />
+          <p className="mt-7 font-mono text-xs uppercase tracking-wider text-amber">AOS</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
             Build the company layer before the dashboard layer.
           </h1>
           <p className="mt-5 max-w-2xl text-sm leading-relaxed text-background/68 sm:text-base">
-            This is where Contractor Circle should become commercially durable for owners: vision,
-            people, numbers, issues, process, and traction. The dashboard becomes real after members
-            start using the operating system.
+            The ALP Operating System is where Contractor Circle becomes commercially durable for
+            owners: vision, people, numbers, issues, process, and traction. The dashboard becomes
+            real after members start using the operating system.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             {featured?.download_url ? (
@@ -234,7 +229,7 @@ function AlpOsPage() {
             <Card className="border-hairline p-8">
               <h3 className="font-display text-2xl">OS assets are being loaded</h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                The ALP OS library will appear here as soon as the member catalog is available.
+                The AOS library will appear here as soon as the member catalog is available.
               </p>
             </Card>
           )}

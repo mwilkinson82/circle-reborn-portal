@@ -2,6 +2,7 @@ import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   Calendar,
@@ -9,9 +10,7 @@ import {
   CheckCircle2,
   ClipboardList,
   DollarSign,
-  FileText,
   Hammer,
-  MessageSquareText,
   PlayCircle,
   Ruler,
   Users,
@@ -23,6 +22,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AosMark } from "@/components/aos-mark";
 
 const BIWEEKLY_CALL_INTERVAL_MS = 14 * 86400000;
 const LIVE_CALL_DURATION_MS = 90 * 60 * 1000;
@@ -38,9 +38,10 @@ const commandCenterTools = [
   {
     to: "/portal/alp-os",
     icon: ClipboardList,
-    label: "ALP Operating System",
-    eyebrow: "Company system",
-    value: "Scale the business",
+    image: "/aos-logo.png",
+    label: "AOS",
+    eyebrow: "Company OS",
+    value: "Build the company",
     hint: "Vision, accountability, process, KPIs",
   },
   {
@@ -197,7 +198,7 @@ function DashboardPage() {
     <div className="container-prose space-y-8 py-6 sm:py-8">
       <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
-      <MemberCommandStrip
+      <OperatingPriorities
         nextCallDate={nextCallDate}
         calendarUrl={calendarUrl}
         liveCallUrl={liveCallUrl}
@@ -208,9 +209,9 @@ function DashboardPage() {
 
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Member workspaces"
+          eyebrow="Enter the right room"
           title="Choose the workspace for the job in front of you"
-          body="Start with ALP OS when you are building the business. Use ConstructLine, Basis, Baseline, and the pricing libraries when the work is a live pursuit, estimate, schedule, or cost question."
+          body="Start with AOS when you are building the business. Use ConstructLine, Basis, Baseline, and the pricing libraries when the work is a live pursuit, estimate, schedule, or cost question."
         />
         <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-5">
           {commandCenterTools.map((tool) => (
@@ -243,80 +244,84 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="grid gap-6 border border-hairline bg-background p-5 sm:p-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
+      className="grid gap-8 py-4 lg:grid-cols-[minmax(0,1fr)_26rem] lg:items-center"
     >
-      <div>
-        <p className="font-mono text-xs uppercase tracking-wider text-amber">
-          Contractor Circle home
-        </p>
-        <h1 className="mt-3 max-w-4xl font-display text-4xl leading-tight sm:text-5xl">
-          Build the company, <span className="text-amber">{firstName}</span>.
+      <div className="max-w-3xl">
+        <GreetingLine firstName={firstName} />
+        <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.03] sm:text-6xl">
+          Build the company <span className="text-amber">behind</span> the projects.
         </h1>
-        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-          Contractor Circle is the business operating room: live guidance, replayed judgment,
-          community context, templates, and ALP tools for contractors who want scale, systems,
-          profit, and optionality.
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Contractor Circle is the operating room for the company behind the projects. Get live
+          judgment, peer pressure, templates, and tools to build scale, systems, profit, and
+          optionality.
         </p>
-        <div className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
-          <HomeSignal
-            label="Next call"
-            value={format(nextCallDate, "MMM d")}
-            detail="Bring a bid, a people issue, or a systems gap."
-          />
-          <HomeSignal
-            label="Core system"
-            value="ALP OS"
-            detail="Vision, accountability, scorecards, process, KPIs."
-          />
-          <HomeSignal
-            label="Daily room"
-            value="Discord"
-            detail="Questions, context, peer review, and member conversation."
-          />
-        </div>
       </div>
 
-      <div className="flex flex-col justify-between border border-hairline bg-secondary p-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Start here
-          </p>
-          <h2 className="mt-2 font-display text-xl leading-tight">Your next useful move</h2>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            This is not a data dashboard yet. It is the home base for getting guidance, using the
-            operating system, and putting the tools to work.
-          </p>
-        </div>
-        <div className="mt-6 grid gap-2">
-          <Button asChild>
-            <Link to="/portal/alp-os">
-              Open ALP OS <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/portal/replays">
-              Watch replays <PlayCircle className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
-      </div>
+      <NextMoveCard nextCallDate={nextCallDate} />
     </motion.section>
   );
 }
 
-function HomeSignal({ label, value, detail }: { label: string; value: string; detail: string }) {
+function GreetingLine({ firstName }: { firstName: string }) {
+  const [greeting, setGreeting] = useState("Good to see you");
+
+  useEffect(() => {
+    setGreeting(getGreeting());
+  }, []);
+
   return (
-    <div className="bg-background p-4">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-2 font-display text-2xl leading-tight">{value}</p>
-      <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{detail}</p>
-    </div>
+    <p className="text-xs font-semibold text-amber">
+      {greeting}, {firstName}.
+    </p>
   );
 }
 
-function MemberCommandStrip({
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 17) return "Good afternoon";
+  return "Good evening";
+}
+
+function NextMoveCard({ nextCallDate }: { nextCallDate: Date }) {
+  return (
+    <Card className="relative min-h-60 overflow-hidden border-0 bg-foreground p-6 text-background shadow-[0_22px_70px_rgba(15,17,21,0.18)]">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_45%,rgba(210,122,38,0.18),transparent_36%)]" />
+      <div className="relative z-10 grid h-full gap-6 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
+            Your next move
+          </p>
+          <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
+          <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
+            Bring one stuck decision into the company operating system before the next live call on{" "}
+            {format(nextCallDate, "MMM d")}.
+          </p>
+          <div className="mt-6 grid gap-2 sm:max-w-52">
+            <Button asChild className="bg-amber text-white shadow-lg hover:bg-amber/90">
+              <Link to="/portal/alp-os">
+                Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
+            >
+              <Link to="/portal/replays">
+                Watch latest replay <PlayCircle className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <AosMark className="mx-auto w-40 sm:w-44" imageClassName="w-24 sm:w-28" />
+      </div>
+    </Card>
+  );
+}
+
+function OperatingPriorities({
   nextCallDate,
   calendarUrl,
   liveCallUrl,
@@ -339,118 +344,156 @@ function MemberCommandStrip({
   communityUrl: string | null;
 }) {
   return (
-    <section className="grid gap-px overflow-hidden border border-hairline bg-hairline lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.85fr)_minmax(15rem,0.85fr)]">
-      <div className="grid gap-px bg-hairline sm:grid-cols-[8.5rem_minmax(0,1fr)]">
-        <div className="flex flex-col justify-between bg-amber-soft p-5">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
-            Next live call
-          </p>
-          <div className="mt-4">
-            <p className="font-display text-5xl leading-none tabular-nums">
-              {format(nextCallDate, "d")}
-            </p>
-            <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
-              {format(nextCallDate, "MMM")}
-            </p>
-          </div>
-          <Badge className="mt-4 w-fit bg-foreground text-background">5:00 PM ET</Badge>
+    <section className="space-y-3">
+      <p className="font-mono text-xs uppercase tracking-wider text-amber">
+        Today's operating priorities
+      </p>
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="grid gap-3 md:grid-cols-3">
+          <Card className="overflow-hidden border-hairline p-0">
+            <div className="grid h-full grid-cols-[7rem_minmax(0,1fr)]">
+              <div className="flex flex-col justify-between bg-amber-soft p-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
+                  Next live room
+                </p>
+                <div>
+                  <p className="font-display text-5xl leading-none tabular-nums">
+                    {format(nextCallDate, "d")}
+                  </p>
+                  <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+                    {format(nextCallDate, "MMM")}
+                  </p>
+                </div>
+                <Badge className="w-fit bg-foreground text-background">5:00 PM ET</Badge>
+              </div>
+              <div className="flex min-w-0 flex-col justify-between p-4">
+                <div>
+                  <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Live call
+                  </p>
+                  <h2 className="mt-2 line-clamp-3 font-display text-xl leading-tight">{topic}</h2>
+                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                    Bring a bid, people issue, or systems gap.
+                  </p>
+                </div>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
+                    {liveCallUrl ? (
+                      <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
+                        Join live call <ArrowUpRight className="ml-2 h-4 w-4" />
+                      </a>
+                    ) : (
+                      <span>Zoom pending</span>
+                    )}
+                  </Button>
+                  <Button asChild variant="outline" size="sm">
+                    <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
+                      <CalendarPlus className="mr-2 h-4 w-4" />
+                      Add
+                    </a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Link
+            to="/portal/replays"
+            className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+          >
+            <div>
+              <div className="flex items-start justify-between gap-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Latest judgment
+                </p>
+                <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
+              </div>
+              <h2 className="mt-3 line-clamp-3 font-display text-xl leading-tight">
+                {latest?.title ?? "Replay library"}
+              </h2>
+              <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+                {latest?.description ??
+                  "Recorded calls preserve the strategy, bid review, and operating-system decisions for later review."}
+              </p>
+            </div>
+            <div className="mt-4 flex items-center gap-2">
+              <Badge variant="secondary">
+                {latest?.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
+              </Badge>
+              <span className="ml-auto inline-flex items-center text-xs font-medium">
+                Watch replay <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+              </span>
+            </div>
+          </Link>
+
+          <a
+            href={communityUrl ?? "https://discord.com/app"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+          >
+            <div>
+              <div className="flex items-start justify-between gap-4">
+                <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                  Get peer pressure
+                </p>
+                <Users className="h-5 w-5 shrink-0 text-amber" />
+              </div>
+              <h2 className="mt-3 font-display text-xl leading-tight">Discord</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Ask the room. Get unstuck faster and move forward.
+              </p>
+            </div>
+            <span className="mt-4 inline-flex items-center text-sm font-medium">
+              Open Discord
+              <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            </span>
+          </a>
         </div>
 
-        <div className="bg-background p-5">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Every other Sunday at 5:00 PM ET
-          </p>
-          <h2 className="mt-3 max-w-2xl font-display text-2xl leading-tight">{topic}</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            Bring one active bid, one stuck decision, or one operating-system gap. This is where the
-            consulting side of Contractor Circle becomes usable inside the business.
-          </p>
-
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
-              {liveCallUrl ? (
-                <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
-                  Join Zoom <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
-              ) : (
-                <span>Zoom link pending</span>
-              )}
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
-                <CalendarPlus className="mr-2 h-4 w-4" />
-                Add to calendar
-              </a>
-            </Button>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/portal/replays">
-                <PlayCircle className="mr-2 h-4 w-4" />
-                Past calls
-              </Link>
-            </Button>
-          </div>
-        </div>
+        <CompanyBuildPath />
       </div>
-
-      <Link
-        to="/portal/replays"
-        className="group bg-background p-5 transition-colors hover:bg-secondary"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Latest replay
-          </p>
-          <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
-        </div>
-        <h2 className="mt-3 font-display text-2xl leading-tight">
-          {latest?.title ?? "Replay library"}
-        </h2>
-        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-          {latest?.description ??
-            "Recorded calls preserve the strategy, bid review, and operating-system decisions for later review."}
-        </p>
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <Badge variant="secondary">
-            {latest?.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
-          </Badge>
-          {latest?.tags?.slice(0, 2).map((tag) => (
-            <Badge key={tag} variant="outline">
-              {tag}
-            </Badge>
-          ))}
-          <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-        </div>
-      </Link>
-
-      <a
-        href={communityUrl ?? "https://discord.com/app"}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group bg-background p-5 transition-colors hover:bg-secondary"
-      >
-        <div className="flex items-start justify-between gap-4">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-            Community
-          </p>
-          <Users className="h-5 w-5 shrink-0 text-amber" />
-        </div>
-        <h2 className="mt-3 font-display text-2xl leading-tight">Discord is the daily room</h2>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Questions, peer review, context, and quick contractor conversation stay where members
-          already gather.
-        </p>
-        <div className="mt-5 inline-flex items-center text-sm font-medium">
-          Open Discord
-          <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-        </div>
-      </a>
     </section>
+  );
+}
+
+const companyBuildPath = [
+  { label: "Vision", status: "Start here", tone: "bg-emerald-500" },
+  { label: "People", status: "Build next", tone: "bg-muted-foreground/35" },
+  { label: "Data", status: "Build next", tone: "bg-amber" },
+  { label: "Issues", status: "Active room", tone: "bg-amber" },
+  { label: "Process", status: "Template library", tone: "bg-muted-foreground/35" },
+  { label: "Traction", status: "Live calls", tone: "bg-emerald-500" },
+];
+
+function CompanyBuildPath() {
+  return (
+    <Card className="border-hairline p-4">
+      <p className="font-mono text-[10px] uppercase tracking-wider text-amber">AOS build path</p>
+      <div className="mt-4 space-y-3">
+        {companyBuildPath.map((item) => (
+          <div key={item.label} className="flex items-center justify-between gap-3 text-xs">
+            <span className="font-medium">{item.label}</span>
+            <span className="inline-flex items-center gap-2 text-muted-foreground">
+              {item.status}
+              <span className={`h-1.5 w-1.5 rounded-full ${item.tone}`} />
+            </span>
+          </div>
+        ))}
+      </div>
+      <Button asChild variant="ghost" size="sm" className="mt-4 w-full justify-between px-0">
+        <Link to="/portal/alp-os">
+          View in AOS <ArrowUpRight className="h-4 w-4" />
+        </Link>
+      </Button>
+    </Card>
   );
 }
 
 function WorkLaneCard({
   to,
   icon: Icon,
+  image,
   label,
   eyebrow,
   value,
@@ -458,6 +501,7 @@ function WorkLaneCard({
 }: {
   to: string;
   icon: IconComponent;
+  image?: string;
   label: string;
   eyebrow: string;
   value: string;
@@ -475,7 +519,11 @@ function WorkLaneCard({
           </p>
           <h3 className="mt-3 font-display text-xl leading-tight">{label}</h3>
         </div>
-        <Icon className="h-5 w-5 shrink-0 text-amber" />
+        {image ? (
+          <img src={image} alt="" className="h-7 w-7 shrink-0 rounded-md object-cover" />
+        ) : (
+          <Icon className="h-5 w-5 shrink-0 text-amber" />
+        )}
       </div>
       <div className="mt-6 flex items-end justify-between gap-3">
         <p className="text-xs leading-relaxed text-muted-foreground">
