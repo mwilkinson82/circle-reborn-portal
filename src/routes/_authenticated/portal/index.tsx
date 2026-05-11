@@ -5,12 +5,16 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Calendar,
+  CheckCircle2,
+  ClipboardCheck,
+  DollarSign,
   FileText,
   PlayCircle,
   Pin,
   Hammer,
   Ruler,
   BookOpen,
+  Users,
 } from "lucide-react";
 import { getDashboard } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,6 +24,59 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import { formatMembershipPlan, titleCase } from "@/lib/membership-plan";
+
+const commandCenterTools = [
+  {
+    to: "/portal/constructline",
+    icon: Hammer,
+    label: "ConstructLine Hub",
+    eyebrow: "Workspace",
+    value: "Open",
+    hint: "Bid command center",
+  },
+  {
+    to: "/portal/takeoff",
+    icon: Ruler,
+    label: "Basis",
+    eyebrow: "Takeoff",
+    value: "Quantify",
+    hint: "Scopes, quantities, line items",
+  },
+  {
+    to: "/portal/cost-library",
+    icon: DollarSign,
+    label: "Cost Library",
+    eyebrow: "Pricing",
+    value: "Price",
+    hint: "Items, assemblies, unit costs",
+  },
+  {
+    to: "/portal/scheduler",
+    icon: Calendar,
+    label: "Baseline",
+    eyebrow: "Schedule",
+    value: "Plan",
+    hint: "Durations, sequence, milestones",
+  },
+];
+
+const operatingRhythm = [
+  {
+    icon: ClipboardCheck,
+    label: "Review the bid basis",
+    detail: "Scope, inclusions, exclusions, and open decisions",
+  },
+  {
+    icon: DollarSign,
+    label: "Pressure-test cost",
+    detail: "Labor, production, material, and coverage",
+  },
+  {
+    icon: CheckCircle2,
+    label: "Package the next move",
+    detail: "Proposal, SOV, clarifications, and follow-up",
+  },
+];
 
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
@@ -65,38 +122,47 @@ function DashboardPage() {
     : 0;
 
   return (
-    <div className="container-prose py-10 space-y-12">
-      {/* Welcome strip */}
+    <div className="container-prose py-8 sm:py-10 space-y-10">
       <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="space-y-6"
+        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
       >
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString(undefined, {
-                weekday: "long",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
-            <h1 className="font-display text-4xl sm:text-5xl mt-1">
-              Welcome back,{" "}
-              <span className="text-amber">
-                {profile?.display_name?.split(" ")[0] ?? "Builder"}
-              </span>
-              .
-            </h1>
-            {profile?.headline && <p className="mt-2 text-muted-foreground">{profile.headline}</p>}
+        <div className="relative overflow-hidden border border-hairline bg-foreground text-background">
+          <div className="absolute inset-y-0 right-0 hidden w-2/5 border-l border-background/10 bg-[linear-gradient(135deg,transparent_0_35%,rgba(255,255,255,0.08)_35%_36%,transparent_36%_100%)] bg-[length:34px_34px] lg:block" />
+          <div className="relative p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-sm text-background/60">
+                  {new Date().toLocaleDateString(undefined, {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <h1 className="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
+                  Welcome back,{" "}
+                  <span className="text-amber">
+                    {profile?.display_name?.split(" ")[0] ?? "Builder"}
+                  </span>
+                  .
+                </h1>
+              </div>
+              <Button asChild variant="secondary" className="bg-background text-foreground">
+                <Link to="/portal/account">View profile</Link>
+              </Button>
+            </div>
+
+            <div className="mt-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {commandCenterTools.map((tool) => (
+                <CommandCenterCard key={tool.to} {...tool} />
+              ))}
+            </div>
           </div>
-          <Button asChild variant="outline">
-            <Link to="/portal/account">View profile</Link>
-          </Button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-hairline border border-hairline">
+        <div className="grid grid-cols-2 gap-px border border-hairline bg-hairline lg:grid-cols-1">
           <Stat label="Status" value={titleCase(member?.status ?? "trialing")} />
           <Stat label="Plan" value={formatMembershipPlan(member?.plan)} />
           <Stat label="Days as member" value={String(days)} />
@@ -104,37 +170,33 @@ function DashboardPage() {
         </div>
       </motion.section>
 
-      {/* Continue + announcements */}
-      <section className="grid lg:grid-cols-3 gap-6">
-        {latest && (
-          <Card className="lg:col-span-2 p-0 overflow-hidden border-hairline">
-            <div className="aspect-[16/8] bg-gradient-to-br from-foreground via-foreground to-amber-soft relative">
-              <div className="absolute inset-0 flex items-end p-6">
-                <div className="text-background">
-                  <p className="text-xs uppercase tracking-wider opacity-70">Continue watching</p>
-                  <h2 className="font-display text-2xl mt-1 max-w-md">{latest.title}</h2>
-                </div>
-              </div>
-              <div className="absolute top-4 right-4">
-                <span className="inline-flex items-center gap-1 rounded-full bg-background/90 text-foreground text-xs px-3 py-1">
-                  <PlayCircle className="h-3 w-3" /> {latest.duration_minutes} min
-                </span>
-              </div>
-            </div>
-            <div className="p-6 flex items-center justify-between gap-6">
-              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
-                {latest.description}
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <Card className="border-hairline p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-wider text-amber">
+                Operating rhythm
               </p>
-              <Button asChild>
-                <Link to="/portal/replays">
-                  Watch <ArrowUpRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
+              <h2 className="mt-2 font-display text-2xl">Today in the Circle</h2>
             </div>
-          </Card>
-        )}
+            <Button asChild>
+              <Link to="/portal/constructline">
+                Open ConstructLine <ArrowUpRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+          <div className="mt-6 grid gap-px border border-hairline bg-hairline md:grid-cols-3">
+            {operatingRhythm.map((item) => (
+              <div key={item.label} className="bg-background p-5">
+                <item.icon className="h-5 w-5 text-amber" />
+                <h3 className="mt-5 font-display text-lg leading-tight">{item.label}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
 
-        <Card className="p-6 border-hairline">
+        <Card className="border-hairline p-6">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg">From the Circle</h2>
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -163,7 +225,58 @@ function DashboardPage() {
         </Card>
       </section>
 
-      {/* Featured templates */}
+      <section className="grid lg:grid-cols-3 gap-6">
+        {latest && (
+          <Card className="lg:col-span-2 p-0 overflow-hidden border-hairline">
+            <div className="aspect-[16/8] bg-[radial-gradient(circle_at_80%_85%,rgba(212,119,44,0.35),transparent_32%),linear-gradient(135deg,#090a0d_0%,#15171c_52%,#d7c3a6_100%)] relative">
+              <div className="absolute inset-0 flex items-end p-6">
+                <div className="text-background">
+                  <p className="text-xs uppercase tracking-wider opacity-70">Continue watching</p>
+                  <h2 className="font-display text-2xl mt-1 max-w-md">{latest.title}</h2>
+                </div>
+              </div>
+              <div className="absolute top-4 right-4">
+                <span className="inline-flex items-center gap-1 rounded-full bg-background/90 text-foreground text-xs px-3 py-1">
+                  <PlayCircle className="h-3 w-3" /> {latest.duration_minutes} min
+                </span>
+              </div>
+            </div>
+            <div className="p-6 flex items-center justify-between gap-6">
+              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
+                {latest.description}
+              </p>
+              <Button asChild>
+                <Link to="/portal/replays">
+                  Watch <ArrowUpRight className="ml-1 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        <Card className="border-hairline p-6">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                Community layer
+              </p>
+              <h2 className="mt-2 font-display text-xl">Discord stays live</h2>
+            </div>
+            <Users className="h-5 w-5 text-amber" />
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            Daily conversation, bid questions, and peer review stay in Discord while the portal
+            houses the tools and member library.
+          </p>
+          <div className="mt-6 border border-hairline bg-secondary p-4">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground">Best next post</p>
+            <p className="mt-2 font-display text-lg leading-tight">
+              Share one active estimate decision before it turns into a bid-day problem.
+            </p>
+          </div>
+        </Card>
+      </section>
+
       <section className="space-y-4">
         <div className="flex items-end justify-between">
           <div>
@@ -213,9 +326,8 @@ function DashboardPage() {
         </div>
       </section>
 
-      {/* Quick links */}
       <section className="space-y-4">
-        <h2 className="font-display text-2xl">Jump back in</h2>
+        <h2 className="font-display text-2xl">Tool suite</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-hairline border border-hairline">
           <QuickLink
             to="/portal/constructline"
@@ -234,6 +346,46 @@ function DashboardPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+function CommandCenterCard({
+  to,
+  icon: Icon,
+  label,
+  eyebrow,
+  value,
+  hint,
+}: {
+  to: string;
+  icon: typeof Hammer;
+  label: string;
+  eyebrow: string;
+  value: string;
+  hint: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group border border-background/10 bg-background/[0.06] p-4 text-background transition-colors hover:bg-background/[0.12]"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="font-mono text-[10px] uppercase tracking-wider text-background/50">
+            {eyebrow}
+          </p>
+          <p className="mt-2 font-display text-xl leading-tight">{value}</p>
+        </div>
+        <Icon className="h-5 w-5 text-amber" />
+      </div>
+      <div className="mt-8 flex items-end justify-between gap-3">
+        <div>
+          <p className="text-sm font-medium">{label}</p>
+          <p className="mt-1 text-xs leading-relaxed text-background/55">{hint}</p>
+        </div>
+        <ArrowUpRight className="h-4 w-4 text-background/50 opacity-0 transition-opacity group-hover:opacity-100" />
+      </div>
+    </Link>
   );
 }
 
