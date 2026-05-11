@@ -5,6 +5,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachAuthHeader } from "@/lib/auth-client-middleware";
 import { isFoundingPlan } from "@/lib/membership-plan";
+import { isConfiguredAdminEmail } from "@/lib/admin-access";
 
 function normalizeClaimStatus(status: string | null | undefined) {
   return (status ?? "").trim().toLowerCase();
@@ -27,18 +28,6 @@ function resolveClaimedMemberStatus(
 
 function isFoundingClaim(priceId: string | null | undefined, status: string | null | undefined) {
   return isFoundingPlan(priceId) || normalizeClaimStatus(status) === "founding";
-}
-
-function configuredAdminEmails() {
-  return (process.env.ADMIN_EMAILS ?? process.env.OWNER_EMAILS ?? "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-function isConfiguredAdminEmail(email: string | null | undefined) {
-  if (!email) return false;
-  return configuredAdminEmails().includes(email.trim().toLowerCase());
 }
 
 type PendingClaim = {
