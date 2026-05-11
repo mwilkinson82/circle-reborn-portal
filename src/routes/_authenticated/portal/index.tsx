@@ -5,16 +5,19 @@ import { motion } from "framer-motion";
 import {
   ArrowUpRight,
   Calendar,
+  CalendarPlus,
   CheckCircle2,
   ClipboardCheck,
   DollarSign,
   FileText,
+  MessageSquare,
   PlayCircle,
   Pin,
   Hammer,
   Ruler,
   BookOpen,
   Users,
+  Video,
 } from "lucide-react";
 import { getDashboard } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -22,8 +25,18 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatDistanceToNow } from "date-fns";
+import { format, formatDistanceToNow } from "date-fns";
 import { formatMembershipPlan, titleCase } from "@/lib/membership-plan";
+
+const BIWEEKLY_CALL_INTERVAL_MS = 14 * 86400000;
+const LIVE_CALL_DURATION_MS = 90 * 60 * 1000;
+
+const LIVE_CALL_EXCEPTIONS: Record<string, { movedTo: Date; note: string }> = {
+  "2026-05-10": {
+    movedTo: new Date(Date.UTC(2026, 4, 9, 21, 0, 0)),
+    note: "Moved for Mother's Day weekend.",
+  },
+};
 
 const commandCenterTools = [
   {
@@ -78,6 +91,59 @@ const operatingRhythm = [
   },
 ];
 
+function getStandardNextCallDate(now = new Date()): Date {
+  const anchor = new Date(Date.UTC(2025, 2, 30, 21, 0, 0));
+
+  if (now.getTime() <= anchor.getTime() + LIVE_CALL_DURATION_MS) return anchor;
+
+  const cyclesPassed = Math.floor((now.getTime() - anchor.getTime()) / BIWEEKLY_CALL_INTERVAL_MS);
+  const currentCallDate = new Date(anchor.getTime() + cyclesPassed * BIWEEKLY_CALL_INTERVAL_MS);
+
+  if (now.getTime() <= currentCallDate.getTime() + LIVE_CALL_DURATION_MS) {
+    return currentCallDate;
+  }
+
+  return new Date(currentCallDate.getTime() + BIWEEKLY_CALL_INTERVAL_MS);
+}
+
+function getNextCallDate(now = new Date()): Date {
+  const standardDate = getStandardNextCallDate(now);
+  const exception = LIVE_CALL_EXCEPTIONS[standardDate.toISOString().split("T")[0]];
+
+  if (!exception) return standardDate;
+
+  const exceptionWindowEnd = new Date(exception.movedTo.getTime() + LIVE_CALL_DURATION_MS);
+  if (now.getTime() <= exceptionWindowEnd.getTime()) return exception.movedTo;
+  return new Date(standardDate.getTime() + BIWEEKLY_CALL_INTERVAL_MS);
+}
+
+function buildCalendarUrl({
+  title,
+  details,
+  start,
+  durationHours = 1.5,
+  location,
+}: {
+  title: string;
+  details: string;
+  start: Date;
+  durationHours?: number;
+  location: string;
+}) {
+  const end = new Date(start.getTime() + durationHours * 60 * 60 * 1000);
+  const serialize = (date: Date) =>
+    date
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}Z$/, "Z");
+
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    title,
+  )}&dates=${serialize(start)}/${serialize(end)}&details=${encodeURIComponent(
+    details,
+  )}&location=${encodeURIComponent(location)}`;
+}
+
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
   component: DashboardPage,
@@ -120,6 +186,16 @@ function DashboardPage() {
   const days = memberSince
     ? Math.max(1, Math.floor((Date.now() - memberSince.getTime()) / 86400000))
     : 0;
+  const nextCallDate = getNextCallDate();
+  const liveCallUrl = data.liveCallUrl;
+  const calendarUrl = buildCalendarUrl({
+    title: "Contractor Circle Live Call",
+    details: liveCallUrl
+      ? `Contractor Circle live call with Marshall.\n\nJoin link:\n${liveCallUrl}`
+      : "Contractor Circle live call with Marshall. Join details are posted in the portal and Discord before the call.",
+    start: nextCallDate,
+    location: liveCallUrl ?? "Contractor Circle portal",
+  });
 
   return (
     <div className="container-prose py-8 sm:py-10 space-y-10">
@@ -171,30 +247,11 @@ function DashboardPage() {
       </motion.section>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <Card className="border-hairline p-6 sm:p-8">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-amber">
-                Operating rhythm
-              </p>
-              <h2 className="mt-2 font-display text-2xl">Today in the Circle</h2>
-            </div>
-            <Button asChild>
-              <Link to="/portal/constructline">
-                Open ConstructLine <ArrowUpRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="mt-6 grid gap-px border border-hairline bg-hairline md:grid-cols-3">
-            {operatingRhythm.map((item) => (
-              <div key={item.label} className="bg-background p-5">
-                <item.icon className="h-5 w-5 text-amber" />
-                <h3 className="mt-5 font-display text-lg leading-tight">{item.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
-              </div>
-            ))}
-          </div>
-        </Card>
+        <LiveCallCard
+          nextCallDate={nextCallDate}
+          calendarUrl={calendarUrl}
+          liveCallUrl={liveCallUrl}
+        />
 
         <Card className="border-hairline p-6">
           <div className="flex items-center justify-between">
@@ -223,6 +280,16 @@ function DashboardPage() {
             )}
           </ul>
         </Card>
+      </section>
+
+      <section className="grid gap-px border border-hairline bg-hairline md:grid-cols-3">
+        {operatingRhythm.map((item) => (
+          <div key={item.label} className="bg-background p-5">
+            <item.icon className="h-5 w-5 text-amber" />
+            <h3 className="mt-5 font-display text-lg leading-tight">{item.label}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+          </div>
+        ))}
       </section>
 
       <section className="grid lg:grid-cols-3 gap-6">
@@ -395,6 +462,142 @@ function Stat({ label, value }: { label: string; value: string }) {
       <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
       <p className="font-display text-2xl mt-2 tabular-nums">{value}</p>
     </div>
+  );
+}
+
+function LiveCallCard({
+  nextCallDate,
+  calendarUrl,
+  liveCallUrl,
+}: {
+  nextCallDate: Date;
+  calendarUrl: string;
+  liveCallUrl: string | null;
+}) {
+  return (
+    <Card className="overflow-hidden border-hairline p-0">
+      <div className="grid gap-px bg-hairline lg:grid-cols-[16rem_minmax(0,1fr)]">
+        <div className="bg-foreground p-6 text-background">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber">Next live room</p>
+          <p className="mt-4 font-display text-5xl leading-none tabular-nums">
+            {format(nextCallDate, "d")}
+          </p>
+          <p className="mt-2 text-sm text-background/65">{format(nextCallDate, "MMMM yyyy")}</p>
+          <div className="mt-8 border border-background/10 p-4">
+            <p className="text-xs uppercase tracking-wider text-background/50">Bring this</p>
+            <p className="mt-2 text-sm leading-relaxed text-background/75">
+              One active bid, one stuck decision, or one operating issue worth pressure-testing.
+            </p>
+          </div>
+        </div>
+        <div className="bg-background p-6 sm:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline">Live call</Badge>
+                <Badge variant="secondary">5:00 PM ET</Badge>
+              </div>
+              <h2 className="mt-4 font-display text-3xl leading-tight">
+                Contractor Circle Live Call
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                The portal should point members toward action: show up live, bring the real
+                constraint, then turn the answer into a better bid or a cleaner operating system.
+              </p>
+            </div>
+            <Calendar className="h-5 w-5 text-amber" />
+          </div>
+
+          <div className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
+            <DashboardAction
+              href={liveCallUrl ?? undefined}
+              icon={Video}
+              label={liveCallUrl ? "Join Zoom" : "Join details"}
+              detail={liveCallUrl ? format(nextCallDate, "EEE, MMM d") : "Pinned before call"}
+              external
+              disabled={!liveCallUrl}
+            />
+            <DashboardAction
+              href={calendarUrl}
+              icon={CalendarPlus}
+              label="Add to calendar"
+              detail="Google Calendar"
+              external
+            />
+            <DashboardAction
+              to="/portal/replays"
+              icon={PlayCircle}
+              label="Past calls"
+              detail="Replay library"
+            />
+          </div>
+
+          <div className="mt-6 flex items-start gap-3 border border-hairline bg-secondary p-4">
+            <MessageSquare className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Discord is still the daily conversation layer. The portal is the operating layer:
+              calls, tools, templates, and ConstructLine work product.
+            </p>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function DashboardAction({
+  to,
+  href,
+  icon: Icon,
+  label,
+  detail,
+  external,
+  disabled,
+}: {
+  to?: string;
+  href?: string;
+  icon: typeof Calendar;
+  label: string;
+  detail: string;
+  external?: boolean;
+  disabled?: boolean;
+}) {
+  const body = (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <Icon className="h-5 w-5 text-amber" />
+        <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+      </div>
+      <p className="mt-5 font-display text-lg leading-tight">{label}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+    </>
+  );
+
+  const className = "group bg-background p-5 text-left transition-colors hover:bg-secondary";
+
+  if (disabled) {
+    return (
+      <div className={`${className} cursor-not-allowed opacity-70 hover:bg-background`}>{body}</div>
+    );
+  }
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        className={className}
+      >
+        {body}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={to ?? "/portal"} className={className}>
+      {body}
+    </Link>
   );
 }
 

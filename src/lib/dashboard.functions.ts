@@ -10,6 +10,10 @@ import {
 import { titleCase } from "@/lib/membership-plan";
 import { attachAuthHeader } from "./auth-client-middleware";
 
+function getLiveCallUrl() {
+  return process.env.CIRCLE_LIVE_CALL_URL?.trim() || null;
+}
+
 function friendlyNameFromEmail(email: string | null | undefined) {
   if (!email) return null;
   const local = email.split("@")[0];
@@ -106,6 +110,7 @@ export const getDashboard = createServerFn({ method: "GET" })
     return {
       profile,
       member,
+      liveCallUrl: getLiveCallUrl(),
       replays: shouldUseReplayCatalogFallback(dashboardReplays)
         ? circleReplayCatalog.slice(0, 4)
         : dashboardReplays,
