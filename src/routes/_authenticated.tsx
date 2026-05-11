@@ -49,8 +49,9 @@ function AuthenticatedLayout() {
     return (
       <MembershipBlocked
         title="Membership check failed"
-        body="Your Discord session is connected, but the membership check did not complete. Try again before entering the portal."
+        body="Your account is connected, but the membership check did not complete. Try again before entering the portal."
         email={user?.email ?? null}
+        accountId={user?.id ?? null}
         status={null}
         onRetry={() => access.refetch()}
         onSignOut={onSignOut}
@@ -62,8 +63,9 @@ function AuthenticatedLayout() {
     return (
       <MembershipBlocked
         title="Membership required"
-        body="Discord confirmed your identity, but this email is not attached to an active paid or comped Contractor Circle record."
+        body="This account email is not attached to an active paid or comped Contractor Circle record."
         email={access.data?.email ?? user?.email ?? null}
+        accountId={access.data?.userId ?? user?.id ?? null}
         status={access.data?.member?.status ?? "incomplete"}
         plan={access.data?.member?.plan ?? null}
         onRetry={() => access.refetch()}
@@ -101,8 +103,8 @@ function MembershipChecking() {
         </div>
         <h1 className="mt-6 font-display text-3xl">Checking membership</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          Discord is connected. We are matching this login against the paid and comped Circle roster
-          before opening the portal.
+          Your account is connected. We are matching this login against the paid and comped Circle
+          roster before opening the portal.
         </p>
       </div>
     </div>
@@ -113,6 +115,7 @@ function MembershipBlocked({
   title,
   body,
   email,
+  accountId,
   status,
   plan,
   onRetry,
@@ -121,6 +124,7 @@ function MembershipBlocked({
   title: string;
   body: string;
   email: string | null;
+  accountId?: string | null;
   status: string | null;
   plan?: string | null;
   onRetry: () => void;
@@ -135,10 +139,10 @@ function MembershipBlocked({
         <h1 className="mt-6 font-display text-3xl">{title}</h1>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{body}</p>
 
-        <dl className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-2">
+        <dl className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-3">
           <div className="bg-background p-4">
             <dt className="text-xs uppercase tracking-wider text-muted-foreground">
-              Discord email
+              Account email
             </dt>
             <dd className="mt-1 truncate text-sm font-medium">{email ?? "Not returned"}</dd>
           </div>
@@ -150,6 +154,10 @@ function MembershipBlocked({
               {status ? titleCase(status.replace(/_/g, " ")) : "Not found"}
               {plan ? ` · ${formatMembershipPlan(plan)}` : ""}
             </dd>
+          </div>
+          <div className="bg-background p-4">
+            <dt className="text-xs uppercase tracking-wider text-muted-foreground">Support ID</dt>
+            <dd className="mt-1 truncate text-sm font-medium">{accountId ?? "Not available"}</dd>
           </div>
         </dl>
 

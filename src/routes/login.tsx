@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
+import { Mail, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -17,10 +18,40 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [discordLoading, setDiscordLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+
+  const onEmail = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
+      toast.error("Enter the email tied to your Circle membership.");
+      return;
+    }
+
+    setEmailLoading(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: normalizedEmail,
+      options: {
+        emailRedirectTo: window.location.origin + "/portal",
+        shouldCreateUser: true,
+      },
+    });
+    setEmailLoading(false);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setEmailSent(true);
+    toast.success("Check your email for a secure sign-in link.");
+  };
 
   const onDiscord = async () => {
-    setLoading(true);
+    setDiscordLoading(true);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "discord",
       options: {
@@ -28,7 +59,7 @@ function LoginPage() {
         scopes: "identify email",
       },
     });
-    setLoading(false);
+    setDiscordLoading(false);
     if (error) toast.error(error.message);
   };
 
@@ -58,7 +89,7 @@ function LoginPage() {
           <div>
             <h1 className="font-display text-3xl">Sign in</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Circle access is tied to your Discord community identity.
+              Use the email tied to your paid or comped Contractor Circle membership.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Not a member yet?{" "}
@@ -68,14 +99,54 @@ function LoginPage() {
             </p>
           </div>
 
-          <Button className="w-full" onClick={onDiscord} disabled={loading}>
+          <form className="space-y-3" onSubmit={onEmail}>
+            <label className="text-xs font-mono uppercase tracking-wider text-muted-foreground">
+              Membership email
+            </label>
+            <Input
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setEmailSent(false);
+              }}
+              placeholder="you@company.com"
+            />
+            <Button className="w-full" type="submit" disabled={emailLoading}>
+              <Mail className="mr-2 h-4 w-4" />
+              {emailLoading ? "Sending link…" : "Email me a secure login link"}
+            </Button>
+            {emailSent ? (
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                Open the link from this browser and the portal will match that email against the
+                active Circle roster.
+              </p>
+            ) : null}
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-hairline" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-3 text-muted-foreground">Community sign-in</span>
+            </div>
+          </div>
+
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={onDiscord}
+            disabled={discordLoading}
+          >
             <MessageCircle className="mr-2 h-4 w-4" />
-            {loading ? "Opening Discord…" : "Continue with Discord"}
+            {discordLoading ? "Opening Discord…" : "Continue with Discord"}
           </Button>
 
           <p className="text-xs leading-relaxed text-muted-foreground">
-            Use the Discord account connected to your Contractor Circle membership. If Discord asks
-            for an account, create one there and continue.
+            Discord remains the community layer. If your purchase email and Discord email are
+            different, use email sign-in first.
           </p>
         </div>
       </div>

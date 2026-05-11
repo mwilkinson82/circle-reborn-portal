@@ -15,8 +15,8 @@ export const Route = createFileRoute("/checkout/return")({
 
 const NEXT = [
   {
-    t: "Connect your Discord",
-    d: "Use the Discord account tied to the email you checked out with so the portal can attach your Circle membership.",
+    t: "Open your member login",
+    d: "Use the same email you checked out with so the portal can attach your Circle membership.",
   },
   {
     t: "Catch the next live call",
@@ -68,7 +68,7 @@ function WelcomePage() {
                 </Link>
               </Button>
               <Button asChild size="lg" variant="ghost">
-                <Link to="/login">Connect Discord</Link>
+                <Link to="/login">Sign in by email</Link>
               </Button>
             </div>
 

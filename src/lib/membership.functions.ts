@@ -392,6 +392,7 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
 
     return {
       hasAccess: hasPortalAccess(member, isAdmin),
+      userId,
       isAdmin,
       member,
       claim,

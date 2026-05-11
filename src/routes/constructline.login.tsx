@@ -12,8 +12,8 @@ export const Route = createFileRoute("/constructline/login")({
         <p className="font-mono text-xs uppercase tracking-wider text-amber">Beta access</p>
         <h1 className="font-display text-4xl mt-4">Sign in to ConstructLine.</h1>
         <p className="mt-4 text-muted-foreground leading-relaxed">
-          ConstructLine uses your Circle membership for access. Sign in with the Discord account
-          connected to your membership.
+          ConstructLine uses your Circle membership for access. Sign in with the email tied to your
+          paid or comped account.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Button asChild size="lg">
