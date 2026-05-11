@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type Stripe from "stripe";
-import { createStripeClient, getWebhookSecret } from "@/lib/stripe.server";
+import { createStripeClient, getWebhookSecret, type StripeEnv } from "@/lib/stripe.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-async function upsertSubscription(sub: Stripe.Subscription) {
-  const stripe = createStripeClient();
+async function upsertSubscription(sub: Stripe.Subscription, env: StripeEnv) {
+  const stripe = createStripeClient(env);
   const item = sub.items.data[0];
   const priceId = item?.price?.id ?? null;
   const productId = typeof item?.price?.product === "string" ? item.price.product : null;
@@ -109,14 +109,15 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
         if (!signature) return new Response("Missing signature", { status: 400 });
 
         const payload = await request.text();
-        const stripe = createStripeClient();
+        const env = new URL(request.url).searchParams.get("env") === "sandbox" ? "sandbox" : "live";
+        const stripe = createStripeClient(env);
 
         let event: Stripe.Event;
         try {
           event = await stripe.webhooks.constructEventAsync(
             payload,
             signature,
-            getWebhookSecret(),
+            getWebhookSecret(env),
           );
         } catch (err) {
           console.error("Webhook signature verification failed", err);
@@ -130,14 +131,14 @@ export const Route = createFileRoute("/api/public/payments/webhook")({
               if (session.mode === "subscription" && session.subscription) {
                 const subId = typeof session.subscription === "string" ? session.subscription : session.subscription.id;
                 const sub = await stripe.subscriptions.retrieve(subId);
-                await upsertSubscription(sub);
+                await upsertSubscription(sub, env);
               }
               break;
             }
             case "customer.subscription.created":
             case "customer.subscription.updated":
             case "customer.subscription.deleted": {
-              await upsertSubscription(event.data.object as Stripe.Subscription);
+              await upsertSubscription(event.data.object as Stripe.Subscription, env);
               break;
             }
             default:
