@@ -370,7 +370,7 @@ function NextLiveCallPanel({
 }) {
   return (
     <Card className="overflow-hidden border-hairline p-0">
-      <div className="grid gap-px bg-hairline lg:grid-cols-[13rem_minmax(0,1fr)_15rem]">
+      <div className="grid gap-px bg-hairline lg:grid-cols-[12rem_minmax(0,1fr)]">
         <div className="flex flex-col justify-between bg-amber-soft p-6">
           <div>
             <p className="font-mono text-xs uppercase tracking-wider text-amber">Next live call</p>
@@ -396,30 +396,30 @@ function NextLiveCallPanel({
             Bring one active bid, one stuck decision, or one operating-system gap. This is where the
             consulting side of Contractor Circle becomes usable inside the business.
           </p>
-        </div>
 
-        <div className="grid content-center gap-2 bg-background p-6">
-          <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} className="justify-start">
-            {liveCallUrl ? (
-              <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
-                Join Zoom <ArrowUpRight className="ml-2 h-4 w-4" />
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Button asChild={!!liveCallUrl} disabled={!liveCallUrl}>
+              {liveCallUrl ? (
+                <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
+                  Join Zoom <ArrowUpRight className="ml-2 h-4 w-4" />
+                </a>
+              ) : (
+                <span>Zoom link pending</span>
+              )}
+            </Button>
+            <Button asChild variant="outline">
+              <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
+                <CalendarPlus className="mr-2 h-4 w-4" />
+                Add to calendar
               </a>
-            ) : (
-              <span>Zoom link pending</span>
-            )}
-          </Button>
-          <Button asChild variant="outline" className="justify-start">
-            <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
-              <CalendarPlus className="mr-2 h-4 w-4" />
-              Add to calendar
-            </a>
-          </Button>
-          <Button asChild variant="ghost" className="justify-start">
-            <Link to="/portal/replays">
-              <PlayCircle className="mr-2 h-4 w-4" />
-              Past calls
-            </Link>
-          </Button>
+            </Button>
+            <Button asChild variant="ghost">
+              <Link to="/portal/replays">
+                <PlayCircle className="mr-2 h-4 w-4" />
+                Past calls
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
     </Card>

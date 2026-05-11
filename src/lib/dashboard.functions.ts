@@ -15,10 +15,7 @@ function getLiveCallUrl() {
 }
 
 function getLiveCallTopic() {
-  return (
-    process.env.CIRCLE_NEXT_CALL_TOPIC?.trim() ||
-    "Live coaching, bid review, and operating-system office hours"
-  );
+  return process.env.CIRCLE_NEXT_CALL_TOPIC?.trim() || "Live coaching and bid review";
 }
 
 function getCommunityUrl() {
