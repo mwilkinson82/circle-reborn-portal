@@ -197,17 +197,14 @@ function DashboardPage() {
     <div className="container-prose space-y-8 py-6 sm:py-8">
       <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)_minmax(18rem,0.85fr)]">
-        <NextLiveCallPanel
-          nextCallDate={nextCallDate}
-          calendarUrl={calendarUrl}
-          liveCallUrl={liveCallUrl}
-          topic={liveCallTopic}
-        />
-
-        {latest && <LatestReplayCard latest={latest} />}
-        <CommunityPanel communityUrl={communityUrl} />
-      </section>
+      <MemberCommandStrip
+        nextCallDate={nextCallDate}
+        calendarUrl={calendarUrl}
+        liveCallUrl={liveCallUrl}
+        topic={liveCallTopic}
+        latest={latest}
+        communityUrl={communityUrl}
+      />
 
       <section className="space-y-4">
         <SectionHeader
@@ -319,48 +316,58 @@ function HomeSignal({ label, value, detail }: { label: string; value: string; de
   );
 }
 
-function NextLiveCallPanel({
+function MemberCommandStrip({
   nextCallDate,
   calendarUrl,
   liveCallUrl,
   topic,
+  latest,
+  communityUrl,
 }: {
   nextCallDate: Date;
   calendarUrl: string;
   liveCallUrl: string | null;
   topic: string;
+  latest:
+    | {
+        title: string;
+        description: string | null;
+        duration_minutes: number | null;
+        tags?: string[] | null;
+      }
+    | undefined;
+  communityUrl: string | null;
 }) {
   return (
-    <Card className="h-full overflow-hidden border-hairline p-0">
-      <div className="grid h-full gap-px bg-hairline sm:grid-cols-[11rem_minmax(0,1fr)]">
-        <div className="flex flex-col justify-between bg-amber-soft p-6">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-wider text-amber">Next live call</p>
-            <p className="mt-5 font-display text-6xl leading-none tabular-nums">
+    <section className="grid gap-px overflow-hidden border border-hairline bg-hairline lg:grid-cols-[minmax(0,1.35fr)_minmax(15rem,0.85fr)_minmax(15rem,0.85fr)]">
+      <div className="grid gap-px bg-hairline sm:grid-cols-[8.5rem_minmax(0,1fr)]">
+        <div className="flex flex-col justify-between bg-amber-soft p-5">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
+            Next live call
+          </p>
+          <div className="mt-4">
+            <p className="font-display text-5xl leading-none tabular-nums">
               {format(nextCallDate, "d")}
             </p>
-            <p className="mt-2 text-sm uppercase tracking-wider text-muted-foreground">
-              {format(nextCallDate, "MMMM")}
+            <p className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+              {format(nextCallDate, "MMM")}
             </p>
           </div>
-          <Badge className="mt-6 w-fit bg-foreground text-background">5:00 PM ET</Badge>
+          <Badge className="mt-4 w-fit bg-foreground text-background">5:00 PM ET</Badge>
         </div>
 
-        <div className="bg-background p-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="outline">Bi-weekly call</Badge>
-            <span className="text-xs text-muted-foreground">
-              Every other Sunday at 5:00 PM ET · Next: {format(nextCallDate, "MMMM d")}
-            </span>
-          </div>
-          <h2 className="mt-4 max-w-2xl font-display text-3xl leading-tight">{topic}</h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+        <div className="bg-background p-5">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Every other Sunday at 5:00 PM ET
+          </p>
+          <h2 className="mt-3 max-w-2xl font-display text-2xl leading-tight">{topic}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Bring one active bid, one stuck decision, or one operating-system gap. This is where the
             consulting side of Contractor Circle becomes usable inside the business.
           </p>
 
-          <div className="mt-6 flex flex-wrap gap-2">
-            <Button asChild={!!liveCallUrl} disabled={!liveCallUrl}>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
               {liveCallUrl ? (
                 <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
                   Join Zoom <ArrowUpRight className="ml-2 h-4 w-4" />
@@ -369,13 +376,13 @@ function NextLiveCallPanel({
                 <span>Zoom link pending</span>
               )}
             </Button>
-            <Button asChild variant="outline">
+            <Button asChild variant="outline" size="sm">
               <a href={calendarUrl} target="_blank" rel="noopener noreferrer">
                 <CalendarPlus className="mr-2 h-4 w-4" />
                 Add to calendar
               </a>
             </Button>
-            <Button asChild variant="ghost">
+            <Button asChild variant="ghost" size="sm">
               <Link to="/portal/replays">
                 <PlayCircle className="mr-2 h-4 w-4" />
                 Past calls
@@ -384,81 +391,60 @@ function NextLiveCallPanel({
           </div>
         </div>
       </div>
-    </Card>
-  );
-}
 
-function LatestReplayCard({
-  latest,
-}: {
-  latest: {
-    title: string;
-    description: string | null;
-    duration_minutes: number | null;
-    tags?: string[] | null;
-  };
-}) {
-  return (
-    <Card className="flex h-full flex-col border-hairline p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+      <Link
+        to="/portal/replays"
+        className="group bg-background p-5 transition-colors hover:bg-secondary"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             Latest replay
           </p>
-          <h2 className="mt-2 font-display text-2xl leading-tight">{latest.title}</h2>
+          <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
         </div>
-        <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
-      </div>
-      {latest.description && (
-        <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-          {latest.description}
+        <h2 className="mt-3 font-display text-2xl leading-tight">
+          {latest?.title ?? "Replay library"}
+        </h2>
+        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {latest?.description ??
+            "Recorded calls preserve the strategy, bid review, and operating-system decisions for later review."}
         </p>
-      )}
-      <div className="mt-5 flex flex-wrap items-center gap-2">
-        <Badge variant="secondary">
-          {latest.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
-        </Badge>
-        {latest.tags?.slice(0, 2).map((tag) => (
-          <Badge key={tag} variant="outline">
-            {tag}
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Badge variant="secondary">
+            {latest?.duration_minutes ? `${latest.duration_minutes} min` : "Replay"}
           </Badge>
-        ))}
-      </div>
-      <Button asChild variant="outline" className="mt-6">
-        <Link to="/portal/replays">
-          Open replay library <ArrowUpRight className="ml-2 h-4 w-4" />
-        </Link>
-      </Button>
-    </Card>
-  );
-}
+          {latest?.tags?.slice(0, 2).map((tag) => (
+            <Badge key={tag} variant="outline">
+              {tag}
+            </Badge>
+          ))}
+          <ArrowUpRight className="ml-auto h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+        </div>
+      </Link>
 
-function CommunityPanel({ communityUrl }: { communityUrl: string | null }) {
-  return (
-    <Card className="flex h-full flex-col border-hairline p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+      <a
+        href={communityUrl ?? "https://discord.com/app"}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group bg-background p-5 transition-colors hover:bg-secondary"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             Community
           </p>
-          <h2 className="mt-2 font-display text-2xl leading-tight">Discord is the daily room</h2>
+          <Users className="h-5 w-5 shrink-0 text-amber" />
         </div>
-        <Users className="h-5 w-5 shrink-0 text-amber" />
-      </div>
-      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-        The portal holds the calls, recordings, templates, and tools. Discord remains the active
-        conversation layer for quick questions, peer review, and member context.
-      </p>
-      <Button asChild variant="outline" className="mt-6">
-        <a
-          href={communityUrl ?? "https://discord.com/app"}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open Discord <ArrowUpRight className="ml-2 h-4 w-4" />
-        </a>
-      </Button>
-    </Card>
+        <h2 className="mt-3 font-display text-2xl leading-tight">Discord is the daily room</h2>
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          Questions, peer review, context, and quick contractor conversation stay where members
+          already gather.
+        </p>
+        <div className="mt-5 inline-flex items-center text-sm font-medium">
+          Open Discord
+          <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+        </div>
+      </a>
+    </section>
   );
 }
 
@@ -484,7 +470,7 @@ function WorkLaneCard({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
             {eyebrow}
           </p>
           <h3 className="mt-3 font-display text-xl leading-tight">{label}</h3>
