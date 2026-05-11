@@ -29,6 +29,18 @@ function isFoundingClaim(priceId: string | null | undefined, status: string | nu
   return isFoundingPlan(priceId) || normalizeClaimStatus(status) === "founding";
 }
 
+function configuredAdminEmails() {
+  return (process.env.ADMIN_EMAILS ?? process.env.OWNER_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function isConfiguredAdminEmail(email: string | null | undefined) {
+  if (!email) return false;
+  return configuredAdminEmails().includes(email.trim().toLowerCase());
+}
+
 type PendingClaim = {
   id: string;
   email: string;
@@ -218,6 +230,34 @@ async function claimPendingSubscriptionForUser(
   return { claimed: true, count: claimedCount };
 }
 
+async function ensureConfiguredAdminAccessForUser(userId: string, email: string | null) {
+  if (!isConfiguredAdminEmail(email)) return { applied: false };
+
+  const { error: memberError } = await supabaseAdmin.from("members").upsert(
+    {
+      user_id: userId,
+      status: "active",
+      plan: "comped",
+      is_comped: true,
+      is_founding: false,
+    },
+    { onConflict: "user_id" },
+  );
+  if (memberError) throw memberError;
+
+  const { error: memberRoleError } = await supabaseAdmin
+    .from("user_roles")
+    .upsert({ user_id: userId, role: "member" }, { onConflict: "user_id,role" });
+  if (memberRoleError) throw memberRoleError;
+
+  const { error: adminRoleError } = await supabaseAdmin
+    .from("user_roles")
+    .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+  if (adminRoleError) throw adminRoleError;
+
+  return { applied: true };
+}
+
 /**
  * Admin-only: list every active/past_due/trialing subscription in the connected
  * Stripe account and write them into `subscriptions` + `pending_claims`.
@@ -371,6 +411,7 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
     const email = resolveAuthEmail(authUserRes?.user, claimEmail);
 
     const claim = await claimPendingSubscriptionForUser(userId, email);
+    const configuredAdmin = await ensureConfiguredAdminAccessForUser(userId, email);
 
     const [memberRes, rolesRes] = await Promise.all([
       supabaseAdmin
@@ -396,6 +437,7 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
       isAdmin,
       member,
       claim,
+      configuredAdmin,
       email,
     };
   });
