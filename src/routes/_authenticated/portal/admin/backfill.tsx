@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,21 +12,41 @@ export const Route = createFileRoute("/_authenticated/portal/admin/backfill")({
 });
 
 function BackfillPage() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const run = useServerFn(backfillExistingSubscriptions);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<{ imported: number; claimed: number; unclaimed: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [accessError, setAccessError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
+    let cancelled = false;
+    if (loading) return;
+    if (!user) {
+      setIsAdmin(false);
+      setAccessError("You are not signed in on this browser session.");
+      return;
+    }
+    setIsAdmin(null);
+    setAccessError(null);
     supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .then(({ data }) => setIsAdmin(!!data?.some((r) => r.role === "admin")));
-  }, [user]);
+      .then(({ data, error }) => {
+        if (cancelled) return;
+        if (error) {
+          setAccessError(error.message);
+          setIsAdmin(false);
+          return;
+        }
+        setIsAdmin(!!data?.some((r) => r.role === "admin"));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [loading, user]);
 
   const onRun = async () => {
     setRunning(true);
@@ -41,8 +61,21 @@ function BackfillPage() {
     }
   };
 
-  if (isAdmin === null) return <div className="p-10 text-sm text-muted-foreground">Checking access…</div>;
-  if (!isAdmin) return <div className="p-10"><h1 className="font-display text-2xl">Admin only</h1></div>;
+  if (loading || isAdmin === null) return <div className="p-10 text-sm text-muted-foreground">Checking admin access…</div>;
+  if (!isAdmin) {
+    return (
+      <div className="container-prose py-12 space-y-4">
+        <h1 className="font-display text-3xl">Admin access required</h1>
+        <p className="text-sm text-muted-foreground">
+          {accessError ?? "This signed-in account does not have the admin role."}
+        </p>
+        <div className="flex flex-wrap gap-3">
+          <Button asChild><Link to="/login">Sign in again</Link></Button>
+          <Button variant="outline" onClick={() => window.location.reload()}>Refresh session</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-prose py-12 space-y-8">
