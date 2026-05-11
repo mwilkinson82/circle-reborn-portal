@@ -198,42 +198,59 @@ function DashboardPage() {
   });
 
   return (
-    <div className="container-prose py-8 sm:py-10 space-y-10">
+    <div className="container-prose py-8 sm:py-10 space-y-8">
       <motion.section
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]"
+        className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_18rem]"
       >
-        <div className="relative overflow-hidden border border-hairline bg-foreground text-background">
-          <div className="absolute inset-y-0 right-0 hidden w-2/5 border-l border-background/10 bg-[linear-gradient(135deg,transparent_0_35%,rgba(255,255,255,0.08)_35%_36%,transparent_36%_100%)] bg-[length:34px_34px] lg:block" />
-          <div className="relative p-6 sm:p-8 lg:p-10">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-sm text-background/60">
-                  {new Date().toLocaleDateString(undefined, {
-                    weekday: "long",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                <h1 className="mt-2 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
+        <div className="border border-hairline bg-foreground text-background">
+          <div className="p-6 sm:p-8 lg:p-10">
+            <p className="font-mono text-xs uppercase tracking-wider text-background/55">
+              Contractor Circle
+            </p>
+            <div className="mt-5 flex flex-wrap items-start justify-between gap-5">
+              <div className="max-w-3xl">
+                <h1 className="font-display text-4xl leading-tight sm:text-5xl">
                   Welcome back,{" "}
                   <span className="text-amber">
                     {profile?.display_name?.split(" ")[0] ?? "Builder"}
                   </span>
                   .
                 </h1>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/65">
+                  Start with the live room, move into the tool suite, or pull a proven template from
+                  the library.
+                </p>
               </div>
               <Button asChild variant="secondary" className="bg-background text-foreground">
                 <Link to="/portal/account">View profile</Link>
               </Button>
             </div>
 
-            <div className="mt-10 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {commandCenterTools.map((tool) => (
-                <CommandCenterCard key={tool.to} {...tool} />
-              ))}
+            <div className="mt-8 grid gap-px border border-background/10 bg-background/10 md:grid-cols-3">
+              <PrimaryPath
+                to="/portal/constructline"
+                icon={Hammer}
+                eyebrow="Build"
+                title="Open ConstructLine"
+                body="Bid hub, takeoff, schedule, and pricing continuity."
+              />
+              <PrimaryPath
+                to="/portal/replays"
+                icon={PlayCircle}
+                eyebrow="Study"
+                title="Watch the latest call"
+                body={latest?.title ?? "Replay library and bid-room sessions."}
+              />
+              <PrimaryPath
+                to="/portal/templates"
+                icon={FileText}
+                eyebrow="Ship"
+                title="Pull a template"
+                body="Scopes, SOVs, scripts, finance, and operating tools."
+              />
             </div>
           </div>
         </div>
@@ -247,111 +264,48 @@ function DashboardPage() {
       </motion.section>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <LiveCallCard
-          nextCallDate={nextCallDate}
-          calendarUrl={calendarUrl}
-          liveCallUrl={liveCallUrl}
-        />
+        <div className="space-y-4">
+          <SectionHeader
+            eyebrow="Today"
+            title="Live room and current focus"
+            body="One place for the next call, the next decision, and the next working session."
+          />
+          <LiveCallCard
+            nextCallDate={nextCallDate}
+            calendarUrl={calendarUrl}
+            liveCallUrl={liveCallUrl}
+          />
+        </div>
 
-        <Card className="border-hairline p-6">
-          <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg">From the Circle</h2>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <ul className="mt-5 divide-y divide-hairline">
-            {announcements.map((a: (typeof announcements)[number]) => (
-              <li key={a.id} className="py-3 first:pt-0 last:pb-0">
-                <div className="flex items-start gap-2">
-                  {a.pinned && <Pin className="h-3.5 w-3.5 text-amber mt-1 shrink-0" />}
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium leading-tight">{a.title}</p>
-                    {a.body && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{a.body}</p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDistanceToNow(new Date(a.published_at), { addSuffix: true })}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            ))}
-            {announcements.length === 0 && (
-              <li className="py-3 text-sm text-muted-foreground">Nothing new yet.</li>
-            )}
-          </ul>
-        </Card>
-      </section>
-
-      <section className="grid gap-px border border-hairline bg-hairline md:grid-cols-3">
-        {operatingRhythm.map((item) => (
-          <div key={item.label} className="bg-background p-5">
-            <item.icon className="h-5 w-5 text-amber" />
-            <h3 className="mt-5 font-display text-lg leading-tight">{item.label}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
-          </div>
-        ))}
-      </section>
-
-      <section className="grid lg:grid-cols-3 gap-6">
-        {latest && (
-          <Card className="lg:col-span-2 p-0 overflow-hidden border-hairline">
-            <div className="aspect-[16/8] bg-[radial-gradient(circle_at_80%_85%,rgba(212,119,44,0.35),transparent_32%),linear-gradient(135deg,#090a0d_0%,#15171c_52%,#d7c3a6_100%)] relative">
-              <div className="absolute inset-0 flex items-end p-6">
-                <div className="text-background">
-                  <p className="text-xs uppercase tracking-wider opacity-70">Continue watching</p>
-                  <h2 className="font-display text-2xl mt-1 max-w-md">{latest.title}</h2>
-                </div>
-              </div>
-              <div className="absolute top-4 right-4">
-                <span className="inline-flex items-center gap-1 rounded-full bg-background/90 text-foreground text-xs px-3 py-1">
-                  <PlayCircle className="h-3 w-3" /> {latest.duration_minutes} min
-                </span>
-              </div>
-            </div>
-            <div className="p-6 flex items-center justify-between gap-6">
-              <p className="text-sm text-muted-foreground line-clamp-2 flex-1">
-                {latest.description}
-              </p>
-              <Button asChild>
-                <Link to="/portal/replays">
-                  Watch <ArrowUpRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </Card>
-        )}
-
-        <Card className="border-hairline p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                Community layer
-              </p>
-              <h2 className="mt-2 font-display text-xl">Discord stays live</h2>
-            </div>
-            <Users className="h-5 w-5 text-amber" />
-          </div>
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-            Daily conversation, bid questions, and peer review stay in Discord while the portal
-            houses the tools and member library.
-          </p>
-          <div className="mt-6 border border-hairline bg-secondary p-4">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">Best next post</p>
-            <p className="mt-2 font-display text-lg leading-tight">
-              Share one active estimate decision before it turns into a bid-day problem.
-            </p>
-          </div>
-        </Card>
+        <AnnouncementsPanel announcements={announcements} />
       </section>
 
       <section className="space-y-4">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-2xl">Featured templates</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Pulled from the library — used on real bids.
-            </p>
-          </div>
+        <SectionHeader
+          eyebrow="Tool suite"
+          title="Choose the work lane"
+          body="ConstructLine is the production workspace. The new portal keeps the member entry clean while we rebuild the tools behind it."
+        />
+        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-4">
+          {commandCenterTools.map((tool) => (
+            <WorkLaneCard key={tool.to} {...tool} />
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-3">
+        {latest && <ReplayPanel latest={latest} className="lg:col-span-2" />}
+
+        <CommunityPanel />
+      </section>
+
+      <section className="space-y-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <SectionHeader
+            eyebrow="Member library"
+            title="Pull from proven material"
+            body="Templates and sessions stay close to the work instead of buried in a file dump."
+          />
           <Link
             to="/portal/templates"
             className="text-sm text-foreground underline underline-offset-4"
@@ -394,29 +348,67 @@ function DashboardPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-display text-2xl">Tool suite</h2>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-hairline border border-hairline">
-          <QuickLink
-            to="/portal/constructline"
-            icon={Hammer}
-            label="ConstructLine"
-            hint="Open the live workspace"
-          />
-          <QuickLink to="/portal/takeoff" icon={Ruler} label="Basis" hint="Takeoffs" />
-          <QuickLink to="/portal/scheduler" icon={Calendar} label="Baseline" hint="Scheduler" />
-          <QuickLink
-            to="/portal/cost-library"
-            icon={BookOpen}
-            label="Cost Library"
-            hint="Regional unit costs"
-          />
+        <SectionHeader
+          eyebrow="Operating rhythm"
+          title="Review, price, package"
+          body="The portal now points every member back to the same contractor workflow."
+        />
+        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-3">
+          {operatingRhythm.map((item) => (
+            <div key={item.label} className="bg-background p-5">
+              <item.icon className="h-5 w-5 text-amber" />
+              <h3 className="mt-5 font-display text-lg leading-tight">{item.label}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.detail}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>
   );
 }
 
-function CommandCenterCard({
+function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
+  return (
+    <div className="max-w-2xl">
+      <p className="font-mono text-xs uppercase tracking-wider text-amber">{eyebrow}</p>
+      <h2 className="mt-2 font-display text-2xl leading-tight">{title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
+    </div>
+  );
+}
+
+function PrimaryPath({
+  to,
+  icon: Icon,
+  eyebrow,
+  title,
+  body,
+}: {
+  to: string;
+  icon: typeof Hammer;
+  eyebrow: string;
+  title: string;
+  body: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group flex min-h-44 flex-col justify-between bg-foreground p-5 text-background transition-colors hover:bg-background/[0.08]"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <p className="font-mono text-xs uppercase tracking-wider text-background/50">{eyebrow}</p>
+        <Icon className="h-5 w-5 text-amber" />
+      </div>
+      <div>
+        <h3 className="font-display text-xl leading-tight">{title}</h3>
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-background/55">{body}</p>
+      </div>
+      <ArrowUpRight className="h-4 w-4 text-background/50 opacity-0 transition-opacity group-hover:opacity-100" />
+    </Link>
+  );
+}
+
+function WorkLaneCard({
   to,
   icon: Icon,
   label,
@@ -434,23 +426,23 @@ function CommandCenterCard({
   return (
     <Link
       to={to}
-      className="group border border-background/10 bg-background/[0.06] p-4 text-background transition-colors hover:bg-background/[0.12]"
+      className="group flex min-h-48 flex-col justify-between bg-background p-5 transition-colors hover:bg-secondary"
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-background/50">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             {eyebrow}
           </p>
-          <p className="mt-2 font-display text-xl leading-tight">{value}</p>
+          <p className="mt-2 font-display text-2xl leading-tight">{value}</p>
         </div>
         <Icon className="h-5 w-5 text-amber" />
       </div>
       <div className="mt-8 flex items-end justify-between gap-3">
         <div>
           <p className="text-sm font-medium">{label}</p>
-          <p className="mt-1 text-xs leading-relaxed text-background/55">{hint}</p>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{hint}</p>
         </div>
-        <ArrowUpRight className="h-4 w-4 text-background/50 opacity-0 transition-opacity group-hover:opacity-100" />
+        <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
     </Link>
   );
@@ -501,8 +493,8 @@ function LiveCallCard({
                 Contractor Circle Live Call
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-                The portal should point members toward action: show up live, bring the real
-                constraint, then turn the answer into a better bid or a cleaner operating system.
+                Show up with one live bid, one stuck decision, or one operating issue. Leave with a
+                cleaner next move.
               </p>
             </div>
             <Calendar className="h-5 w-5 text-amber" />
@@ -601,26 +593,121 @@ function DashboardAction({
   );
 }
 
-function QuickLink({
-  to,
-  icon: Icon,
-  label,
-  hint,
+function AnnouncementsPanel({
+  announcements,
 }: {
-  to: string;
-  icon: typeof Calendar;
-  label: string;
-  hint: string;
+  announcements: Array<{
+    id: string;
+    title: string;
+    body: string | null;
+    pinned: boolean | null;
+    published_at: string;
+  }>;
 }) {
   return (
-    <Link to={to} className="bg-background p-6 hover:bg-secondary transition-colors group">
-      <div className="flex items-start justify-between">
-        <Icon className="h-5 w-5 text-muted-foreground group-hover:text-amber transition-colors" />
-        <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+    <Card className="border-hairline p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            From the Circle
+          </p>
+          <h2 className="mt-2 font-display text-xl">Updates</h2>
+        </div>
+        <Calendar className="h-4 w-4 text-muted-foreground" />
       </div>
-      <p className="font-display text-lg mt-6">{label}</p>
-      <p className="text-xs text-muted-foreground mt-1">{hint}</p>
-    </Link>
+      <ul className="mt-5 divide-y divide-hairline">
+        {announcements.map((a) => (
+          <li key={a.id} className="py-3 first:pt-0 last:pb-0">
+            <div className="flex items-start gap-2">
+              {a.pinned && <Pin className="mt-1 h-3.5 w-3.5 shrink-0 text-amber" />}
+              <div className="min-w-0">
+                <p className="text-sm font-medium leading-tight">{a.title}</p>
+                {a.body && (
+                  <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{a.body}</p>
+                )}
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(a.published_at), { addSuffix: true })}
+                </p>
+              </div>
+            </div>
+          </li>
+        ))}
+        {announcements.length === 0 && (
+          <li className="py-3 text-sm text-muted-foreground">Nothing new yet.</li>
+        )}
+      </ul>
+    </Card>
+  );
+}
+
+function ReplayPanel({
+  latest,
+  className,
+}: {
+  latest: {
+    title: string;
+    description: string | null;
+    duration_minutes: number | null;
+  };
+  className?: string;
+}) {
+  return (
+    <Card className={`overflow-hidden border-hairline p-0 ${className ?? ""}`}>
+      <div className="grid gap-px bg-hairline md:grid-cols-[minmax(0,1fr)_16rem]">
+        <div className="bg-background p-6">
+          <p className="font-mono text-xs uppercase tracking-wider text-amber">Latest replay</p>
+          <h2 className="mt-3 max-w-xl font-display text-3xl leading-tight">{latest.title}</h2>
+          {latest.description && (
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              {latest.description}
+            </p>
+          )}
+          <Button asChild className="mt-6">
+            <Link to="/portal/replays">
+              Open replays <ArrowUpRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+        <div className="flex min-h-56 flex-col justify-between bg-foreground p-6 text-background">
+          <PlayCircle className="h-9 w-9 text-amber" />
+          <div>
+            <p className="font-mono text-xs uppercase tracking-wider text-background/50">
+              Watch time
+            </p>
+            <p className="mt-2 font-display text-4xl tabular-nums">
+              {latest.duration_minutes ?? 0}
+              <span className="ml-1 text-base font-sans text-background/50">min</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function CommunityPanel() {
+  return (
+    <Card className="border-hairline p-6">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+            Community layer
+          </p>
+          <h2 className="mt-2 font-display text-xl">Discord stays live</h2>
+        </div>
+        <Users className="h-5 w-5 text-amber" />
+      </div>
+      <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+        Daily questions and peer review stay in Discord. The portal holds the calls, templates,
+        tools, and work product.
+      </p>
+      <div className="mt-6 border border-hairline bg-secondary p-4">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">Best next post</p>
+        <p className="mt-2 font-display text-lg leading-tight">
+          Share one active estimate decision before it turns into a bid-day problem.
+        </p>
+      </div>
+    </Card>
   );
 }
 
