@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
+import { formatMembershipPlan, titleCase } from "@/lib/membership-plan";
 
 export const Route = createFileRoute("/_authenticated/portal/")({
   head: () => ({ meta: [{ title: "Dashboard — ALP Contractor Circle" }] }),
@@ -97,7 +98,7 @@ function DashboardPage() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-hairline border border-hairline">
           <Stat label="Status" value={titleCase(member?.status ?? "trialing")} />
-          <Stat label="Plan" value={member?.plan ?? "Circle"} />
+          <Stat label="Plan" value={formatMembershipPlan(member?.plan)} />
           <Stat label="Days as member" value={String(days)} />
           <Stat label="Replays" value={String(replays.length) + "+"} />
         </div>
@@ -266,10 +267,6 @@ function QuickLink({
       <p className="text-xs text-muted-foreground mt-1">{hint}</p>
     </Link>
   );
-}
-
-function titleCase(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function DashboardSkeleton() {

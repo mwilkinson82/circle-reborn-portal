@@ -7,6 +7,7 @@ import { createPortalSession } from "@/lib/payments.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { formatMembershipPlan, titleCase } from "@/lib/membership-plan";
 
 export const Route = createFileRoute("/_authenticated/portal/account")({
   head: () => ({ meta: [{ title: "Account — ALP Contractor Circle" }] }),
@@ -55,11 +56,13 @@ function AccountPage() {
             <dl className="mt-6 grid gap-px border border-hairline bg-hairline sm:grid-cols-2">
               <div className="bg-card p-4">
                 <dt className="text-xs uppercase tracking-wider text-muted-foreground">Status</dt>
-                <dd className="mt-1 font-medium">{data?.member?.status ?? "Checking"}</dd>
+                <dd className="mt-1 font-medium">
+                  {data?.member?.status ? titleCase(data.member.status) : "Checking"}
+                </dd>
               </div>
               <div className="bg-card p-4">
                 <dt className="text-xs uppercase tracking-wider text-muted-foreground">Plan</dt>
-                <dd className="mt-1 font-medium">{data?.member?.plan ?? "Circle"}</dd>
+                <dd className="mt-1 font-medium">{formatMembershipPlan(data?.member?.plan)}</dd>
               </div>
             </dl>
           </div>
