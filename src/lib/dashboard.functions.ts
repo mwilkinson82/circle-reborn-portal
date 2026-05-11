@@ -14,6 +14,10 @@ function getLiveCallUrl() {
   return process.env.CIRCLE_LIVE_CALL_URL?.trim() || null;
 }
 
+function getLiveCallCalendarUrl() {
+  return process.env.CIRCLE_LIVE_CALL_ICS_URL?.trim() || null;
+}
+
 function getLiveCallTopic() {
   return process.env.CIRCLE_NEXT_CALL_TOPIC?.trim() || "Live coaching and bid review";
 }
@@ -136,6 +140,7 @@ export const getDashboard = createServerFn({ method: "GET" })
       profile,
       member,
       liveCallUrl: getLiveCallUrl(),
+      liveCallCalendarUrl: getLiveCallCalendarUrl(),
       liveCallTopic: getLiveCallTopic(),
       communityUrl: getCommunityUrl(),
       replays: shouldUseReplayCatalogFallback(dashboardReplays)

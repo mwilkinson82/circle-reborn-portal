@@ -114,7 +114,7 @@ const commandCenterTools = [
 type IconComponent = typeof Hammer;
 
 function getStandardNextCallDate(now = new Date()): Date {
-  const anchor = new Date(Date.UTC(2025, 2, 30, 21, 0, 0));
+  const anchor = new Date(Date.UTC(2026, 4, 24, 21, 0, 0));
 
   if (now.getTime() <= anchor.getTime() + LIVE_CALL_DURATION_MS) return anchor;
 
@@ -209,6 +209,7 @@ function DashboardPage() {
     featuredTemplates,
     announcements,
     liveCallTopic,
+    liveCallCalendarUrl,
     communityUrl,
   } = data;
   const latest = replays[0];
@@ -220,14 +221,16 @@ function DashboardPage() {
     : 0;
   const nextCallDate = getNextCallDate();
   const liveCallUrl = data.liveCallUrl;
-  const calendarUrl = buildCalendarUrl({
-    title: `Contractor Circle: ${liveCallTopic}`,
-    details: liveCallUrl
-      ? `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin link:\n${liveCallUrl}`
-      : `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin details are posted in the portal and Discord before the call.`,
-    start: nextCallDate,
-    location: liveCallUrl ?? "Contractor Circle portal",
-  });
+  const calendarUrl =
+    liveCallCalendarUrl ??
+    buildCalendarUrl({
+      title: `Contractor Circle: ${liveCallTopic}`,
+      details: liveCallUrl
+        ? `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin link:\n${liveCallUrl}`
+        : `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin details are posted in the portal and Discord before the call.`,
+      start: nextCallDate,
+      location: liveCallUrl ?? "Contractor Circle portal",
+    });
 
   return (
     <div className="container-prose space-y-7 py-6 sm:py-8">
@@ -388,7 +391,7 @@ function NextLiveCallPanel({
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline">Bi-weekly call</Badge>
             <span className="text-xs text-muted-foreground">
-              {format(nextCallDate, "EEEE, MMMM d")}
+              Every other Sunday at 5:00 PM ET · Next: {format(nextCallDate, "MMMM d")}
             </span>
           </div>
           <h2 className="mt-4 max-w-2xl font-display text-3xl leading-tight">{topic}</h2>
