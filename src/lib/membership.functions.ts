@@ -29,6 +29,161 @@ function isFoundingClaim(priceId: string | null | undefined, status: string | nu
   return isFoundingPlan(priceId) || normalizeClaimStatus(status) === "founding";
 }
 
+type PendingClaim = {
+  id: string;
+  email: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  price_id: string | null;
+  status: string;
+  current_period_end: string | null;
+};
+
+type ClaimResult = {
+  claimed: boolean;
+  count?: number;
+  reason?: string;
+};
+
+type MembershipRecord = {
+  status: string | null;
+  plan: string | null;
+  stripe_customer_id?: string | null;
+  stripe_subscription_id?: string | null;
+  current_period_end: string | null;
+  is_comped: boolean | null;
+  is_founding: boolean | null;
+};
+
+function hasPortalAccess(
+  member: Pick<MembershipRecord, "status" | "is_comped"> | null | undefined,
+  isAdmin: boolean,
+) {
+  if (isAdmin) return true;
+  const status = normalizeClaimStatus(member?.status);
+  return ["active", "trialing", "past_due"].includes(status) || member?.is_comped === true;
+}
+
+function resolveStripeMemberStatus(
+  status: Stripe.Subscription.Status,
+): "active" | "past_due" | "canceled" {
+  if (status === "active" || status === "trialing") return "active";
+  if (status === "past_due") return "past_due";
+  return "canceled";
+}
+
+async function refreshPaidMemberFromStripe(
+  userId: string,
+  member: MembershipRecord | null,
+): Promise<MembershipRecord | null> {
+  if (!member?.stripe_subscription_id || member.is_comped === true) return member;
+
+  const stripe = createStripeClient("live");
+  const subscription = await stripe.subscriptions.retrieve(member.stripe_subscription_id);
+  const item = subscription.items.data[0];
+  const priceId = item?.price?.id ?? member.plan;
+  const productId = typeof item?.price?.product === "string" ? item.price.product : null;
+  const periodEndUnix = item?.current_period_end ?? null;
+  const periodEndIso = periodEndUnix ? new Date(periodEndUnix * 1000).toISOString() : null;
+  const status = resolveStripeMemberStatus(subscription.status);
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
+
+  const updated: MembershipRecord = {
+    ...member,
+    status,
+    plan: priceId,
+    stripe_customer_id: customerId,
+    stripe_subscription_id: subscription.id,
+    current_period_end: periodEndIso,
+    is_founding: isFoundingPlan(priceId),
+    is_comped: false,
+  };
+
+  const { error: memberError } = await supabaseAdmin
+    .from("members")
+    .update({
+      status: updated.status,
+      plan: updated.plan,
+      stripe_customer_id: updated.stripe_customer_id,
+      stripe_subscription_id: updated.stripe_subscription_id,
+      current_period_end: updated.current_period_end,
+      is_founding: updated.is_founding,
+      is_comped: updated.is_comped,
+    })
+    .eq("user_id", userId);
+  if (memberError) throw memberError;
+
+  const { error: subscriptionError } = await supabaseAdmin
+    .from("subscriptions")
+    .update({
+      status: subscription.status,
+      price_id: priceId,
+      product_id: productId,
+      current_period_end: periodEndIso,
+      cancel_at_period_end: subscription.cancel_at_period_end,
+    })
+    .eq("stripe_subscription_id", subscription.id);
+  if (subscriptionError) throw subscriptionError;
+
+  return updated;
+}
+
+async function claimPendingSubscriptionForUser(
+  userId: string,
+  email: string | null | undefined,
+): Promise<ClaimResult> {
+  if (!email) return { claimed: false, reason: "no email on session" };
+
+  const { data: pendings, error: pendingError } = await supabaseAdmin
+    .from("pending_claims")
+    .select("*")
+    .ilike("email", email)
+    .is("claimed_at", null);
+
+  if (pendingError) throw pendingError;
+  if (!pendings || pendings.length === 0) return { claimed: false, reason: "no pending claim" };
+
+  let claimedCount = 0;
+  for (const p of pendings as PendingClaim[]) {
+    const isComped = !p.stripe_subscription_id;
+    const status = resolveClaimedMemberStatus(p.status);
+
+    if (p.stripe_subscription_id) {
+      const { error: subscriptionError } = await supabaseAdmin
+        .from("subscriptions")
+        .update({ user_id: userId })
+        .eq("stripe_subscription_id", p.stripe_subscription_id);
+      if (subscriptionError) throw subscriptionError;
+    }
+
+    const { error: memberError } = await supabaseAdmin.from("members").upsert(
+      {
+        user_id: userId,
+        status,
+        plan: p.price_id ?? (isComped ? "comped" : null),
+        stripe_customer_id: p.stripe_customer_id,
+        stripe_subscription_id: p.stripe_subscription_id,
+        current_period_end: p.current_period_end,
+        is_founding: isFoundingClaim(p.price_id, p.status),
+        is_comped: isComped,
+      },
+      { onConflict: "user_id" },
+    );
+    if (memberError) throw memberError;
+
+    const { error: claimedError } = await supabaseAdmin
+      .from("pending_claims")
+      .update({ claimed_at: new Date().toISOString(), claimed_by: userId })
+      .eq("id", p.id);
+    if (claimedError) throw claimedError;
+
+    claimedCount++;
+  }
+
+  return { claimed: true, count: claimedCount };
+}
+
 /**
  * Admin-only: list every active/past_due/trialing subscription in the connected
  * Stripe account and write them into `subscriptions` + `pending_claims`.
@@ -168,6 +323,41 @@ export const getMyAdminStatus = createServerFn({ method: "GET" })
     };
   });
 
+export const getMyMembershipAccess = createServerFn({ method: "GET" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { userId, claims } = context;
+    const email = (claims as { email?: string } | undefined)?.email ?? null;
+
+    const claim = await claimPendingSubscriptionForUser(userId, email);
+
+    const [memberRes, rolesRes] = await Promise.all([
+      supabaseAdmin
+        .from("members")
+        .select(
+          "status, plan, stripe_customer_id, stripe_subscription_id, current_period_end, is_comped, is_founding",
+        )
+        .eq("user_id", userId)
+        .maybeSingle(),
+      supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
+    ]);
+
+    if (memberRes.error) {
+      console.error("Membership access check failed", memberRes.error);
+    }
+
+    const isAdmin = !!rolesRes.data?.some((r) => r.role === "admin");
+    const member = await refreshPaidMemberFromStripe(userId, memberRes.data ?? null);
+
+    return {
+      hasAccess: hasPortalAccess(member, isAdmin),
+      isAdmin,
+      member,
+      claim,
+      email,
+    };
+  });
+
 /**
  * Called automatically when an authenticated user lands in the portal.
  * Looks up pending_claims by their email, links the subscription to the user,
@@ -178,51 +368,5 @@ export const claimMyPendingSubscription = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { userId, claims } = context;
     const email = (claims as { email?: string } | undefined)?.email;
-    if (!email) return { claimed: false, reason: "no email on session" };
-
-    const { data: pendings } = await supabaseAdmin
-      .from("pending_claims")
-      .select("*")
-      .ilike("email", email)
-      .is("claimed_at", null);
-
-    if (!pendings || pendings.length === 0) return { claimed: false, reason: "no pending claim" };
-
-    let claimedCount = 0;
-    for (const p of pendings) {
-      const isComped = !p.stripe_subscription_id;
-      const status = resolveClaimedMemberStatus(p.status);
-
-      // Link the subscription to this user (only if there is one)
-      if (p.stripe_subscription_id) {
-        await supabaseAdmin
-          .from("subscriptions")
-          .update({ user_id: userId })
-          .eq("stripe_subscription_id", p.stripe_subscription_id);
-      }
-
-      // Mirror to members
-      await supabaseAdmin
-        .from("members")
-        .update({
-          status,
-          plan: p.price_id ?? (isComped ? "comped" : null),
-          stripe_customer_id: p.stripe_customer_id,
-          stripe_subscription_id: p.stripe_subscription_id,
-          current_period_end: p.current_period_end,
-          is_founding: isFoundingClaim(p.price_id, p.status),
-          is_comped: isComped,
-        })
-        .eq("user_id", userId);
-
-      // Mark as claimed (kept for audit, not deleted)
-      await supabaseAdmin
-        .from("pending_claims")
-        .update({ claimed_at: new Date().toISOString(), claimed_by: userId })
-        .eq("id", p.id);
-
-      claimedCount++;
-    }
-
-    return { claimed: true, count: claimedCount };
+    return claimPendingSubscriptionForUser(userId, email);
   });
