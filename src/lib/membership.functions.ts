@@ -11,6 +11,10 @@ function normalizeClaimStatus(status: string | null | undefined) {
   return (status ?? "").trim().toLowerCase();
 }
 
+function normalizeEmailForMatch(email: string | null | undefined) {
+  return (email ?? "").trim().toLowerCase();
+}
+
 function isActiveManualClaim(status: string | null | undefined) {
   return ["active", "trialing", "comped", "manual", "founding"].includes(
     normalizeClaimStatus(status),
@@ -173,19 +177,24 @@ async function claimPendingSubscriptionForUser(
   userId: string,
   email: string | null | undefined,
 ): Promise<ClaimResult> {
-  if (!email) return { claimed: false, reason: "no email on session" };
+  const normalizedEmail = normalizeEmailForMatch(email);
+  if (!normalizedEmail) return { claimed: false, reason: "no email on session" };
 
   const { data: pendings, error: pendingError } = await supabaseAdmin
     .from("pending_claims")
     .select("*")
-    .ilike("email", email)
-    .is("claimed_at", null);
+    .is("claimed_at", null)
+    .limit(1000);
 
   if (pendingError) throw pendingError;
-  if (!pendings || pendings.length === 0) return { claimed: false, reason: "no pending claim" };
+  const matchingPendings = (pendings ?? []).filter(
+    (pending) => normalizeEmailForMatch(pending.email) === normalizedEmail,
+  );
+
+  if (matchingPendings.length === 0) return { claimed: false, reason: "no pending claim" };
 
   let claimedCount = 0;
-  for (const p of pendings as PendingClaim[]) {
+  for (const p of matchingPendings as PendingClaim[]) {
     const isComped = !p.stripe_subscription_id;
     const status = resolveClaimedMemberStatus(p.status);
 
@@ -442,7 +451,14 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
       };
     }
 
-    const claim = await claimPendingSubscriptionForUser(userId, email);
+    let claim: ClaimResult = { claimed: false, reason: "not checked" };
+    try {
+      claim = await claimPendingSubscriptionForUser(userId, email);
+    } catch (error) {
+      console.error("Pending membership claim failed", error);
+      claim = { claimed: false, reason: "claim check failed" };
+    }
+
     const configuredAdmin = await ensureConfiguredAdminAccessForUser(userId, email);
 
     const [memberRes, rolesRes] = await Promise.all([
@@ -461,7 +477,19 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
     }
 
     const isAdmin = !!rolesRes.data?.some((r) => r.role === "admin");
-    const member = await refreshPaidMemberFromStripe(userId, memberRes.data ?? null);
+
+    if (rolesRes.error) {
+      console.error("Membership role lookup failed", rolesRes.error);
+    }
+
+    let stripeRefreshError: string | null = null;
+    let member = memberRes.data ?? null;
+    try {
+      member = await refreshPaidMemberFromStripe(userId, member);
+    } catch (error) {
+      console.error("Stripe membership refresh failed", error);
+      stripeRefreshError = "Stripe refresh failed; using current membership record.";
+    }
 
     return {
       hasAccess: hasPortalAccess(member, isAdmin),
@@ -470,6 +498,7 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
       member,
       claim,
       configuredAdmin,
+      stripeRefreshError,
       email,
     };
   });
