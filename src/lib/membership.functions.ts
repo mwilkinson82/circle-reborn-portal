@@ -57,6 +57,11 @@ type ClaimResult = {
   reason?: string;
 };
 
+type ConfiguredAdminResult = {
+  applied: boolean;
+  error?: string | null;
+};
+
 type MembershipRecord = {
   status: string | null;
   plan: string | null;
@@ -230,7 +235,10 @@ async function claimPendingSubscriptionForUser(
   return { claimed: true, count: claimedCount };
 }
 
-async function ensureConfiguredAdminAccessForUser(userId: string, email: string | null) {
+async function ensureConfiguredAdminAccessForUser(
+  userId: string,
+  email: string | null,
+): Promise<ConfiguredAdminResult> {
   if (!isConfiguredAdminEmail(email)) return { applied: false };
 
   const { error: memberError } = await supabaseAdmin.from("members").upsert(
@@ -380,6 +388,10 @@ export const getMyAdminStatus = createServerFn({ method: "GET" })
     const { userId, claims } = context;
     const email = (claims as { email?: string } | undefined)?.email;
 
+    if (isConfiguredAdminEmail(email)) {
+      return { isAdmin: true, email: email ?? null, error: null };
+    }
+
     const { data: roles, error } = await supabaseAdmin
       .from("user_roles")
       .select("role")
@@ -409,6 +421,37 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
     }
 
     const email = resolveAuthEmail(authUserRes?.user, claimEmail);
+
+    if (isConfiguredAdminEmail(email)) {
+      let configuredAdmin: ConfiguredAdminResult = { applied: false };
+      try {
+        configuredAdmin = await ensureConfiguredAdminAccessForUser(userId, email);
+      } catch (error) {
+        console.error("Configured admin bootstrap failed", error);
+        configuredAdmin = {
+          applied: false,
+          error: "Portal access was granted, but the admin membership row was not written.",
+        };
+      }
+
+      return {
+        hasAccess: true,
+        userId,
+        isAdmin: true,
+        member: {
+          status: "active",
+          plan: "comped",
+          stripe_customer_id: null,
+          stripe_subscription_id: null,
+          current_period_end: null,
+          is_comped: true,
+          is_founding: false,
+        } satisfies MembershipRecord,
+        claim: { claimed: false, reason: "configured admin email" },
+        configuredAdmin,
+        email,
+      };
+    }
 
     const claim = await claimPendingSubscriptionForUser(userId, email);
     const configuredAdmin = await ensureConfiguredAdminAccessForUser(userId, email);
