@@ -10,6 +10,9 @@ import {
   Shield,
   LogOut,
   Hammer,
+  Wrench,
+  Users,
+  ExternalLink,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,9 +36,11 @@ const main = [
 ];
 
 const tools = [
-  { title: "Scheduler", url: "/portal/scheduler", icon: Calendar },
-  { title: "Takeoffs", url: "/portal/takeoff", icon: Ruler },
+  { title: "ConstructLine Hub", url: "/portal/constructline", icon: Wrench },
+  { title: "Basis (Takeoffs)", url: "/portal/takeoff", icon: Ruler },
+  { title: "Baseline (Scheduler)", url: "/portal/scheduler", icon: Calendar },
   { title: "Cost Library", url: "/portal/cost-library", icon: BookOpen },
+  { title: "Trade Rate Library", url: "/portal/labor-library", icon: Users },
 ];
 
 const account = [
@@ -88,7 +93,10 @@ export function PortalSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Tools</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex items-center gap-1.5">
+            ConstructLine
+            {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(tools)}</SidebarMenu>
           </SidebarGroupContent>
