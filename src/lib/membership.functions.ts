@@ -80,7 +80,9 @@ type ConfiguredAdminResult = {
 
 type AccessTestResult = {
   memberEmail: string;
+  memberActionLink: string;
   blockedEmail: string;
+  blockedActionLink: string;
   preparedAt: string;
 };
 
@@ -312,6 +314,39 @@ function createPlusAlias(email: string, tag: string) {
   return `${cleanLocal}+${tag}@${domain}`.toLowerCase();
 }
 
+function getPortalRedirectUrl() {
+  const configuredUrl =
+    process.env.SITE_URL ??
+    process.env.PUBLIC_SITE_URL ??
+    process.env.VITE_SITE_URL ??
+    process.env.VITE_APP_URL;
+  const vercelProjectUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const vercelUrl = process.env.VERCEL_URL;
+  const origin =
+    configuredUrl ??
+    (vercelProjectUrl ? `https://${vercelProjectUrl}` : null) ??
+    (vercelUrl ? `https://${vercelUrl}` : null) ??
+    "https://circle-reborn-portal.vercel.app";
+
+  return `${origin.replace(/\/$/, "")}/portal`;
+}
+
+async function generateAccessTestActionLink(email: string) {
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+    options: { redirectTo: getPortalRedirectUrl() },
+  });
+  if (error) throw error;
+
+  const actionLink = data.properties?.action_link;
+  if (!actionLink) {
+    throw new Error("Supabase did not return an access test login link.");
+  }
+
+  return actionLink;
+}
+
 /**
  * Admin-only: list every active/past_due/trialing subscription in the connected
  * Stripe account and write them into `subscriptions` + `pending_claims`.
@@ -496,7 +531,12 @@ export const prepareAccessTest = createServerFn({ method: "POST" })
       .ilike("email", blockedEmail);
     if (blockedCleanupError) throw blockedCleanupError;
 
-    return { memberEmail, blockedEmail, preparedAt };
+    const [memberActionLink, blockedActionLink] = await Promise.all([
+      generateAccessTestActionLink(memberEmail),
+      generateAccessTestActionLink(blockedEmail),
+    ]);
+
+    return { memberEmail, memberActionLink, blockedEmail, blockedActionLink, preparedAt };
   });
 
 export const getMyMembershipAccess = createServerFn({ method: "GET" })

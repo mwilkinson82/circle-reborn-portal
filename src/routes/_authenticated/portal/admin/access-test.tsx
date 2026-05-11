@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { Check, Copy, ShieldCheck } from "lucide-react";
+import { Check, Copy, ExternalLink, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,9 @@ export const Route = createFileRoute("/_authenticated/portal/admin/access-test")
 
 type AccessTestResult = {
   memberEmail: string;
+  memberActionLink: string;
   blockedEmail: string;
+  blockedActionLink: string;
   preparedAt: string;
 };
 
@@ -51,7 +53,7 @@ function AccessTestPage() {
     try {
       const prepared = await prepare({ data: undefined as never });
       setResult(prepared);
-      toast.success("Access test emails are ready.");
+      toast.success("Access test links are ready.");
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -91,7 +93,8 @@ function AccessTestPage() {
         <h1 className="font-display text-3xl mt-2">Access gate test</h1>
         <p className="text-sm text-muted-foreground mt-3 max-w-prose">
           This prepares two Gmail aliases that deliver to your inbox. One alias is staged as a
-          comped Circle member. The other is intentionally left off the roster.
+          comped Circle member. The other is intentionally left off the roster. The generated links
+          bypass email delivery so Supabase rate limits do not slow down QA.
         </p>
       </div>
 
@@ -103,7 +106,8 @@ function AccessTestPage() {
           <div className="min-w-0">
             <h2 className="font-display text-2xl">Prepare test emails</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              No customer inboxes needed. Both links will land in your Gmail.
+              No customer inboxes or emails needed. These are one-time Supabase admin links for
+              testing only.
             </p>
           </div>
         </div>
@@ -129,10 +133,15 @@ function AccessTestPage() {
               <h2 className="font-display text-2xl mt-2">Comped member alias</h2>
             </div>
             <EmailCopy value={result.memberEmail} />
+            <Button asChild className="w-fit">
+              <a href={result.memberActionLink}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open member login link
+              </a>
+            </Button>
             <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
               <li>Sign out of the portal.</li>
-              <li>Go to the login page and enter this email.</li>
-              <li>Open the Supabase email in Gmail and confirm the link.</li>
+              <li>Open the member login link above.</li>
               <li>You should land in the portal dashboard.</li>
             </ol>
           </Card>
@@ -145,10 +154,15 @@ function AccessTestPage() {
               <h2 className="font-display text-2xl mt-2">Non-member alias</h2>
             </div>
             <EmailCopy value={result.blockedEmail} />
+            <Button asChild variant="outline" className="w-fit">
+              <a href={result.blockedActionLink}>
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open blocked login link
+              </a>
+            </Button>
             <ol className="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
               <li>Sign out again.</li>
-              <li>Go to the login page and enter this email.</li>
-              <li>Open the Supabase email in Gmail and confirm the link.</li>
+              <li>Open the blocked login link above.</li>
               <li>You should see Membership required instead of the dashboard.</li>
             </ol>
           </Card>
