@@ -1,15 +1,25 @@
 import { Link } from "@tanstack/react-router";
-import { Hammer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+function ContractorCircleMark() {
+  return (
+    <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-md bg-foreground">
+      <img
+        src="/favicon-32x32.png"
+        alt=""
+        className="h-full w-full object-cover"
+        aria-hidden="true"
+      />
+    </span>
+  );
+}
 
 export function MarketingHeader() {
   return (
     <header className="border-b border-hairline">
       <div className="container-prose flex items-center justify-between py-5">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background">
-            <Hammer className="h-4 w-4" />
-          </span>
+          <ContractorCircleMark />
           <span className="font-display text-xl tracking-tight">
             ALP<span className="text-amber">.</span>
           </span>
@@ -54,9 +64,7 @@ export function MarketingFooter() {
       <div className="container-prose py-12 grid gap-10 md:grid-cols-4">
         <div>
           <Link to="/" className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-foreground text-background">
-              <Hammer className="h-4 w-4" />
-            </span>
+            <ContractorCircleMark />
             <span className="font-display text-xl">
               ALP<span className="text-amber">.</span>
             </span>
