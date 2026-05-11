@@ -49,7 +49,7 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data }) => {
-    const stripe = createStripeClient();
+    const stripe = createStripeClient("live");
     const stripePrice = await stripe.prices.retrieve(data.priceId);
     if (!stripePrice.active) throw new Error("Price is not active");
     const isRecurring = stripePrice.type === "recurring";
@@ -90,7 +90,7 @@ export const createPortalSession = createServerFn({ method: "POST" })
       .maybeSingle();
     if (subError || !sub?.stripe_customer_id) throw new Error("No subscription found");
 
-    const stripe = createStripeClient();
+    const stripe = createStripeClient("live");
     const portal = await stripe.billingPortal.sessions.create({
       customer: sub.stripe_customer_id,
       ...(data.returnUrl && { return_url: data.returnUrl }),
