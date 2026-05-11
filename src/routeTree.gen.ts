@@ -29,6 +29,7 @@ import { Route as AuthenticatedPortalTemplatesRouteImport } from './routes/_auth
 import { Route as AuthenticatedPortalTakeoffRouteImport } from './routes/_authenticated/portal/takeoff'
 import { Route as AuthenticatedPortalSchedulerRouteImport } from './routes/_authenticated/portal/scheduler'
 import { Route as AuthenticatedPortalReplaysRouteImport } from './routes/_authenticated/portal/replays'
+import { Route as AuthenticatedPortalLaborLibraryRouteImport } from './routes/_authenticated/portal/labor-library'
 import { Route as AuthenticatedPortalCostLibraryRouteImport } from './routes/_authenticated/portal/cost-library'
 import { Route as AuthenticatedPortalConstructlineRouteImport } from './routes/_authenticated/portal/constructline'
 import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal/admin'
@@ -141,6 +142,12 @@ const AuthenticatedPortalReplaysRoute =
     path: '/portal/replays',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalLaborLibraryRoute =
+  AuthenticatedPortalLaborLibraryRouteImport.update({
+    id: '/portal/labor-library',
+    path: '/portal/labor-library',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedPortalCostLibraryRoute =
   AuthenticatedPortalCostLibraryRouteImport.update({
     id: '/portal/cost-library',
@@ -203,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
   '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
@@ -230,6 +238,7 @@ export interface FileRoutesByTo {
   '/portal/account': typeof AuthenticatedPortalAccountRoute
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
   '/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
@@ -260,6 +269,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/_authenticated/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/_authenticated/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/_authenticated/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/_authenticated/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/_authenticated/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
   '/_authenticated/portal/takeoff': typeof AuthenticatedPortalTakeoffRoute
@@ -290,6 +300,7 @@ export interface FileRouteTypes {
     | '/portal/admin'
     | '/portal/constructline'
     | '/portal/cost-library'
+    | '/portal/labor-library'
     | '/portal/replays'
     | '/portal/scheduler'
     | '/portal/takeoff'
@@ -317,6 +328,7 @@ export interface FileRouteTypes {
     | '/portal/account'
     | '/portal/constructline'
     | '/portal/cost-library'
+    | '/portal/labor-library'
     | '/portal/replays'
     | '/portal/scheduler'
     | '/portal/takeoff'
@@ -346,6 +358,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin'
     | '/_authenticated/portal/constructline'
     | '/_authenticated/portal/cost-library'
+    | '/_authenticated/portal/labor-library'
     | '/_authenticated/portal/replays'
     | '/_authenticated/portal/scheduler'
     | '/_authenticated/portal/takeoff'
@@ -513,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalReplaysRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/labor-library': {
+      id: '/_authenticated/portal/labor-library'
+      path: '/portal/labor-library'
+      fullPath: '/portal/labor-library'
+      preLoaderRoute: typeof AuthenticatedPortalLaborLibraryRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/portal/cost-library': {
       id: '/_authenticated/portal/cost-library'
       path: '/portal/cost-library'
@@ -587,6 +607,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRouteWithChildren
   AuthenticatedPortalConstructlineRoute: typeof AuthenticatedPortalConstructlineRoute
   AuthenticatedPortalCostLibraryRoute: typeof AuthenticatedPortalCostLibraryRoute
+  AuthenticatedPortalLaborLibraryRoute: typeof AuthenticatedPortalLaborLibraryRoute
   AuthenticatedPortalReplaysRoute: typeof AuthenticatedPortalReplaysRoute
   AuthenticatedPortalSchedulerRoute: typeof AuthenticatedPortalSchedulerRoute
   AuthenticatedPortalTakeoffRoute: typeof AuthenticatedPortalTakeoffRoute
@@ -599,6 +620,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRouteWithChildren,
   AuthenticatedPortalConstructlineRoute: AuthenticatedPortalConstructlineRoute,
   AuthenticatedPortalCostLibraryRoute: AuthenticatedPortalCostLibraryRoute,
+  AuthenticatedPortalLaborLibraryRoute: AuthenticatedPortalLaborLibraryRoute,
   AuthenticatedPortalReplaysRoute: AuthenticatedPortalReplaysRoute,
   AuthenticatedPortalSchedulerRoute: AuthenticatedPortalSchedulerRoute,
   AuthenticatedPortalTakeoffRoute: AuthenticatedPortalTakeoffRoute,
