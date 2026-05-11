@@ -93,7 +93,10 @@ export function PortalSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Tools</SidebarGroupLabel>
+          <SidebarGroupLabel className="flex items-center gap-1.5">
+            ConstructLine
+            {!collapsed && <ExternalLink className="h-3 w-3 opacity-60" />}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(tools)}</SidebarMenu>
           </SidebarGroupContent>
