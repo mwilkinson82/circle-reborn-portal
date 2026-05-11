@@ -20,14 +20,12 @@ export function ConstructLineLinkOut({ link, showRelated = true }: Props) {
           Active ConstructLine workspace
         </div>
         <div className="space-y-3">
-          <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-            {link.title}
-          </h1>
+          <h1 className="font-display text-3xl md:text-4xl tracking-tight">{link.title}</h1>
           <p className="text-sm text-muted-foreground max-w-prose">
-            {link.blurb} You'll be sent to the live production ConstructLine app where your
-            existing projects, data, and saved work continue to live. We're auditing and porting
-            this module into the new portal — until that's complete and validated, the link below
-            keeps you on the tool you already use.
+            {link.blurb} You'll be sent to the live production ConstructLine app where your existing
+            projects, data, and saved work continue to live. We're auditing and porting this module
+            into the new portal — until that's complete and validated, the link below keeps you on
+            the tool you already use.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
