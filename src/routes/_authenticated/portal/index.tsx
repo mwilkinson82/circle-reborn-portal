@@ -216,15 +216,20 @@ function DashboardPage() {
       <section className="space-y-4">
         <h2 className="font-display text-2xl">Jump back in</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-px bg-hairline border border-hairline">
-          <QuickLink to="/portal/scheduler" icon={Calendar} label="Scheduler" hint="CPM + Gantt" />
-          <QuickLink to="/portal/takeoff" icon={Ruler} label="Takeoffs" hint="AI-assisted" />
+          <QuickLink
+            to="/portal/constructline"
+            icon={Hammer}
+            label="ConstructLine"
+            hint="Open the live workspace"
+          />
+          <QuickLink to="/portal/takeoff" icon={Ruler} label="Basis" hint="Takeoffs" />
+          <QuickLink to="/portal/scheduler" icon={Calendar} label="Baseline" hint="Scheduler" />
           <QuickLink
             to="/portal/cost-library"
             icon={BookOpen}
             label="Cost Library"
             hint="Regional unit costs"
           />
-          <QuickLink to="/portal/replays" icon={Hammer} label="Replays" hint="Live call archive" />
         </div>
       </section>
     </div>
