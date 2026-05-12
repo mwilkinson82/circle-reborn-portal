@@ -37,7 +37,7 @@ function AccountPage() {
         <p className="font-mono text-xs uppercase tracking-wider text-amber">Member</p>
         <h1 className="font-display text-4xl mt-2">Account</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          Profile and billing basics while the full account room is being rebuilt.
+          Profile and billing basics for your Contractor Circle membership.
         </p>
       </div>
 

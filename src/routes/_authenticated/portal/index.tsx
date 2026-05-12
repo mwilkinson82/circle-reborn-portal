@@ -41,7 +41,7 @@ const aosHomeBaseTool = {
   label: "AOS",
   eyebrow: "Home base",
   value: "Build the company",
-  hint: "Where live pressure becomes structure",
+  hint: "Where pressure becomes structure",
 };
 
 const fieldSupportTools = [
@@ -204,7 +204,7 @@ function DashboardPage() {
         <SectionHeader
           eyebrow="Support tools"
           title="Use field tools when the work calls for them"
-          body="AOS is the home base. ConstructLine, Basis, Baseline, and the pricing libraries support live pursuits, estimates, schedules, and cost questions when that is the problem in front of you."
+          body="Use the portal to get ready. Use AOS to run the company. ConstructLine, Basis, Baseline, and the pricing libraries stay secondary for pursuits, estimates, schedules, and cost questions."
         />
         <div className="surface-tool-row grid gap-3 rounded-xl p-3 lg:grid-cols-[minmax(16rem,0.82fr)_minmax(0,2fr)]">
           <WorkLaneCard {...aosHomeBaseTool} isHomeBase />
@@ -255,8 +255,8 @@ function CircleHomeHero({ firstName }: { firstName: string }) {
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-relaxed text-foreground/68 sm:text-base">
           Contractor Circle gives you live guidance, peer pressure, and AOS to turn stuck decisions
-          into structure. Bring the problems here, pressure-test them with Marshall, and build the
-          company machine one week at a time.
+          into structure. Prepare the issue here, pressure-test it with Marshall, then carry the
+          output into AOS.
         </p>
       </div>
 
@@ -316,7 +316,7 @@ function NextMoveCard() {
           <p className="eyebrow text-amber">Your next move</p>
           <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
-            Bring one stuck decision into the operating system before the next live call.
+            Contractor Circle brings the pressure. AOS turns it into structure.
           </p>
           <div className="mt-6 grid gap-2 sm:max-w-52">
             <Button

@@ -82,7 +82,8 @@ function ReplaysPage() {
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/68">
             Archived calls, bid reviews, operating-system decisions, and practical field-to-office
-            judgment. Use this room when the next move needs precedent, not more noise.
+            judgment. These are not videos; they are archived judgment sessions for the next time a
+            member needs precedent, not more noise.
           </p>
           <div className="mt-7 grid gap-2 text-xs text-background/62 sm:grid-cols-3">
             <LibraryCue label="Watch" body="Find the judgment" />
@@ -211,6 +212,7 @@ function FeaturedReplay({ replay }: { replay: ReplayItem }) {
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
               {replay.description ?? "Archived call judgment ready for review."}
             </p>
+            <ReplayBestFor replay={replay} />
             <ReplayMeta replay={replay} />
           </div>
           <ReplayAction replay={replay} className="mt-6 w-full justify-between" />
@@ -238,6 +240,7 @@ function ReplayCard({ replay }: { replay: ReplayItem }) {
           <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             {replay.description ?? "Replay notes are being prepared for this session."}
           </p>
+          <ReplayBestFor replay={replay} />
           <ReplayMeta replay={replay} />
         </div>
         <div className="flex items-center bg-background p-5">
@@ -301,6 +304,18 @@ function ReplayMeta({ replay }: { replay: ReplayItem }) {
         </span>
       ) : null}
     </div>
+  );
+}
+
+function ReplayBestFor({ replay }: { replay: ReplayItem }) {
+  const topics = replay.tags?.slice(0, 2).join(" and ");
+  return (
+    <p className="mt-4 border-l-2 border-amber/40 pl-3 text-xs leading-relaxed text-muted-foreground">
+      <span className="font-semibold text-foreground">Best for:</span>{" "}
+      {topics
+        ? `Members working through ${topics.toLowerCase()} decisions.`
+        : "Members looking for precedent before they bring a live issue into the room."}
+    </p>
   );
 }
 

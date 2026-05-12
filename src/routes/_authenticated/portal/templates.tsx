@@ -132,9 +132,9 @@ function TemplatesPage() {
             Pull the right asset into the operating rhythm.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/65">
-            This is the portal-side stack for meeting prep, AOS handoff, and field support. Start
-            with the prescribed path, then search the full library when a specific issue needs a
-            form, checklist, script, or SOP.
+            This is the portal-side stack for meeting prep, AOS follow-through, and field support.
+            Start with the prescribed path, then search the full library when the operating problem
+            in front of you needs a form, checklist, script, or SOP.
           </p>
           <div className="mt-7 grid gap-2 text-xs text-background/64 sm:grid-cols-3">
             <LibraryCue label="1" body="Prepare the issue" />
@@ -298,8 +298,8 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
           Start with the assets that create operating traction
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Use these first, in order, before wandering the full library. They are the bridge between
-          call pressure and the dedicated AOS workspace.
+          Use these first, in order, before searching the full library. They turn call pressure into
+          a practical next asset, then point the output back toward AOS.
         </p>
       </div>
 
@@ -378,7 +378,7 @@ function TemplateAction({
   if (!downloadUrl) {
     return (
       <Button type="button" variant="outline" disabled>
-        Coming soon
+        Coming next
       </Button>
     );
   }

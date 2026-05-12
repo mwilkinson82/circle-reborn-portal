@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowUpRight,
   BadgeDollarSign,
@@ -87,6 +87,7 @@ type DraftField =
 type CallPrepDraft = Record<DraftField, string>;
 
 const DRAFT_STORAGE_KEY = "contractor-circle-call-prep-draft";
+const LOCAL_HISTORY_STORAGE_KEY = "contractor-circle-call-prep-history";
 
 const outcomeOptions: Array<{
   id: PacketOutputType;
@@ -128,7 +129,7 @@ const statusLabels: Record<CallPrepPacket["status"], string> = {
   draft: "Draft",
   ready: "Ready",
   discussed: "Discussed",
-  converted: "Converted",
+  converted: "Carried into AOS",
 };
 
 function CallPrepPage() {
@@ -136,7 +137,7 @@ function CallPrepPage() {
   const queryClient = useQueryClient();
   const savePacket = useServerFn(createCallPrepPacket);
   const fetchPackets = useServerFn(getCallPrepPackets);
-  const { data: packets = [] } = useQuery({
+  const { data: serverPackets = [], isError: packetsUnavailable } = useQuery({
     queryKey: ["call-prep-packets", user?.id],
     queryFn: () => fetchPackets(),
     enabled: !!user && !loading,
@@ -154,8 +155,10 @@ function CallPrepPage() {
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [hydratedDraft, setHydratedDraft] = useState(false);
+  const [localPackets, setLocalPackets] = useState<CallPrepPacket[]>([]);
 
   const category = categories.find((item) => item.id === categoryId) ?? categories[0];
   const completedCount = [issue, tried, avoiding, consequence, win].filter(
@@ -164,6 +167,13 @@ function CallPrepPage() {
   const selectedOutcome =
     outcomeOptions.find((outcome) => outcome.id === expectedOutput) ?? outcomeOptions[0];
   const canSave = issue.trim().length > 0 && !saving;
+  const packets = useMemo(
+    () =>
+      [...localPackets, ...serverPackets].sort(
+        (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime(),
+      ),
+    [localPackets, serverPackets],
+  );
 
   const issuePacket = [
     "Contractor Circle Call Prep",
@@ -221,6 +231,18 @@ function CallPrepPage() {
   }, []);
 
   useEffect(() => {
+    const savedHistory = window.localStorage.getItem(LOCAL_HISTORY_STORAGE_KEY);
+    if (!savedHistory) return;
+
+    try {
+      const parsed = JSON.parse(savedHistory) as CallPrepPacket[];
+      setLocalPackets(Array.isArray(parsed) ? parsed : []);
+    } catch {
+      setLocalPackets([]);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!hydratedDraft) return;
 
     const draft: CallPrepDraft = {
@@ -264,6 +286,7 @@ function CallPrepPage() {
     if (!canSave) return;
     setSaving(true);
     setSaveError(null);
+    setSaveNotice(null);
     setSaved(false);
 
     try {
@@ -284,8 +307,27 @@ function CallPrepPage() {
       await queryClient.invalidateQueries({ queryKey: ["call-prep-packets"] });
       setSaved(true);
       window.setTimeout(() => setSaved(false), 2200);
-    } catch (error) {
-      setSaveError(error instanceof Error ? error.message : "Could not save this issue packet.");
+    } catch {
+      const fallbackPacket = buildLocalPacket({
+        categoryId,
+        issue,
+        tried,
+        avoiding,
+        consequence,
+        win,
+        expectedOutput,
+        outputSummary,
+        owner,
+        dueDate,
+      });
+      const nextPackets = [fallbackPacket, ...localPackets].slice(0, 30);
+      setLocalPackets(nextPackets);
+      window.localStorage.setItem(LOCAL_HISTORY_STORAGE_KEY, JSON.stringify(nextPackets));
+      setSaved(true);
+      setSaveNotice(
+        "Saved in this browser for launch readiness. Cloud history was unavailable, so this is not permanent sync.",
+      );
+      window.setTimeout(() => setSaved(false), 2200);
     } finally {
       setSaving(false);
     }
@@ -303,8 +345,9 @@ function CallPrepPage() {
             What needs pressure before the next call?
           </h1>
           <p className="relative z-10 mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Bring one stuck decision into the open. A good Contractor Circle issue should turn into
-            a decision, to-do, SOP gap, scorecard metric, or AOS issue.
+            Build the issue packet before the call. Copy it into the live room or Discord. After the
+            call, capture the decision, to-do, SOP gap, scorecard metric, or AOS issue and carry it
+            into the operating system.
           </p>
 
           <div className="relative z-10 mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -366,6 +409,8 @@ function CallPrepPage() {
           </p>
         </Card>
       </section>
+
+      <HowThisWorks />
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] xl:gap-7">
         <Card className="surface-operating p-5 sm:p-6">
@@ -469,7 +514,7 @@ function CallPrepPage() {
               <p className="eyebrow text-muted-foreground">Issue Packet</p>
               <h2 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Built for AOS or the live room.
+                Portable for the live room, Discord, and AOS follow-through.
               </p>
             </div>
           </div>
@@ -524,16 +569,102 @@ function CallPrepPage() {
             {saveError ? (
               <p className="text-xs leading-relaxed text-destructive">{saveError}</p>
             ) : null}
+            {saveNotice ? (
+              <p className="text-xs leading-relaxed text-muted-foreground">{saveNotice}</p>
+            ) : null}
           </div>
         </Card>
       </section>
 
-      <CallPrepHistory packets={packets} />
+      <CallPrepHistory
+        packets={packets}
+        hasLocalFallback={packetsUnavailable || !!localPackets.length}
+      />
     </div>
   );
 }
 
-function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
+function buildLocalPacket(draft: {
+  categoryId: CategoryId;
+  issue: string;
+  tried: string;
+  avoiding: string;
+  consequence: string;
+  win: string;
+  expectedOutput: PacketOutputType;
+  outputSummary: string;
+  owner: string;
+  dueDate: string;
+}): CallPrepPacket {
+  const now = new Date().toISOString();
+  const answeredCount = [
+    draft.issue,
+    draft.tried,
+    draft.avoiding,
+    draft.consequence,
+    draft.win,
+  ].filter((value) => value.trim().length > 0).length;
+  const status: CallPrepPacket["status"] = draft.outputSummary
+    ? "converted"
+    : answeredCount >= 5
+      ? "ready"
+      : "draft";
+
+  return {
+    id: `local-${Date.now()}`,
+    user_id: "local-browser",
+    category: draft.categoryId,
+    issue: draft.issue.trim(),
+    tried: draft.tried.trim() || null,
+    avoiding: draft.avoiding.trim() || null,
+    consequence: draft.consequence.trim() || null,
+    win: draft.win.trim() || null,
+    expected_output: draft.expectedOutput,
+    output_summary: draft.outputSummary.trim() || null,
+    owner: draft.owner.trim() || null,
+    due_date: draft.dueDate.trim() || null,
+    status,
+    created_at: now,
+    updated_at: now,
+  };
+}
+
+function HowThisWorks() {
+  const steps = [
+    {
+      title: "Prepare the issue",
+      body: "Answer the pressure questions before the call.",
+    },
+    {
+      title: "Pressure-test it",
+      body: "Bring the packet into the live room or Discord.",
+    },
+    {
+      title: "Carry the output into AOS",
+      body: "Turn it into a decision, to-do, SOP gap, scorecard metric, or issue.",
+    },
+  ];
+
+  return (
+    <section className="grid gap-3 md:grid-cols-3">
+      {steps.map((step, index) => (
+        <div key={step.title} className="surface-library rounded-lg p-5">
+          <p className="eyebrow text-amber">{String(index + 1).padStart(2, "0")}</p>
+          <h2 className="mt-3 font-display text-xl leading-tight">{step.title}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function CallPrepHistory({
+  packets,
+  hasLocalFallback,
+}: {
+  packets: CallPrepPacket[];
+  hasLocalFallback: boolean;
+}) {
   return (
     <section className="space-y-4">
       <div className="max-w-2xl">
@@ -544,6 +675,12 @@ function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
           Copy them into the live room now; open AOS and place the final decision where the company
           will keep operating from it.
         </p>
+        {hasLocalFallback ? (
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+            Browser-saved packets are a launch fallback only and are not labeled as permanent cloud
+            sync.
+          </p>
+        ) : null}
       </div>
 
       {packets.length ? (

@@ -89,22 +89,34 @@ const orchestrationTools = [
   {
     label: "Owner dependency packet",
     status: "Seeded",
-    body: "Find where the business still depends on the owner, then point the member to the first system to build.",
+    what: "A short diagnostic for spotting where every decision still runs through the owner.",
+    why: "Owner drag is usually the first place growth stalls and accountability stays vague.",
+    output: "Creates a call-ready owner-dependency issue packet.",
+    cta: "Preview",
   },
   {
     label: "Scorecard metric prompt",
     status: "Next",
-    body: "Help members pick the weekly numbers that matter before those metrics move into AOS.",
+    what: "A guided prompt for choosing the weekly number that should make the issue visible.",
+    why: "If the number is not watched weekly, the same problem will keep reappearing as a story.",
+    output: "Creates a candidate AOS scorecard metric.",
+    cta: "Coming next",
   },
   {
     label: "SOP gap prompt",
     status: "Next",
-    body: "Turn repeated friction into the missing process list: billing, handoff, closeout, hiring, reporting, and more.",
+    what: "A helper for turning repeated friction into the missing process that needs written.",
+    why: "Most recurring issues are not solved by advice; they need a way of working.",
+    output: "Creates a candidate SOP gap for AOS follow-through.",
+    cta: "Coming next",
   },
   {
     label: "Decision packet",
-    status: "Next",
-    body: "Capture the decisions that happen on calls so company memory survives the week.",
+    status: "Coming into the system",
+    what: "A lightweight capture format for decisions made during calls or Discord pressure loops.",
+    why: "A useful call should leave company memory, not just a good conversation.",
+    output: "Creates a decision summary to carry into AOS.",
+    cta: "Coming next",
   },
 ];
 
@@ -296,9 +308,25 @@ function AlpOsPage() {
           <div className="grid gap-3">
             {orchestrationTools.map((tool) => (
               <Card key={tool.label} className="surface-library p-5">
-                <Badge variant="outline">{tool.status}</Badge>
+                <div className="flex items-start justify-between gap-3">
+                  <Badge variant={tool.status === "Seeded" ? "default" : "outline"}>
+                    {tool.status}
+                  </Badge>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={tool.cta !== "Preview"}
+                  >
+                    {tool.cta}
+                  </Button>
+                </div>
                 <h3 className="mt-4 font-display text-xl leading-tight">{tool.label}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{tool.body}</p>
+                <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground">
+                  <ToolDetail label="What it is" value={tool.what} />
+                  <ToolDetail label="Why it matters" value={tool.why} />
+                  <ToolDetail label="Output" value={tool.output} />
+                </div>
               </Card>
             ))}
           </div>
@@ -337,7 +365,7 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
 
       <div className="grid gap-3 md:grid-cols-3">
         <MetricTile label="Ready packets" value={String(ready)} />
-        <MetricTile label="Converted outputs" value={String(converted)} />
+        <MetricTile label="Carried into AOS" value={String(converted)} />
         <MetricTile
           label="Primary output"
           value={resolvePrimaryOutcome(counts)}
@@ -367,7 +395,7 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
               <h3 className="font-display text-2xl">No issue packets saved yet</h3>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
                 Start with one stuck decision before the next call. The first saved packet becomes
-                the bridge between the live room and the external AOS app.
+                the portable handoff between the live room and the external AOS app.
               </p>
               <Button asChild className="mt-5">
                 <Link to="/portal/call-prep">Build first packet</Link>
@@ -474,7 +502,7 @@ function formatStatus(status: CallPrepPacket["status"]) {
     draft: "Draft",
     ready: "Ready",
     discussed: "Discussed",
-    converted: "Converted",
+    converted: "Carried into AOS",
   }[status];
 }
 
@@ -533,7 +561,7 @@ function AssetAction({ downloadUrl, isFirst }: { downloadUrl: string | null; isF
   if (!downloadUrl) {
     return (
       <Button type="button" variant="outline" disabled>
-        Coming soon
+        Coming next
       </Button>
     );
   }
@@ -545,5 +573,14 @@ function AssetAction({ downloadUrl, isFirst }: { downloadUrl: string | null; isF
         {isFirst ? "Open Playbook" : "Open"}
       </a>
     </Button>
+  );
+}
+
+function ToolDetail({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="eyebrow text-muted-foreground">{label}</p>
+      <p className="mt-1">{value}</p>
+    </div>
   );
 }

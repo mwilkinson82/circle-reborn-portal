@@ -6,7 +6,10 @@
 export type ConstructLineLink = {
   key: string;
   title: string;
+  promise: string;
   blurb: string;
+  bestUsedFor: string;
+  supportNote: string;
   url: string;
 };
 
@@ -14,31 +17,53 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
   {
     key: "constructline",
     title: "ConstructLine Hub",
-    blurb: "Entry point for the full ConstructLine workspace.",
+    promise: "Run the pursuit.",
+    blurb:
+      "Entry point for live pursuits, bid continuity, project records, and connected field tools.",
+    bestUsedFor: "Live pursuits, bid continuity, and project records.",
+    supportNote:
+      "Use this when the work needs field execution support, not operating-system setup.",
     url: "https://alpcontractorcircle.com/portal/constructline",
   },
   {
     key: "takeoff",
     title: "Basis (Takeoffs)",
-    blurb: "Project list, line items, quantities, and bid basis.",
+    promise: "Quantify the work.",
+    blurb:
+      "Use when an estimate, scope, quantity, or line-item review is the problem in front of you.",
+    bestUsedFor: "Scopes, quantities, line items, and estimate review.",
+    supportNote:
+      "Bring unclear estimate decisions back into Prepare for Call when they need judgment.",
     url: "https://alpcontractorcircle.com/portal/takeoff",
   },
   {
     key: "scheduler",
     title: "Baseline (Scheduler)",
-    blurb: "CPM schedules, Gantt, and baseline comparison.",
+    promise: "Plan the work.",
+    blurb:
+      "Use when durations, sequencing, milestones, Gantt logic, or CPM schedule clarity is needed.",
+    bestUsedFor: "Durations, sequencing, milestones, and schedule logic.",
+    supportNote: "Use Baseline to clarify the plan; use AOS to run the company rhythm around it.",
     url: "https://alpcontractorcircle.com/portal/scheduler",
   },
   {
     key: "cost-library",
     title: "Cost Library",
-    blurb: "Regional priced item catalog by CSI division.",
+    promise: "Price with memory.",
+    blurb: "Use when pricing, assemblies, item costs, or historical trade memory are needed.",
+    bestUsedFor: "Assemblies, item costs, price references, and historical cost memory.",
+    supportNote: "Use pricing evidence here, then carry leadership decisions into the call or AOS.",
     url: "https://alpcontractorcircle.com/portal/cost-library",
   },
   {
     key: "labor-library",
     title: "Trade Rate Library",
-    blurb: "Crew rates, labor multipliers, and trade specialties.",
+    promise: "Know the labor.",
+    blurb:
+      "Use when crew rates, trade multipliers, labor assumptions, or regional rate checks are needed.",
+    bestUsedFor: "Crew rates, trade multipliers, labor assumptions, and regional rate checks.",
+    supportNote:
+      "Use rate clarity to support the bid; use Contractor Circle for the operating decision.",
     url: "https://alpcontractorcircle.com/portal/labor-library",
   },
 ];

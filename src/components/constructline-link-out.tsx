@@ -1,11 +1,4 @@
-import {
-  ArrowUpRight,
-  CheckCircle2,
-  ExternalLink,
-  Hammer,
-  Layers,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowUpRight, CheckCircle2, ExternalLink, Hammer, ShieldCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CONSTRUCTLINE_LINKS, type ConstructLineLink } from "@/lib/constructline-links";
@@ -32,9 +25,12 @@ export function ConstructLineLinkOut({ link, showRelated = true }: Props) {
             <h1 className="mt-8 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">
               {link.title}
             </h1>
+            <p className="mt-3 font-display text-2xl leading-tight text-background/92">
+              {link.promise}
+            </p>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/65">
-              {link.blurb} Your existing projects, data, and saved work remain in the current
-              production app while this module is rebuilt into the new Vercel portal.
+              {link.blurb} This is a secondary field tool linked from the member portal so the work
+              stays accessible when it is the problem in front of you.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Button asChild size="lg" className="gap-2 bg-background text-foreground">
@@ -49,34 +45,31 @@ export function ConstructLineLinkOut({ link, showRelated = true }: Props) {
         </div>
 
         <Card className="border-hairline p-6">
-          <h2 className="font-display text-xl">Continuity status</h2>
+          <h2 className="font-display text-xl">Workspace status</h2>
           <div className="mt-5 space-y-4">
-            <StatusRow icon={CheckCircle2} label="Member gate" value="Protected" />
-            <StatusRow icon={ShieldCheck} label="Data path" value="Current app" />
-            <StatusRow icon={Layers} label="Migration" value="Staged rebuild" />
+            <StatusRow icon={CheckCircle2} label="Access" value="Protected" />
+            <StatusRow icon={ShieldCheck} label="Workspace" value="Current production app" />
+            <StatusRow icon={ExternalLink} label="Portal status" value="Linked workspace" />
           </div>
           <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
-            This keeps members working while the new portal matures behind it.
+            Opens the current production workspace in a new tab. The portal does not replace this
+            tool; it helps you decide when to use it.
           </p>
         </Card>
       </section>
 
       <section className="grid gap-px border border-hairline bg-hairline md:grid-cols-3">
         <WorkflowCard
-          eyebrow="Step 1"
-          title="Open the live tool"
-          body="Use the workspace members already know while we validate the Vercel rebuild."
+          eyebrow="Use when"
+          title={link.bestUsedFor}
+          body="Field tools support the work in front of you. They do not replace AOS as the company home base."
         />
         <WorkflowCard
-          eyebrow="Step 2"
-          title="Keep project work moving"
-          body="Current bids, schedules, libraries, and saved records stay where they are."
+          eyebrow="Portal role"
+          title="Support layer"
+          body="Contractor Circle brings the pressure. AOS turns it into structure. These tools help when the pressure is tied to project execution."
         />
-        <WorkflowCard
-          eyebrow="Step 3"
-          title="Port with proof"
-          body="Each module moves only after the data model and contractor workflow hold up."
-        />
+        <WorkflowCard eyebrow="Support note" title="Bring decisions back" body={link.supportNote} />
       </section>
 
       {showRelated && (
@@ -122,7 +115,7 @@ function StatusRow({
   label,
   value,
 }: {
-  icon: typeof CheckCircle2;
+  icon: typeof CheckCircle2 | typeof ExternalLink | typeof ShieldCheck;
   label: string;
   value: string;
 }) {
