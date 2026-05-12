@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { DatabaseZap, ShieldCheck } from "lucide-react";
+import { DatabaseZap, ShieldCheck, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -68,9 +68,28 @@ function AdminPage() {
         <p className="font-mono text-xs uppercase tracking-wider text-amber">Admin</p>
         <h1 className="font-display text-4xl mt-2">Admin tools</h1>
         <p className="text-sm text-muted-foreground mt-2">
-          Run one-time maintenance actions for membership and billing data.
+          Run content, schedule, membership, and billing operations for Contractor Circle.
         </p>
       </div>
+
+      <Card className="p-6 border-hairline">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-md bg-amber-soft text-amber">
+              <Video className="h-6 w-6" />
+            </div>
+            <div>
+              <h2 className="font-display text-2xl">Content command center</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Add replay links, manage bootcamp dates, and review bootcamp questions.
+              </p>
+            </div>
+          </div>
+          <Button asChild>
+            <Link to="/portal/admin/content">Open content</Link>
+          </Button>
+        </div>
+      </Card>
 
       <Card className="p-6 border-hairline">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

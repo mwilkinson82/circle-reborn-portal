@@ -25,11 +25,13 @@ export const Route = createFileRoute("/join")({
 });
 
 const INCLUDED = [
-  "Weekly live operating calls with Marshall",
+  "Biweekly Contractor Circle group guidance call",
+  "Monthly bootcamp/session with frameworks, tools, templates, and implementation guidance",
   "Full replay archive — searchable, tagged",
   "Working template library",
+  "AOS access for operating-system implementation",
   "ConstructLine beta access",
-  "Private member directory + Discord",
+  "Private member community for group-session support",
 ];
 
 function JoinPage() {
@@ -86,8 +88,9 @@ function JoinPage() {
             </ul>
 
             <p className="mt-10 text-xs text-muted-foreground leading-relaxed">
-              First-call money back, no questions. By continuing you agree to be billed monthly
-              until you cancel from your account page.
+              First-session money back. Contractor Circle is a group membership, not unlimited
+              private consulting access. By continuing you agree to be billed monthly until you
+              cancel from your account page.
             </p>
           </aside>
 

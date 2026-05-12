@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/portal/call-prep")({
-  head: () => ({ meta: [{ title: "Prepare for Call — Contractor Circle" }] }),
+  head: () => ({ meta: [{ title: "Bring One Issue — Contractor Circle" }] }),
   component: CallPrepPage,
 });
 
@@ -47,7 +47,7 @@ const categories = [
     id: "people",
     label: "People",
     icon: Users,
-    prompt: "Seat fit, accountability, hiring, performance, delegation, or right-person questions.",
+    prompt: "Seat fit, accountability, hiring, performance, delegation, or right-person decisions.",
   },
   {
     id: "cash",
@@ -97,27 +97,27 @@ const outcomeOptions: Array<{
   {
     id: "decision",
     label: "Decision",
-    helper: "The call should force a clear leadership choice.",
+    helper: "The session should sharpen a clear leadership choice.",
   },
   {
     id: "todo",
     label: "To-do",
-    helper: "The call should create a named next action.",
+    helper: "The output should create a named next action.",
   },
   {
     id: "sop_gap",
     label: "SOP gap",
-    helper: "The call should expose a process that needs documented.",
+    helper: "The output should expose a process that needs documented.",
   },
   {
     id: "scorecard_metric",
     label: "Scorecard metric",
-    helper: "The call should identify a number to track weekly.",
+    helper: "The output should identify a number to track weekly.",
   },
   {
     id: "aos_issue",
     label: "AOS issue",
-    helper: "This should move into the AOS app's issues list.",
+    helper: "This may need to become an issue in the AOS app.",
   },
 ];
 
@@ -176,7 +176,7 @@ function CallPrepPage() {
   );
 
   const issuePacket = [
-    "Contractor Circle Call Prep",
+    "Contractor Circle Pressure Packet",
     `Category: ${category.label}`,
     "",
     "1. What needs pressure?",
@@ -340,14 +340,14 @@ function CallPrepPage() {
           <div className="blueprint-fade pointer-events-none absolute inset-0 opacity-50" />
           <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-amber/10 blur-3xl" />
 
-          <p className="eyebrow relative z-10 text-amber">Call prep</p>
+          <p className="eyebrow relative z-10 text-amber">Session prep</p>
           <h1 className="relative z-10 mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
-            What needs pressure before the next call?
+            Bring one issue before the next session.
           </h1>
           <p className="relative z-10 mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Build the issue packet before the call. Copy it into the live room or Discord. After the
-            call, capture the decision, to-do, SOP gap, scorecard metric, or AOS issue and carry it
-            into the operating system.
+            Use this to prepare one issue before the next Contractor Circle call or bootcamp. Not
+            every issue will be addressed live, but the process will help you turn business friction
+            into operating-system work.
           </p>
 
           <div className="relative z-10 mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -384,7 +384,7 @@ function CallPrepPage() {
         </div>
 
         <Card className="surface-command command-panel p-6">
-          <p className="eyebrow relative z-10 text-amber">Packet status</p>
+          <p className="eyebrow relative z-10 text-amber">Pressure packet</p>
           <h2 className="mt-2 font-display text-2xl leading-tight">{category.label}</h2>
           <p className="mt-3 text-sm leading-relaxed text-background/68">{category.prompt}</p>
 
@@ -392,7 +392,7 @@ function CallPrepPage() {
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium text-background/82">Prep strength</span>
               <Badge variant={completedCount >= 4 ? "default" : "outline"}>
-                {completedCount}/5 answered
+                {completedCount}/5 prepared
               </Badge>
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-background/12">
@@ -404,8 +404,8 @@ function CallPrepPage() {
           </div>
 
           <p className="mt-7 border-t border-background/10 pt-4 text-xs leading-relaxed text-background/58">
-            Save the packet here, copy it into the live room, then open AOS and carry the output
-            into the operating system.
+            Save the packet here for your own preparation. If the pattern comes up in a group
+            session, use it to participate clearly, then carry the output into AOS.
           </p>
         </Card>
       </section>
@@ -419,7 +419,7 @@ function CallPrepPage() {
               <MessageSquareText className="h-5 w-5" />
             </div>
             <div>
-              <p className="eyebrow text-amber">Build the issue</p>
+              <p className="eyebrow text-amber">Bring One Issue</p>
               <h2 className="mt-2 font-display text-2xl leading-tight">
                 Make the problem specific enough to solve
               </h2>
@@ -497,10 +497,10 @@ function CallPrepPage() {
             <PrepQuestion
               step="After"
               id="outcomeSummary"
-              label="Captured call output"
+              label="Captured session output"
               value={outputSummary}
               onChange={setOutputSummary}
-              placeholder="After the call: write the decision, to-do, SOP gap, or scorecard metric that came out of the conversation."
+              placeholder="After the session: write the decision, to-do, SOP gap, scorecard metric, issue, or implementation step you are carrying into AOS."
             />
           </div>
         </Card>
@@ -511,10 +511,10 @@ function CallPrepPage() {
               <ClipboardCheck className="h-5 w-5 text-amber" />
             </div>
             <div>
-              <p className="eyebrow text-muted-foreground">Issue Packet</p>
+              <p className="eyebrow text-muted-foreground">Pressure Packet</p>
               <h2 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                Portable for the live room, Discord, and AOS follow-through.
+                Portable for your session prep and AOS follow-through.
               </p>
             </div>
           </div>
@@ -550,7 +550,7 @@ function CallPrepPage() {
                 </>
               ) : (
                 <>
-                  Save issue packet <Save className="h-4 w-4" />
+                  Save pressure packet <Save className="h-4 w-4" />
                 </>
               )}
             </Button>
@@ -563,7 +563,7 @@ function CallPrepPage() {
               Future: Send packet to AOS <ArrowUpRight className="h-4 w-4" />
             </Button>
             <Button variant="outline" className="w-full justify-between" onClick={copyIssuePacket}>
-              {copied ? "Copied" : "Copy issue packet"}
+              {copied ? "Copied" : "Copy pressure packet"}
               {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
             {saveError ? (
@@ -633,15 +633,15 @@ function HowThisWorks() {
   const steps = [
     {
       title: "Prepare the issue",
-      body: "Answer the pressure questions before the call.",
+      body: "Answer the pressure questions before the next group call or bootcamp.",
     },
     {
-      title: "Pressure-test it",
-      body: "Bring the packet into the live room or Discord.",
+      title: "Use the session",
+      body: "Use the group environment to pressure-test the pattern when it is relevant.",
     },
     {
       title: "Carry the output into AOS",
-      body: "Turn it into a decision, to-do, SOP gap, scorecard metric, or issue.",
+      body: "Turn the output into a decision, to-do, SOP gap, scorecard metric, issue, or implementation step.",
     },
   ];
 
@@ -668,12 +668,12 @@ function CallPrepHistory({
   return (
     <section className="space-y-4">
       <div className="max-w-2xl">
-        <p className="eyebrow text-amber">Call prep history</p>
-        <h2 className="mt-2 font-display text-2xl leading-tight">Make the pressure cumulative</h2>
+        <p className="eyebrow text-amber">Pressure packet history</p>
+        <h2 className="mt-2 font-display text-2xl leading-tight">Make the prep cumulative</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Saved packets stay in Contractor Circle so the pressure does not disappear after the call.
-          Copy them into the live room now; open AOS and place the final decision where the company
-          will keep operating from it.
+          Saved packets stay in Contractor Circle so your thinking does not disappear after the
+          session. Not every issue will be addressed live, but every packet should help you work the
+          system: decision, to-do, SOP gap, scorecard metric, AOS issue, or implementation step.
         </p>
         {hasLocalFallback ? (
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
@@ -709,8 +709,8 @@ function CallPrepHistory({
         <Card className="surface-operating operating-brief p-6">
           <h3 className="font-display text-2xl">No saved packets yet</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Saved packets stay in Contractor Circle so the pressure does not disappear after the
-            call.
+            Saved packets stay in Contractor Circle so your session prep and implementation work can
+            build over time.
           </p>
         </Card>
       )}
@@ -797,7 +797,7 @@ function IssuePacketBrief({
   return (
     <div>
       <div className="border-b border-hairline pb-4">
-        <p className="eyebrow text-amber">Issue Packet</p>
+        <p className="eyebrow text-amber">Pressure Packet</p>
         <h3 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h3>
       </div>
       <div className="mt-1">
@@ -811,7 +811,7 @@ function IssuePacketBrief({
         ))}
         {outputSummary ? (
           <div className="brief-row">
-            <p className="eyebrow text-muted-foreground">Captured call output</p>
+            <p className="eyebrow text-muted-foreground">Captured session output</p>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
               {outputSummary}
             </p>

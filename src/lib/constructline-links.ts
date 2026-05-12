@@ -33,7 +33,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
       "Use when an estimate, scope, quantity, or line-item review is the problem in front of you.",
     bestUsedFor: "Scopes, quantities, line items, and estimate review.",
     supportNote:
-      "Bring unclear estimate decisions back into Prepare for Call when they need judgment.",
+      "Bring unclear estimate decisions into Bring One Issue when they need group-session judgment.",
     url: "https://alpcontractorcircle.com/portal/takeoff",
   },
   {
@@ -52,7 +52,8 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
     promise: "Price with memory.",
     blurb: "Use when pricing, assemblies, item costs, or historical trade memory are needed.",
     bestUsedFor: "Assemblies, item costs, price references, and historical cost memory.",
-    supportNote: "Use pricing evidence here, then carry leadership decisions into the call or AOS.",
+    supportNote:
+      "Use pricing evidence here, then carry leadership decisions into a session or AOS.",
     url: "https://alpcontractorcircle.com/portal/cost-library",
   },
   {

@@ -30,14 +30,17 @@ import { Route as AuthenticatedPortalTakeoffRouteImport } from './routes/_authen
 import { Route as AuthenticatedPortalSchedulerRouteImport } from './routes/_authenticated/portal/scheduler'
 import { Route as AuthenticatedPortalReplaysRouteImport } from './routes/_authenticated/portal/replays'
 import { Route as AuthenticatedPortalLaborLibraryRouteImport } from './routes/_authenticated/portal/labor-library'
+import { Route as AuthenticatedPortalIntensiveRouteImport } from './routes/_authenticated/portal/intensive'
 import { Route as AuthenticatedPortalCostLibraryRouteImport } from './routes/_authenticated/portal/cost-library'
 import { Route as AuthenticatedPortalConstructlineRouteImport } from './routes/_authenticated/portal/constructline'
+import { Route as AuthenticatedPortalCommandToolsRouteImport } from './routes/_authenticated/portal/command-tools'
 import { Route as AuthenticatedPortalCallPrepRouteImport } from './routes/_authenticated/portal/call-prep'
 import { Route as AuthenticatedPortalAlpOsRouteImport } from './routes/_authenticated/portal/alp-os'
 import { Route as AuthenticatedPortalAdminRouteImport } from './routes/_authenticated/portal/admin'
 import { Route as AuthenticatedPortalAccountRouteImport } from './routes/_authenticated/portal/account'
 import { Route as AuthenticatedPortalAdminIndexRouteImport } from './routes/_authenticated/portal/admin/index'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as AuthenticatedPortalAdminContentRouteImport } from './routes/_authenticated/portal/admin/content'
 import { Route as AuthenticatedPortalAdminBackfillRouteImport } from './routes/_authenticated/portal/admin/backfill'
 import { Route as AuthenticatedPortalAdminAccessTestRouteImport } from './routes/_authenticated/portal/admin/access-test'
 
@@ -151,6 +154,12 @@ const AuthenticatedPortalLaborLibraryRoute =
     path: '/portal/labor-library',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedPortalIntensiveRoute =
+  AuthenticatedPortalIntensiveRouteImport.update({
+    id: '/portal/intensive',
+    path: '/portal/intensive',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedPortalCostLibraryRoute =
   AuthenticatedPortalCostLibraryRouteImport.update({
     id: '/portal/cost-library',
@@ -161,6 +170,12 @@ const AuthenticatedPortalConstructlineRoute =
   AuthenticatedPortalConstructlineRouteImport.update({
     id: '/portal/constructline',
     path: '/portal/constructline',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedPortalCommandToolsRoute =
+  AuthenticatedPortalCommandToolsRouteImport.update({
+    id: '/portal/command-tools',
+    path: '/portal/command-tools',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
 const AuthenticatedPortalCallPrepRoute =
@@ -199,6 +214,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedPortalAdminContentRoute =
+  AuthenticatedPortalAdminContentRouteImport.update({
+    id: '/content',
+    path: '/content',
+    getParentRoute: () => AuthenticatedPortalAdminRoute,
+  } as any)
 const AuthenticatedPortalAdminBackfillRoute =
   AuthenticatedPortalAdminBackfillRouteImport.update({
     id: '/backfill',
@@ -231,8 +252,10 @@ export interface FileRoutesByFullPath {
   '/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/portal/call-prep': typeof AuthenticatedPortalCallPrepRoute
+  '/portal/command-tools': typeof AuthenticatedPortalCommandToolsRoute
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/intensive': typeof AuthenticatedPortalIntensiveRoute
   '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
@@ -241,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
+  '/portal/admin/content': typeof AuthenticatedPortalAdminContentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
@@ -262,8 +286,10 @@ export interface FileRoutesByTo {
   '/portal/account': typeof AuthenticatedPortalAccountRoute
   '/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/portal/call-prep': typeof AuthenticatedPortalCallPrepRoute
+  '/portal/command-tools': typeof AuthenticatedPortalCommandToolsRoute
   '/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/portal/intensive': typeof AuthenticatedPortalIntensiveRoute
   '/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
@@ -272,6 +298,7 @@ export interface FileRoutesByTo {
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
+  '/portal/admin/content': typeof AuthenticatedPortalAdminContentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/portal/admin': typeof AuthenticatedPortalAdminIndexRoute
 }
@@ -296,8 +323,10 @@ export interface FileRoutesById {
   '/_authenticated/portal/admin': typeof AuthenticatedPortalAdminRouteWithChildren
   '/_authenticated/portal/alp-os': typeof AuthenticatedPortalAlpOsRoute
   '/_authenticated/portal/call-prep': typeof AuthenticatedPortalCallPrepRoute
+  '/_authenticated/portal/command-tools': typeof AuthenticatedPortalCommandToolsRoute
   '/_authenticated/portal/constructline': typeof AuthenticatedPortalConstructlineRoute
   '/_authenticated/portal/cost-library': typeof AuthenticatedPortalCostLibraryRoute
+  '/_authenticated/portal/intensive': typeof AuthenticatedPortalIntensiveRoute
   '/_authenticated/portal/labor-library': typeof AuthenticatedPortalLaborLibraryRoute
   '/_authenticated/portal/replays': typeof AuthenticatedPortalReplaysRoute
   '/_authenticated/portal/scheduler': typeof AuthenticatedPortalSchedulerRoute
@@ -306,6 +335,7 @@ export interface FileRoutesById {
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/admin/access-test': typeof AuthenticatedPortalAdminAccessTestRoute
   '/_authenticated/portal/admin/backfill': typeof AuthenticatedPortalAdminBackfillRoute
+  '/_authenticated/portal/admin/content': typeof AuthenticatedPortalAdminContentRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
   '/_authenticated/portal/admin/': typeof AuthenticatedPortalAdminIndexRoute
 }
@@ -330,8 +360,10 @@ export interface FileRouteTypes {
     | '/portal/admin'
     | '/portal/alp-os'
     | '/portal/call-prep'
+    | '/portal/command-tools'
     | '/portal/constructline'
     | '/portal/cost-library'
+    | '/portal/intensive'
     | '/portal/labor-library'
     | '/portal/replays'
     | '/portal/scheduler'
@@ -340,6 +372,7 @@ export interface FileRouteTypes {
     | '/portal/'
     | '/portal/admin/access-test'
     | '/portal/admin/backfill'
+    | '/portal/admin/content'
     | '/api/public/payments/webhook'
     | '/portal/admin/'
   fileRoutesByTo: FileRoutesByTo
@@ -361,8 +394,10 @@ export interface FileRouteTypes {
     | '/portal/account'
     | '/portal/alp-os'
     | '/portal/call-prep'
+    | '/portal/command-tools'
     | '/portal/constructline'
     | '/portal/cost-library'
+    | '/portal/intensive'
     | '/portal/labor-library'
     | '/portal/replays'
     | '/portal/scheduler'
@@ -371,6 +406,7 @@ export interface FileRouteTypes {
     | '/portal'
     | '/portal/admin/access-test'
     | '/portal/admin/backfill'
+    | '/portal/admin/content'
     | '/api/public/payments/webhook'
     | '/portal/admin'
   id:
@@ -394,8 +430,10 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/admin'
     | '/_authenticated/portal/alp-os'
     | '/_authenticated/portal/call-prep'
+    | '/_authenticated/portal/command-tools'
     | '/_authenticated/portal/constructline'
     | '/_authenticated/portal/cost-library'
+    | '/_authenticated/portal/intensive'
     | '/_authenticated/portal/labor-library'
     | '/_authenticated/portal/replays'
     | '/_authenticated/portal/scheduler'
@@ -404,6 +442,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/'
     | '/_authenticated/portal/admin/access-test'
     | '/_authenticated/portal/admin/backfill'
+    | '/_authenticated/portal/admin/content'
     | '/api/public/payments/webhook'
     | '/_authenticated/portal/admin/'
   fileRoutesById: FileRoutesById
@@ -572,6 +611,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalLaborLibraryRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/portal/intensive': {
+      id: '/_authenticated/portal/intensive'
+      path: '/portal/intensive'
+      fullPath: '/portal/intensive'
+      preLoaderRoute: typeof AuthenticatedPortalIntensiveRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/portal/cost-library': {
       id: '/_authenticated/portal/cost-library'
       path: '/portal/cost-library'
@@ -584,6 +630,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/constructline'
       fullPath: '/portal/constructline'
       preLoaderRoute: typeof AuthenticatedPortalConstructlineRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/portal/command-tools': {
+      id: '/_authenticated/portal/command-tools'
+      path: '/portal/command-tools'
+      fullPath: '/portal/command-tools'
+      preLoaderRoute: typeof AuthenticatedPortalCommandToolsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/portal/call-prep': {
@@ -628,6 +681,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/portal/admin/content': {
+      id: '/_authenticated/portal/admin/content'
+      path: '/content'
+      fullPath: '/portal/admin/content'
+      preLoaderRoute: typeof AuthenticatedPortalAdminContentRouteImport
+      parentRoute: typeof AuthenticatedPortalAdminRoute
+    }
     '/_authenticated/portal/admin/backfill': {
       id: '/_authenticated/portal/admin/backfill'
       path: '/backfill'
@@ -648,6 +708,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedPortalAdminRouteChildren {
   AuthenticatedPortalAdminAccessTestRoute: typeof AuthenticatedPortalAdminAccessTestRoute
   AuthenticatedPortalAdminBackfillRoute: typeof AuthenticatedPortalAdminBackfillRoute
+  AuthenticatedPortalAdminContentRoute: typeof AuthenticatedPortalAdminContentRoute
   AuthenticatedPortalAdminIndexRoute: typeof AuthenticatedPortalAdminIndexRoute
 }
 
@@ -657,6 +718,7 @@ const AuthenticatedPortalAdminRouteChildren: AuthenticatedPortalAdminRouteChildr
       AuthenticatedPortalAdminAccessTestRoute,
     AuthenticatedPortalAdminBackfillRoute:
       AuthenticatedPortalAdminBackfillRoute,
+    AuthenticatedPortalAdminContentRoute: AuthenticatedPortalAdminContentRoute,
     AuthenticatedPortalAdminIndexRoute: AuthenticatedPortalAdminIndexRoute,
   }
 
@@ -670,8 +732,10 @@ interface AuthenticatedRouteChildren {
   AuthenticatedPortalAdminRoute: typeof AuthenticatedPortalAdminRouteWithChildren
   AuthenticatedPortalAlpOsRoute: typeof AuthenticatedPortalAlpOsRoute
   AuthenticatedPortalCallPrepRoute: typeof AuthenticatedPortalCallPrepRoute
+  AuthenticatedPortalCommandToolsRoute: typeof AuthenticatedPortalCommandToolsRoute
   AuthenticatedPortalConstructlineRoute: typeof AuthenticatedPortalConstructlineRoute
   AuthenticatedPortalCostLibraryRoute: typeof AuthenticatedPortalCostLibraryRoute
+  AuthenticatedPortalIntensiveRoute: typeof AuthenticatedPortalIntensiveRoute
   AuthenticatedPortalLaborLibraryRoute: typeof AuthenticatedPortalLaborLibraryRoute
   AuthenticatedPortalReplaysRoute: typeof AuthenticatedPortalReplaysRoute
   AuthenticatedPortalSchedulerRoute: typeof AuthenticatedPortalSchedulerRoute
@@ -685,8 +749,10 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedPortalAdminRoute: AuthenticatedPortalAdminRouteWithChildren,
   AuthenticatedPortalAlpOsRoute: AuthenticatedPortalAlpOsRoute,
   AuthenticatedPortalCallPrepRoute: AuthenticatedPortalCallPrepRoute,
+  AuthenticatedPortalCommandToolsRoute: AuthenticatedPortalCommandToolsRoute,
   AuthenticatedPortalConstructlineRoute: AuthenticatedPortalConstructlineRoute,
   AuthenticatedPortalCostLibraryRoute: AuthenticatedPortalCostLibraryRoute,
+  AuthenticatedPortalIntensiveRoute: AuthenticatedPortalIntensiveRoute,
   AuthenticatedPortalLaborLibraryRoute: AuthenticatedPortalLaborLibraryRoute,
   AuthenticatedPortalReplaysRoute: AuthenticatedPortalReplaysRoute,
   AuthenticatedPortalSchedulerRoute: AuthenticatedPortalSchedulerRoute,

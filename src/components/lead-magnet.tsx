@@ -181,7 +181,7 @@ export function LeadThankYou({ title, body, downloadUrl, downloadLabel }: LeadTh
           </p>
           <h3 className="font-display text-2xl">Want the full operating room?</h3>
           <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-            The Circle gets you weekly live calls with Marshall, the full template library, and the
+            The Circle gets you two monthly group sessions, AOS, the full template library, and
             ConstructLine beta tools.
           </p>
           <Button asChild className="mt-6">

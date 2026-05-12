@@ -27,7 +27,10 @@ function AuthenticatedLayout() {
   const pageTitles: Record<string, string> = {
     "": "Home",
     "alp-os": "AOS",
-    "call-prep": "Prepare for Call",
+    "call-prep": "Bring One Issue",
+    "command-tools": "Business Command Tools",
+    intensive: "Work With Marshall",
+    "admin/content": "Content Command Center",
   };
   const title =
     pageTitles[routeSegment] ??

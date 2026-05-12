@@ -91,7 +91,7 @@ const orchestrationTools = [
     status: "Seeded",
     what: "A short diagnostic for spotting where every decision still runs through the owner.",
     why: "Owner drag is usually the first place growth stalls and accountability stays vague.",
-    output: "Creates a call-ready owner-dependency issue packet.",
+    output: "Creates a session-ready owner-dependency pressure packet.",
     cta: "Preview",
   },
   {
@@ -113,11 +113,20 @@ const orchestrationTools = [
   {
     label: "Decision packet",
     status: "Coming into the system",
-    what: "A lightweight capture format for decisions made during calls or Discord pressure loops.",
-    why: "A useful call should leave company memory, not just a good conversation.",
+    what: "A lightweight capture format for decisions clarified during sessions or implementation work.",
+    why: "A useful session should leave company memory, not just a good conversation.",
     output: "Creates a decision summary to carry into AOS.",
     cta: "Coming next",
   },
+];
+
+const systemsRoadmap = [
+  "AOS foundation",
+  "Project delivery systems",
+  "Accounting systems",
+  "Legal systems",
+  "Contract systems",
+  "Contractor infrastructure",
 ];
 
 const outputLabels: Record<PacketOutputType, string> = {
@@ -182,8 +191,8 @@ function AlpOsPage() {
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/68 sm:text-base">
             AOS is where Contractor Circle becomes structure: vision, people, numbers, issues,
-            process, and traction. Use this portal to bring the pressure, prepare the issue packet,
-            and carry the output into the dedicated AOS app.
+            process, and traction. Use this portal to prepare one issue, use group sessions to
+            pressure-test the pattern, and carry the output into the dedicated AOS app.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Button asChild variant="secondary" className="bg-background text-foreground">
@@ -208,7 +217,7 @@ function AlpOsPage() {
               className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
               <Link to="/portal/call-prep">
-                Prepare call issue <ArrowUpRight className="ml-2 h-4 w-4" />
+                Bring one issue <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -332,6 +341,24 @@ function AlpOsPage() {
           </div>
         </div>
       </section>
+
+      <section className="surface-operating rounded-xl p-6 sm:p-7">
+        <SectionHeader
+          eyebrow="Systems roadmap"
+          title="AOS first, then thin-sliced contractor infrastructure"
+          body="Contractor Circle starts with the operating system, then expands into focused systems for project delivery, accounting, legal, contracts, and the other infrastructure contractors need to run a stronger company."
+        />
+        <div className="mt-5 grid gap-2 md:grid-cols-3">
+          {systemsRoadmap.map((item, index) => (
+            <div key={item} className="rounded-lg border border-hairline bg-background/70 p-4">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
+                {String(index + 1).padStart(2, "0")}
+              </p>
+              <p className="mt-2 font-medium">{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
@@ -352,8 +379,8 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <SectionHeader
           eyebrow="Issue packet loop"
-          title="Bring the pressure, then carry it into AOS"
-          body="Saved call-prep packets keep the weekly rhythm from becoming disposable. Copy the packet for the live room today; open AOS when the decision needs to become company memory."
+          title="Prepare one issue, then carry the output into AOS"
+          body="Saved pressure packets make members better prepared without creating unlimited support obligations. Not every issue is addressed live; each packet should still help the member turn friction into operating-system work."
         />
         <Button asChild>
           <Link to="/portal/call-prep">
@@ -392,10 +419,10 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
               <ClipboardList className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="font-display text-2xl">No issue packets saved yet</h3>
+              <h3 className="font-display text-2xl">No pressure packets saved yet</h3>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                Start with one stuck decision before the next call. The first saved packet becomes
-                the portable handoff between the live room and the external AOS app.
+                Start with one stuck decision before the next session. The first saved packet
+                becomes the portable handoff between member prep and the external AOS app.
               </p>
               <Button asChild className="mt-5">
                 <Link to="/portal/call-prep">Build first packet</Link>
@@ -455,8 +482,8 @@ function PacketCard({ packet }: { packet: CallPrepPacket }) {
             </p>
           ) : (
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Ready for the live room. After the call, copy the decision, to-do, SOP gap, or weekly
-              number into AOS.
+              Ready for session prep. After the session, carry the decision, to-do, SOP gap, weekly
+              number, issue, or implementation step into AOS.
             </p>
           )}
         </div>

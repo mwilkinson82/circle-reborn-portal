@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Weekly live calls with Marshall Wilkinson, a working library of templates, and operating tools built on $2.5B of executed work. For GCs scaling from $5M to $50M.",
+          "Two monthly group sessions, AOS, a working library of templates, and operating tools built on $2.5B of executed work. For GCs scaling from $5M to $50M.",
       },
       { property: "og:title", content: "ALP Contractor Circle" },
       { property: "og:description", content: "The operating room for serious contractors." },
@@ -23,8 +23,8 @@ export const Route = createFileRoute("/")({
 const VALUE = [
   {
     k: "01",
-    t: "Live working calls",
-    d: "Marshall walks live bids, contracts, and operating decisions every week. You bring real work; the room sharpens it.",
+    t: "Group working sessions",
+    d: "Bring one issue, make it specific, and use the room to sharpen the operating pattern.",
   },
   {
     k: "02",
@@ -50,19 +50,20 @@ const TESTIMONIALS = [
     r: "PM, design-build, Colorado",
   },
   {
-    q: "Marshall doesn't pull punches. The room calls out the things your team won't.",
+    q: "The room doesn't let us stay vague. We show up with one issue and leave with clearer operating work.",
     a: "Aaron M.",
     r: "Owner, $24M revenue, Pacific NW",
   },
 ];
 
 const INCLUDED = [
-  "Weekly live operating calls with Marshall",
+  "Biweekly Contractor Circle group guidance call",
+  "Monthly bootcamp/session with frameworks, tools, templates, and system implementation guidance",
   "Full replay archive — searchable, tagged",
   "Working template library (SOVs, MSAs, scopes, scripts)",
   "ConstructLine beta: scheduler, takeoff, cost library",
-  "Private member directory + Discord room",
-  "Quarterly intensives on bidding, hiring, and capital",
+  "AOS access for operating-system implementation",
+  "Private member community for group-session support",
 ];
 
 const FAQ = [
@@ -72,7 +73,7 @@ const FAQ = [
   },
   {
     q: "What's the time commitment?",
-    a: "One live call per week (90 minutes). Replays if you can't make it. Templates are pull-as-you-need.",
+    a: "Plan around two group sessions per month: one Contractor Circle guidance call and one bootcamp/session. Replays are available if you can't make it. Templates are pull-as-you-need.",
   },
   {
     q: "Can I cancel?",
@@ -111,9 +112,9 @@ function LandingPage() {
             contractors build in.
           </h1>
           <p className="mt-8 text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            Weekly live calls with Marshall Wilkinson. A working library of templates, scripts, and
-            operating systems pulled straight from $2.5B in built work. No fluff, no funnels — a
-            private room for GCs scaling from $5M to $50M.
+            Two monthly group sessions, AOS, and a working library of templates, scripts, and
+            operating systems pulled straight from $2.5B in built work. Bring one issue, make it
+            specific, and turn business friction into operating-system work.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
@@ -126,7 +127,7 @@ function LandingPage() {
             </Button>
           </div>
           <p className="mt-6 text-xs font-mono uppercase tracking-wider text-muted-foreground">
-            Cancel anytime · First-call money back
+            Cancel anytime · First-session money back
           </p>
         </motion.div>
       </section>
@@ -158,8 +159,8 @@ function LandingPage() {
           </p>
           <h2 className="font-display text-4xl sm:text-5xl mt-4">Operating, not coaching.</h2>
           <p className="mt-4 text-muted-foreground leading-relaxed">
-            We don't sell mindset. The Circle is a working room — calls, files, and tools that move
-            real numbers on real jobs.
+            We don't sell mindset or unlimited access. The Circle is a working room — group
+            sessions, files, AOS, and tools that help members implement better systems.
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-px bg-hairline border border-hairline">
@@ -221,7 +222,7 @@ function LandingPage() {
               </Link>
             </Button>
             <p className="mt-4 text-xs text-muted-foreground text-center">
-              First-call money back, no questions.
+              First-session money back.
             </p>
           </div>
           <div className="md:col-span-3 border border-hairline p-10">

@@ -11,6 +11,8 @@ import {
   UserCircle,
   Shield,
   LogOut,
+  Landmark,
+  MessageSquareHeart,
   Wrench,
   Users,
   ExternalLink,
@@ -39,7 +41,8 @@ type NavItem = {
 const companyOs: NavItem[] = [
   { title: "Home", url: "/portal", icon: Home },
   { title: "AOS", url: "/portal/alp-os", icon: ClipboardCheck },
-  { title: "Prepare for Call", url: "/portal/call-prep", icon: ClipboardList },
+  { title: "Bring One Issue", url: "/portal/call-prep", icon: ClipboardList },
+  { title: "Command Tools", url: "/portal/command-tools", icon: Landmark },
 ];
 
 const guidance: NavItem[] = [
@@ -56,6 +59,7 @@ const tools: NavItem[] = [
 ];
 
 const account: NavItem[] = [
+  { title: "Work With Marshall", url: "/portal/intensive", icon: MessageSquareHeart },
   { title: "Profile", url: "/portal/account", icon: UserCircle },
   { title: "Admin", url: "/portal/admin", icon: Shield },
 ];

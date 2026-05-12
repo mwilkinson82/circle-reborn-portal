@@ -37,6 +37,10 @@ export type LibraryReplay = {
   created_at: string;
 };
 
+const cloudflareStreamUrl = (id: string) => `https://iframe.videodelivery.net/${id}`;
+const cloudflareThumbnailUrl = (id: string) =>
+  `https://videodelivery.net/${id}/thumbnails/thumbnail.jpg?time=1s`;
+
 export const PLACEHOLDER_TEMPLATE_TITLES = new Set([
   "Subcontractor Bid Submittal Form",
   "Schedule of Values Template",
@@ -835,7 +839,7 @@ export const circleTemplateCatalog = [
     description:
       "Full 36-slide bootcamp deck covering ALP/EOS implementation, the VITO cascade, accountability charts, People Analyzer, mock L10 meetings, and the APP framework.",
     long_description:
-      'The April 2026 ALP Contractor Circle Monthly Boot Camp slide deck — "Building the Machine: ALP/EOS Implementation, the APP Framework, and Real-World Problem Solving." This 36-page presentation covers the complete 3-hour bootcamp in 5 blocks: Block 1 — VITO & Accountability Chart Review (45 min): The VITO cascade from 10-Year Target down to Quarterly Rocks, how to build your accountability chart with the 5 major functions (Sales/Marketing, Operations, Finance, Integrator, Visionary), and why structure drives execution. Block 2 — People Analyzer Deep Dive (30 min): The EOS People Analyzer tool for evaluating whether people are in the right seats — GWC (Get It, Want It, Capacity) plus core value alignment scoring. Block 3 — Mock L10 Meeting & IDS (45 min): A live walkthrough of the Level 10 meeting format — segue, scorecard review, rock review, customer/employee headlines, to-do list, and IDS (Identify, Discuss, Solve). Block 4 — The APP Framework (25 min): Marshall\'s proprietary Accountability, Process, Performance framework for building systems that run without the owner. Block 5 — Member-Submitted Topics (25 min): Open floor for real problems from real contractors. Facilitated by Marshall Wilkinson.',
+      'The April 2026 ALP Contractor Circle Monthly Boot Camp slide deck — "Building the Machine: ALP/EOS Implementation, the APP Framework, and Real-World Problem Solving." This 36-page presentation covers the complete 3-hour bootcamp in 5 blocks: Block 1 — VITO & Accountability Chart Review (45 min): The VITO cascade from 10-Year Target down to Quarterly Rocks, how to build your accountability chart with the 5 major functions (Sales/Marketing, Operations, Finance, Integrator, Visionary), and why structure drives execution. Block 2 — People Analyzer Deep Dive (30 min): The EOS People Analyzer tool for evaluating whether people are in the right seats — GWC (Get It, Want It, Capacity) plus core value alignment scoring. Block 3 — Mock L10 Meeting & IDS (45 min): A live walkthrough of the Level 10 meeting format — segue, scorecard review, rock review, customer/employee headlines, to-do list, and IDS (Identify, Discuss, Solve). Block 4 — The APP Framework (25 min): Marshall\'s proprietary Accountability, Process, Performance framework for building systems that run without the owner. Block 5 — Selected member patterns and implementation discussion (25 min): questions reviewed for broad group value and turned into operating-system lessons.',
     category: "leadership",
     file_type: "pdf",
     download_url:
@@ -903,43 +907,161 @@ export const circleTemplateCatalog = [
 
 export const circleReplayCatalog = [
   {
-    id: "legacy-replay-eos-contractors",
-    title: "EOS for Contractors — Full Session",
+    id: "replay-2026-05-09-jermaine-warren",
+    title:
+      "Contractor Circle Call, Saturday, May 9th, 2026 - Special guest speaker Jermaine Warren from ICV Partners Private Equity",
     description:
-      "Full recording of the inaugural Contractor Circle call on the EOS operating system adapted for contractors.",
-    duration_minutes: null,
-    recorded_at: "2026-03-29T22:59:00.000Z",
-    tags: ["Contractor Circle", "EOS", "Operations"],
+      "Marshall hosted a Contractor Circle group session featuring Jermaine Warren from ICV Partners, with practical judgment on what private equity looks for in construction businesses: scalable operations, non-discretionary demand, reduced founder dependency, standardized processes, and growth-ready financial discipline.",
+    duration_minutes: 120,
+    recorded_at: "2026-05-09T21:00:00.000Z",
+    tags: ["Contractor Circle", "Private Equity", "Enterprise Value"],
     thumbnail_url: null,
-    video_url: null,
+    video_url: "https://us06web.zoom.us/clips/embed/N6Y0Vi1_SL64mIQMURr14Q",
     published: true,
-    created_at: "2026-03-29T22:59:00.000Z",
+    created_at: "2026-05-09T21:00:00.000Z",
   },
   {
-    id: "legacy-replay-business-asset",
-    title: "Your Business is Your Biggest Asset — Call #2",
+    id: "replay-2026-04-26-building-the-machine-bootcamp",
+    title: "Contractor Circle Monthly Boot Camp Event - April",
     description:
-      "Call #2 replay covering contractor enterprise value, PE acquisition criteria, V/TO through the exit lens, and the People Component.",
-    duration_minutes: null,
+      'Monthly bootcamp session focused on "Building the Machine," including VITO review, accountability charts, planning levels, quarterly rocks, hiring priorities, and the operating discipline required to scale a construction company without separate silos.',
+    duration_minutes: 300,
+    recorded_at: "2026-04-26T21:00:00.000Z",
+    tags: ["Bootcamp", "AOS", "Implementation"],
+    thumbnail_url: null,
+    video_url: "https://us06web.zoom.us/clips/embed/lho53C-BRZyh-zIyuiX1bw",
+    published: true,
+    created_at: "2026-04-26T21:00:00.000Z",
+  },
+  {
+    id: "replay-2026-04-12-business-asset",
+    title: "Contractor Circle call #2 - Your Business is your Biggest Asset",
+    description:
+      "Marshall led a Contractor Circle discussion on building a business with enterprise value, including PE acquisition criteria, owner-independent operations, recurring revenue, systemized process, W-2 workforce structure, VITO through the exit lens, and the People Component.",
+    duration_minutes: 180,
     recorded_at: "2026-04-12T21:00:00.000Z",
     tags: ["Contractor Circle", "Enterprise Value", "Leadership"],
-    thumbnail_url: null,
-    video_url: null,
+    thumbnail_url: cloudflareThumbnailUrl("6ffb51a061db1e7606772c499b016119"),
+    video_url: cloudflareStreamUrl("6ffb51a061db1e7606772c499b016119"),
     published: true,
     created_at: "2026-04-12T21:00:00.000Z",
   },
   {
-    id: "legacy-replay-jermaine-warren",
-    title: "Contractor Circle with Jermaine Warren",
+    id: "replay-2026-03-29-inaugural-call",
+    title: "Inaugural Call (Introductions & ALP/EOS)",
     description:
-      "Contractor Circle member call with guest speaker Jermaine Warren. The old portal email confirms this replay was published, but the video URL was not included in the zip export.",
-    duration_minutes: null,
-    recorded_at: "2026-05-01T12:00:00.000Z",
-    tags: ["Contractor Circle", "Guest Session"],
-    thumbnail_url: null,
-    video_url: null,
+      "Kickoff Contractor Circle session introducing the six-component operating system for contractors: VITO, People, Data, Issues, Process, and Traction. The session frames structured decision-making, accountability charts, weekly pulse tracking, and the first implementation path.",
+    duration_minutes: 120,
+    recorded_at: "2026-03-29T22:59:00.000Z",
+    tags: ["Contractor Circle", "EOS", "Operations"],
+    thumbnail_url: cloudflareThumbnailUrl("f7aa2ae6746076f3a91ed3da28390882"),
+    video_url: cloudflareStreamUrl("f7aa2ae6746076f3a91ed3da28390882"),
     published: true,
-    created_at: "2026-05-01T12:00:00.000Z",
+    created_at: "2026-03-29T22:59:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-8",
+    title: "Lesson 8 Conclusion",
+    description:
+      "Final ALP Outdoor Living Sales Course lesson tying the sales-control framework back to professional operator behavior and next-step execution.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:07:00.000Z",
+    tags: ["Masterclass", "Sales", "Implementation"],
+    thumbnail_url: cloudflareThumbnailUrl("90e9cdb2693dbb7b1355d0e6161c7453"),
+    video_url: cloudflareStreamUrl("90e9cdb2693dbb7b1355d0e6161c7453"),
+    published: true,
+    created_at: "2026-03-20T18:07:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-7",
+    title: "Lesson 7 The Professional Operator Standard",
+    description:
+      "ALP Outdoor Living Sales Course lesson on the professional operator standard: the posture, control, and operating discipline behind a premium contractor sales process.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:06:00.000Z",
+    tags: ["Masterclass", "Sales", "Operator Standard"],
+    thumbnail_url: cloudflareThumbnailUrl("74faf840fe2dfde85cbaa40dadc55129"),
+    video_url: cloudflareStreamUrl("74faf840fe2dfde85cbaa40dadc55129"),
+    published: true,
+    created_at: "2026-03-20T18:06:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-6",
+    title: "Lesson 6 The Controlled Exit Protocol and Gap Authority",
+    description:
+      "ALP Outdoor Living Sales Course lesson on controlling the exit, preserving authority, and using gap authority so the next decision stays clear.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:05:00.000Z",
+    tags: ["Masterclass", "Sales", "Authority"],
+    thumbnail_url: cloudflareThumbnailUrl("0aab518d4080b6bb5120737c4ecd2cbb"),
+    video_url: cloudflareStreamUrl("0aab518d4080b6bb5120737c4ecd2cbb"),
+    published: true,
+    created_at: "2026-03-20T18:05:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-5",
+    title: "Lesson 5 Objections, Authority and Controlling the Next Decision",
+    description:
+      "ALP Outdoor Living Sales Course lesson on handling objections without surrendering control, reframing resistance, and directing the next decision.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:04:00.000Z",
+    tags: ["Masterclass", "Sales", "Objections"],
+    thumbnail_url: cloudflareThumbnailUrl("dde07034114fd2ac0c270f296ad9bbb1"),
+    video_url: cloudflareStreamUrl("dde07034114fd2ac0c270f296ad9bbb1"),
+    published: true,
+    created_at: "2026-03-20T18:04:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-4",
+    title: "Lesson 4 Authority Pre-Framing and First Visit Control",
+    description:
+      "ALP Outdoor Living Sales Course lesson on setting authority before the visit and keeping the first appointment structured around the right decision.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:03:00.000Z",
+    tags: ["Masterclass", "Sales", "Authority"],
+    thumbnail_url: cloudflareThumbnailUrl("d5d801bb685c2ba37307cfec975a45ba"),
+    video_url: cloudflareStreamUrl("d5d801bb685c2ba37307cfec975a45ba"),
+    published: true,
+    created_at: "2026-03-20T18:03:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-3",
+    title: "Lesson 3 The Decision Architecture Framework",
+    description:
+      "ALP Outdoor Living Sales Course lesson on decision architecture: how to structure a sales process around controlled next decisions instead of loose follow-up.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:02:00.000Z",
+    tags: ["Masterclass", "Sales", "Decision Architecture"],
+    thumbnail_url: cloudflareThumbnailUrl("7cc786910d9c8dd471bcbd9dea7d0f47"),
+    video_url: cloudflareStreamUrl("7cc786910d9c8dd471bcbd9dea7d0f47"),
+    published: true,
+    created_at: "2026-03-20T18:02:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-2",
+    title: "Lesson 2 Why Most Outdoor Living Contractors Lose Control",
+    description:
+      "ALP Outdoor Living Sales Course lesson diagnosing why outdoor living contractors lose control of the buyer process and where authority starts to leak.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:01:00.000Z",
+    tags: ["Masterclass", "Sales", "Control"],
+    thumbnail_url: cloudflareThumbnailUrl("d08eb0b0803e5465b51140730cfcd265"),
+    video_url: cloudflareStreamUrl("d08eb0b0803e5465b51140730cfcd265"),
+    published: true,
+    created_at: "2026-03-20T18:01:00.000Z",
+  },
+  {
+    id: "masterclass-sales-baseline-lesson-1",
+    title: "Lesson 1 The Professional Sales Baseline",
+    description:
+      "ALP Outdoor Living Sales Course opening lesson establishing the professional sales baseline for authority, control, qualification, and next-step discipline.",
+    duration_minutes: null,
+    recorded_at: "2026-03-20T18:00:00.000Z",
+    tags: ["Masterclass", "Sales", "Professional Baseline"],
+    thumbnail_url: cloudflareThumbnailUrl("71bc6466270cc0f24427c97176ea1c4a"),
+    video_url: cloudflareStreamUrl("71bc6466270cc0f24427c97176ea1c4a"),
+    published: true,
+    created_at: "2026-03-20T18:00:00.000Z",
   },
 ] satisfies LibraryReplay[];
 

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -11,18 +11,28 @@ import {
   ClipboardList,
   DollarSign,
   Hammer,
+  Landmark,
   PlayCircle,
   Ruler,
+  Send,
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getDashboard } from "@/lib/dashboard.functions";
+import {
+  getBootcampCenter,
+  submitBootcampQuestion,
+  type BootcampQuestion,
+  type BootcampSession,
+} from "@/lib/bootcamp.functions";
 import { AOS_APP_URL } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { AosMark } from "@/components/aos-mark";
+import { toast } from "sonner";
 
 const BIWEEKLY_CALL_INTERVAL_MS = 14 * 86400000;
 const LIVE_CALL_DURATION_MS = 90 * 60 * 1000;
@@ -77,6 +87,14 @@ const fieldSupportTools = [
     value: "Price with memory",
     hint: "Items, assemblies, unit costs, and labor rates",
   },
+];
+
+const ownerCommandTools = [
+  "Owner Dependency",
+  "Capacity Map",
+  "System Gap Finder",
+  "Cash Control Snapshot",
+  "Contract Risk Scan",
 ];
 
 type IconComponent = typeof Hammer;
@@ -161,9 +179,16 @@ function DashboardError({ error, reset }: { error: Error; reset: () => void }) {
 function DashboardPage() {
   const { user, loading } = useAuth();
   const fetchDashboard = useServerFn(getDashboard);
+  const fetchBootcamp = useServerFn(getBootcampCenter);
   const { data, isLoading } = useQuery({
     queryKey: ["dashboard", user?.id],
     queryFn: () => fetchDashboard(),
+    enabled: !!user && !loading,
+    retry: 1,
+  });
+  const bootcamp = useQuery({
+    queryKey: ["bootcamp-center", user?.id],
+    queryFn: () => fetchBootcamp(),
     enabled: !!user && !loading,
     retry: 1,
   });
@@ -182,8 +207,8 @@ function DashboardPage() {
     buildCalendarUrl({
       title: `Contractor Circle: ${liveCallTopic}`,
       details: liveCallUrl
-        ? `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin link:\n${liveCallUrl}`
-        : `Contractor Circle live call with Marshall.\n\nTopic:\n${liveCallTopic}\n\nJoin details are posted in the portal and Discord before the call.`,
+        ? `Contractor Circle group session.\n\nTopic:\n${liveCallTopic}\n\nJoin link:\n${liveCallUrl}`
+        : `Contractor Circle group session.\n\nTopic:\n${liveCallTopic}\n\nJoin details are posted in the portal before the session.`,
       start: nextCallDate,
       location: liveCallUrl ?? "Contractor Circle portal",
     });
@@ -199,6 +224,11 @@ function DashboardPage() {
         topic={liveCallTopic}
         latest={latest}
       />
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+        <OwnerCommandToolsPanel />
+        <BootcampQuestionPanel data={bootcamp.data ?? null} isLoading={bootcamp.isLoading} />
+      </section>
 
       <section className="space-y-4">
         <SectionHeader
@@ -218,7 +248,10 @@ function DashboardPage() {
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <ResourceLibraryPanel featuredTemplates={featuredTemplates} />
-        <AnnouncementsPanel announcements={announcements} />
+        <div className="space-y-5">
+          <IntensiveCard />
+          <AnnouncementsPanel announcements={announcements} />
+        </div>
       </section>
     </div>
   );
@@ -231,6 +264,149 @@ function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: strin
       <h2 className="mt-2 font-display text-2xl leading-tight">{title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
+  );
+}
+
+function OwnerCommandToolsPanel() {
+  return (
+    <Card className="surface-operating overflow-hidden p-0">
+      <div className="grid gap-px bg-hairline lg:grid-cols-[minmax(0,1fr)_17rem]">
+        <div className="bg-background p-5 sm:p-6">
+          <p className="eyebrow text-amber">Owner Command Tools</p>
+          <h2 className="mt-2 font-display text-3xl leading-tight">
+            Diagnose the constraint before you bring it to the room.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Thin-sliced owner tools for owner dependency, capacity, systems, cash, contracts, and
+            decisions. Use the output to pull assets, prepare one issue, and carry the next move
+            into AOS.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {ownerCommandTools.map((tool) => (
+              <Badge key={tool} variant="secondary">
+                {tool}
+              </Badge>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col justify-between bg-background p-5">
+          <div className="flex h-12 w-12 items-center justify-center rounded-md bg-amber-soft text-amber">
+            <Landmark className="h-6 w-6" />
+          </div>
+          <Button asChild className="mt-6 w-full justify-between">
+            <Link to="/portal/command-tools">
+              Open Command Tools <ArrowUpRight className="h-4 w-4" />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function BootcampQuestionPanel({
+  data,
+  isLoading,
+}: {
+  data: { nextSession: BootcampSession | null; questions: BootcampQuestion[] } | null;
+  isLoading: boolean;
+}) {
+  const [question, setQuestion] = useState("");
+  const [context, setContext] = useState("");
+  const queryClient = useQueryClient();
+  const saveQuestion = useServerFn(submitBootcampQuestion);
+  const mutation = useMutation({
+    mutationFn: () =>
+      saveQuestion({
+        data: {
+          sessionId: data?.nextSession?.id ?? null,
+          question,
+          context,
+        },
+      }),
+    onSuccess: () => {
+      setQuestion("");
+      setContext("");
+      queryClient.invalidateQueries({ queryKey: ["bootcamp-center"] });
+      toast.success("Bootcamp question submitted for review.");
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : "Question could not be submitted.");
+    },
+  });
+  const latestQuestion = data?.questions?.[0];
+
+  return (
+    <Card className="surface-library p-5">
+      <p className="eyebrow text-amber">Monthly bootcamp</p>
+      <h2 className="mt-2 font-display text-2xl leading-tight">Submit a bootcamp question</h2>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        Bootcamp questions are reviewed by Marshall. If accepted, you will receive a confirmation
+        when the email workflow is connected.
+      </p>
+      <div className="mt-4 border border-hairline bg-background p-3">
+        <p className="text-xs text-muted-foreground">Next bootcamp</p>
+        <p className="mt-1 text-sm font-medium">
+          {isLoading
+            ? "Loading..."
+            : data?.nextSession
+              ? `${data.nextSession.title} · ${format(new Date(data.nextSession.session_date), "MMM d")}`
+              : "Date being set"}
+        </p>
+      </div>
+      <div className="mt-4 space-y-3">
+        <Textarea
+          value={question}
+          onChange={(event) => setQuestion(event.target.value)}
+          placeholder="What would you like Marshall to consider for the bootcamp?"
+          className="min-h-24"
+        />
+        <Textarea
+          value={context}
+          onChange={(event) => setContext(event.target.value)}
+          placeholder="Optional context: company size, situation, what you have tried."
+          className="min-h-20"
+        />
+        <Button
+          className="w-full justify-between"
+          disabled={question.trim().length < 8 || mutation.isPending}
+          onClick={() => mutation.mutate()}
+        >
+          {mutation.isPending ? "Submitting..." : "Submit for review"}
+          <Send className="h-4 w-4" />
+        </Button>
+      </div>
+      {latestQuestion ? (
+        <div className="mt-4 border-t border-hairline pt-4">
+          <p className="text-xs text-muted-foreground">Latest submission</p>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <p className="line-clamp-2 text-sm">{latestQuestion.question}</p>
+            <Badge variant={latestQuestion.status === "accepted" ? "default" : "outline"}>
+              {latestQuestion.status}
+            </Badge>
+          </div>
+        </div>
+      ) : null}
+    </Card>
+  );
+}
+
+function IntensiveCard() {
+  return (
+    <Card className="surface-command command-panel p-5">
+      <p className="eyebrow text-amber">Work With Marshall</p>
+      <h2 className="mt-2 font-display text-2xl leading-tight text-background">
+        When the group room is not enough.
+      </h2>
+      <p className="mt-2 text-sm leading-relaxed text-background/64">
+        Six-Week Contractor Intensive. $5,000 upfront. Six private sessions with Marshall.
+      </p>
+      <Button asChild variant="secondary" className="mt-5 w-full justify-between">
+        <Link to="/portal/intensive">
+          Request Intensive <ArrowUpRight className="h-4 w-4" />
+        </Link>
+      </Button>
+    </Card>
   );
 }
 
@@ -254,9 +430,9 @@ function CircleHomeHero({ firstName }: { firstName: string }) {
           Build the company <span className="text-amber">behind</span> the projects.
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-relaxed text-foreground/68 sm:text-base">
-          Contractor Circle gives you live guidance, peer pressure, and AOS to turn stuck decisions
-          into structure. Prepare the issue here, pressure-test it with Marshall, then carry the
-          output into AOS.
+          Contractor Circle gives you group guidance, peer pressure, and AOS to turn stuck decisions
+          into structure. Bring one issue, make it specific, use the session to pressure-test the
+          pattern, then carry the output into AOS.
         </p>
       </div>
 
@@ -333,7 +509,7 @@ function NextMoveCard() {
               className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
               <Link to="/portal/call-prep">
-                Prepare call issue <ClipboardList className="ml-2 h-4 w-4" />
+                Bring one issue <ClipboardList className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
@@ -371,7 +547,7 @@ function OperatingPriorities({
         <Card className="surface-operating overflow-hidden rounded-lg p-0 lg:col-span-2 xl:col-span-1">
           <div className="grid h-full min-h-52 grid-cols-[8rem_minmax(0,1fr)]">
             <div className="flex flex-col justify-between bg-amber-soft p-4">
-              <p className="eyebrow text-amber">Next live call</p>
+              <p className="eyebrow text-amber">Next group session</p>
               <div>
                 <p className="font-display text-5xl leading-none tabular-nums">
                   {format(nextCallDate, "d")}
@@ -387,18 +563,18 @@ function OperatingPriorities({
             <div className="flex min-w-0 flex-col justify-between p-4">
               <div>
                 <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                  Live call
+                  Group session
                 </p>
                 <h2 className="mt-2 line-clamp-2 font-display text-2xl leading-tight">{topic}</h2>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  Bring a bid, people issue, or systems gap.
+                  Bring one prepared issue, bid pattern, or systems gap.
                 </p>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button asChild={!!liveCallUrl} disabled={!liveCallUrl} size="sm">
                   {liveCallUrl ? (
                     <a href={liveCallUrl} target="_blank" rel="noopener noreferrer">
-                      Join call <ArrowUpRight className="ml-2 h-4 w-4" />
+                      Join session <ArrowUpRight className="ml-2 h-4 w-4" />
                     </a>
                   ) : (
                     <span>Zoom pending</span>
@@ -421,16 +597,16 @@ function OperatingPriorities({
         >
           <div>
             <div className="flex items-start justify-between gap-4">
-              <p className="eyebrow text-muted-foreground">Prepare the issue</p>
+              <p className="eyebrow text-muted-foreground">Session prep</p>
               <ClipboardList className="h-5 w-5 shrink-0 text-amber" />
             </div>
-            <h2 className="mt-3 font-display text-2xl leading-tight">What needs pressure?</h2>
+            <h2 className="mt-3 font-display text-2xl leading-tight">Bring One Issue</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Turn a people, cash, sales, production, or systems problem into a call-ready issue.
+              Make one business problem specific before the next Contractor Circle session.
             </p>
           </div>
           <span className="mt-4 inline-flex items-center text-sm font-medium">
-            Prepare for call
+            Prepare issue
             <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </span>
         </Link>
@@ -474,7 +650,7 @@ const companyBuildPath = [
   { label: "Numbers", status: "Scorecard", tone: "bg-amber" },
   { label: "Issues", status: "Active room", tone: "bg-amber" },
   { label: "Process", status: "Template library", tone: "bg-muted-foreground/35" },
-  { label: "Traction", status: "Live calls", tone: "bg-foreground/55" },
+  { label: "Traction", status: "Group rhythm", tone: "bg-foreground/55" },
 ];
 
 function CompanyBuildPath() {

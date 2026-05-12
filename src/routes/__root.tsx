@@ -81,14 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+          "The operating system membership for serious contractors: group sessions, AOS, templates, and tools from Marshall Wilkinson and the ALP team.",
       },
       { name: "author", content: "Altitude Logic Pressure" },
       { property: "og:title", content: "ALP Contractor Circle" },
       {
         property: "og:description",
         content:
-          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+          "The operating system membership for serious contractors: group sessions, AOS, templates, and tools from Marshall Wilkinson and the ALP team.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "twitter:description",
         content:
-          "The operating system for serious contractors. Live calls, templates, and tools from Marshall Wilkinson and the ALP team.",
+          "The operating system membership for serious contractors: group sessions, AOS, templates, and tools from Marshall Wilkinson and the ALP team.",
       },
       {
         property: "og:image",
