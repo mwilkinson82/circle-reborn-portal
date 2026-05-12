@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getDashboard } from "@/lib/dashboard.functions";
+import { AOS_APP_URL, getAosHost } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -308,24 +309,38 @@ function getGreeting() {
 }
 
 function NextMoveCard() {
+  const aosHost = getAosHost();
+
   return (
     <Card className="surface-command command-panel min-h-60 p-6">
       <div className="relative z-10 grid h-full gap-6 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center">
         <div>
           <p className="eyebrow text-amber">Your next move</p>
-          <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
+          <h2 className="mt-3 font-display text-3xl leading-tight">Prepare the AOS handoff</h2>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
-            Bring one stuck decision into the company operating system before the next live call.
+            Capture the stuck decision here, then carry the clean output into the dedicated AOS
+            workspace.
           </p>
           <div className="mt-6 grid gap-2 sm:max-w-52">
-            <Button
-              asChild
-              className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
-            >
-              <Link to="/portal/alp-os">
-                Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            {AOS_APP_URL ? (
+              <Button
+                asChild
+                className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
+              >
+                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                  Open AOS app <ArrowUpRight className="ml-2 h-4 w-4" />
+                </a>
+              </Button>
+            ) : (
+              <Button
+                asChild
+                className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
+              >
+                <Link to="/portal/alp-os">
+                  View AOS bridge <ArrowUpRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            )}
             <Button
               asChild
               variant="outline"
@@ -336,6 +351,11 @@ function NextMoveCard() {
               </Link>
             </Button>
           </div>
+          <p className="mt-3 text-[11px] leading-relaxed text-background/48">
+            {aosHost
+              ? `External destination: ${aosHost}`
+              : "External AOS destination is not configured yet."}
+          </p>
         </div>
         <AosMark className="mx-auto w-40 sm:w-44" imageClassName="w-24 rounded-2xl sm:w-28" />
       </div>
@@ -479,7 +499,7 @@ const companyBuildPath = [
 function CompanyBuildPath() {
   return (
     <Card className="surface-library system-map p-4">
-      <p className="eyebrow text-amber">AOS build path</p>
+      <p className="eyebrow text-amber">AOS handoff path</p>
       <div className="mt-5 space-y-3">
         {companyBuildPath.map((item, index) => (
           <div
@@ -501,7 +521,7 @@ function CompanyBuildPath() {
       </div>
       <Button asChild variant="ghost" size="sm" className="mt-4 w-full justify-between px-0">
         <Link to="/portal/alp-os">
-          View in AOS <ArrowUpRight className="h-4 w-4" />
+          View bridge <ArrowUpRight className="h-4 w-4" />
         </Link>
       </Button>
     </Card>

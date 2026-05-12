@@ -2,7 +2,15 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ArrowUpRight, CheckCircle2, Download, FileText, Search, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  CheckCircle2,
+  ClipboardList,
+  Download,
+  FileText,
+  Search,
+  X,
+} from "lucide-react";
 import { getTemplateLibrary } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
@@ -121,12 +129,18 @@ function TemplatesPage() {
         <div className="surface-command command-panel p-6 sm:p-8 lg:p-10">
           <p className="eyebrow text-amber">Member library</p>
           <h1 className="mt-3 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">
-            Stop rebuilding from scratch.
+            Pull the right asset into the operating rhythm.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/65">
-            Operating-system docs, SOPs, contracts, checklists, and scripts arranged close to the
-            work they support.
+            This is the portal-side stack for meeting prep, AOS handoff, and field support. Start
+            with the prescribed path, then search the full library when a specific issue needs a
+            form, checklist, script, or SOP.
           </p>
+          <div className="mt-7 grid gap-2 text-xs text-background/64 sm:grid-cols-3">
+            <LibraryCue label="1" body="Prepare the issue" />
+            <LibraryCue label="2" body="Open the matching asset" />
+            <LibraryCue label="3" body="Carry the output into AOS" />
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
           <StatBlock label="Resources" value={String(templates.length)} />
@@ -146,7 +160,7 @@ function TemplatesPage() {
           <section className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
               <div>
-                <h2 className="font-display text-2xl">Template library</h2>
+                <h2 className="font-display text-2xl">Asset stack</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {filteredTemplates.length} of {templates.length} resources
                 </p>
@@ -281,10 +295,11 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
       <div className="max-w-2xl">
         <p className="eyebrow text-amber">Prescribed path</p>
         <h2 className="mt-2 font-display text-2xl leading-tight">
-          Start building the operating system
+          Start with the assets that create operating traction
         </h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Use these first assets in order before wandering the full library.
+          Use these first, in order, before wandering the full library. They are the bridge between
+          call pressure and the dedicated AOS workspace.
         </p>
       </div>
 
@@ -320,6 +335,17 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
         ))}
       </div>
     </section>
+  );
+}
+
+function LibraryCue({ label, body }: { label: string; body: string }) {
+  return (
+    <div className="flex items-center gap-3 border border-background/10 bg-background/[0.04] px-3 py-2">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background/10 font-mono text-[10px] text-amber">
+        {label}
+      </span>
+      <span>{body}</span>
+    </div>
   );
 }
 
@@ -378,9 +404,12 @@ function TemplateSkeleton() {
 function EmptyState() {
   return (
     <Card className="surface-library p-8 text-center">
-      <h2 className="font-display text-2xl">Template room is being loaded</h2>
+      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-md border border-hairline bg-amber-soft text-amber">
+        <ClipboardList className="h-5 w-5" />
+      </div>
+      <h2 className="mt-5 font-display text-2xl">Asset stack is being loaded</h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
-        Published templates will appear here as the Circle library is loaded into the new portal.
+        Published templates will appear here as the Circle library is loaded into the portal.
       </p>
     </Card>
   );

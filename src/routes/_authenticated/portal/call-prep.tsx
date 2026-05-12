@@ -22,6 +22,7 @@ import {
   type CallPrepPacket,
   type PacketOutputType,
 } from "@/lib/call-prep.functions";
+import { AOS_APP_URL } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -163,6 +164,7 @@ function CallPrepPage() {
   const selectedOutcome =
     outcomeOptions.find((outcome) => outcome.id === expectedOutput) ?? outcomeOptions[0];
   const canSave = issue.trim().length > 0 && !saving;
+  const openAosLabel = AOS_APP_URL ? "Open AOS app" : "View AOS bridge";
 
   const issuePacket = [
     "Contractor Circle Call Prep",
@@ -501,12 +503,18 @@ function CallPrepPage() {
               )}
             </Button>
             <Button asChild variant="outline" className="w-full justify-between">
-              <Link to="/portal/alp-os">
-                Open AOS <ArrowUpRight className="h-4 w-4" />
-              </Link>
+              {AOS_APP_URL ? (
+                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                  {openAosLabel} <ArrowUpRight className="h-4 w-4" />
+                </a>
+              ) : (
+                <Link to="/portal/alp-os">
+                  {openAosLabel} <ArrowUpRight className="h-4 w-4" />
+                </Link>
+              )}
             </Button>
             <Button type="button" variant="outline" className="w-full justify-between" disabled>
-              Future: Send to AOS <ArrowUpRight className="h-4 w-4" />
+              Future: Send packet to AOS <ArrowUpRight className="h-4 w-4" />
             </Button>
             <Button variant="outline" className="w-full justify-between" onClick={copyIssuePacket}>
               {copied ? "Copied" : "Copy issue packet"}

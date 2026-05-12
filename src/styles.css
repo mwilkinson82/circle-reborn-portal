@@ -311,8 +311,14 @@
     right: 1.5rem;
     top: 2.05rem;
     height: 1px;
+    display: none;
     pointer-events: none;
     background: linear-gradient(90deg, transparent, oklch(0.74 0.15 55 / 32%), transparent);
+  }
+  @media (min-width: 768px) {
+    .system-map::before {
+      display: block;
+    }
   }
   .system-node {
     position: relative;

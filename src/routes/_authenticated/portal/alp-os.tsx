@@ -21,6 +21,7 @@ import {
   type PacketOutputType,
 } from "@/lib/call-prep.functions";
 import { getTemplateLibrary } from "@/lib/dashboard.functions";
+import { AOS_APP_URL, getAosHost } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -44,8 +45,6 @@ const osAssetPriority = [
   "legacy-template-26",
   "legacy-template-33",
 ];
-
-const aosAppUrl = (import.meta.env.VITE_AOS_APP_URL as string | undefined)?.trim() || null;
 
 const buildSequence = [
   {
@@ -157,6 +156,7 @@ function AlpOsPage() {
   );
   const assets = osTemplates.length ? osTemplates : fallbackTemplates;
   const featured = assets[0];
+  const aosHost = getAosHost();
 
   return (
     <div className="container-prose space-y-8 py-8 sm:py-10">
@@ -175,10 +175,10 @@ function AlpOsPage() {
             and carry the output into the dedicated AOS app.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            {aosAppUrl ? (
+            {AOS_APP_URL ? (
               <Button asChild variant="secondary" className="bg-background text-foreground">
-                <a href={aosAppUrl} target="_blank" rel="noopener noreferrer">
-                  Open in AOS <ArrowUpRight className="ml-2 h-4 w-4" />
+                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                  Open AOS app <ArrowUpRight className="ml-2 h-4 w-4" />
                 </a>
               </Button>
             ) : (
@@ -188,7 +188,7 @@ function AlpOsPage() {
                 className="bg-background text-foreground"
                 disabled
               >
-                Open in AOS
+                AOS app pending
               </Button>
             )}
             {featured?.download_url ? (
@@ -212,6 +212,11 @@ function AlpOsPage() {
               </Link>
             </Button>
           </div>
+          <p className="mt-4 text-xs leading-relaxed text-background/48">
+            {aosHost
+              ? `External destination: ${aosHost}`
+              : "This bridge is ready. Add VITE_AOS_APP_URL when the external AOS app should open from here."}
+          </p>
         </div>
 
         <Card className="surface-operating p-6">
