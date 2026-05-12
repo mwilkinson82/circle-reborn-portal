@@ -226,7 +226,7 @@ function DashboardPage() {
 function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
     <div className="max-w-2xl">
-      <p className="font-mono text-xs uppercase tracking-wider text-amber">{eyebrow}</p>
+      <p className="eyebrow text-amber">{eyebrow}</p>
       <h2 className="mt-2 font-display text-2xl leading-tight">{title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
@@ -239,13 +239,17 @@ function CircleHomeHero({ firstName }: { firstName: string }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="relative isolate grid overflow-hidden py-4 lg:grid-cols-[minmax(0,1fr)_28rem] lg:items-center lg:gap-10"
+      className="relative isolate grid overflow-hidden py-6 lg:grid-cols-[minmax(0,1fr)_29rem] lg:items-center lg:gap-8"
     >
       <HeroSketchLayer />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[-8rem] top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-amber/10 blur-3xl"
+      />
 
       <div className="relative z-10 max-w-3xl py-8 sm:py-10">
         <GreetingLine firstName={firstName} />
-        <h1 className="mt-4 max-w-3xl font-display text-5xl leading-[1.03] sm:text-6xl">
+        <h1 className="mt-4 max-w-3xl font-display text-[clamp(3rem,6vw,4.85rem)] leading-[1.04]">
           Build the company <span className="text-amber">behind</span> the projects.
         </h1>
         <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -266,14 +270,15 @@ function HeroSketchLayer() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -bottom-16 -left-28 -top-16 z-0 hidden w-[72%] overflow-hidden sm:block lg:w-[66%]"
+      className="pointer-events-none absolute -bottom-20 -left-32 -top-20 z-0 hidden w-[78%] overflow-hidden rounded-[4rem] sm:block lg:w-[69%]"
     >
       <img
         src="/contractor-circle-hero-sketch.jpg"
         alt=""
-        className="h-full w-full object-cover object-left-top opacity-55 mix-blend-multiply grayscale-[14%]"
+        className="h-full w-full object-cover object-left-top opacity-62 mix-blend-multiply grayscale-[10%] sepia-[8%]"
       />
-      <div className="absolute inset-y-0 right-0 w-2/3 bg-gradient-to-r from-background/0 via-background/75 to-background" />
+      <div className="absolute inset-0 blueprint-fade opacity-60" />
+      <div className="absolute inset-y-0 right-0 w-3/4 bg-gradient-to-r from-background/0 via-background/76 to-background" />
       <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-background via-background/70 to-background/0" />
       <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-background via-background/75 to-background/0" />
       <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-background/0" />
@@ -304,19 +309,19 @@ function getGreeting() {
 
 function NextMoveCard() {
   return (
-    <Card className="relative min-h-60 overflow-hidden border-0 bg-foreground p-6 text-background shadow-[0_22px_70px_rgba(15,17,21,0.18)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_45%,rgba(210,122,38,0.18),transparent_36%)]" />
+    <Card className="surface-command command-panel min-h-60 p-6">
       <div className="relative z-10 grid h-full gap-6 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
-            Your next move
-          </p>
+          <p className="eyebrow text-amber">Your next move</p>
           <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
             Bring one stuck decision into the company operating system before the next live call.
           </p>
           <div className="mt-6 grid gap-2 sm:max-w-52">
-            <Button asChild className="bg-amber text-white shadow-lg hover:bg-amber/90">
+            <Button
+              asChild
+              className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
+            >
               <Link to="/portal/alp-os">
                 Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
@@ -332,7 +337,7 @@ function NextMoveCard() {
             </Button>
           </div>
         </div>
-        <AosMark className="mx-auto w-40 sm:w-44" imageClassName="w-24 sm:w-28" />
+        <AosMark className="mx-auto w-40 sm:w-44" imageClassName="w-24 rounded-2xl sm:w-28" />
       </div>
     </Card>
   );
@@ -360,16 +365,12 @@ function OperatingPriorities({
 }) {
   return (
     <section className="space-y-3">
-      <p className="font-mono text-xs uppercase tracking-wider text-amber">
-        This week's operating priorities
-      </p>
+      <p className="eyebrow text-amber">This Week's Operating Priorities</p>
       <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.35fr)_minmax(14rem,0.85fr)_minmax(14rem,0.85fr)_16rem]">
-        <Card className="overflow-hidden border-hairline p-0 lg:col-span-2 xl:col-span-1">
+        <Card className="surface-operating overflow-hidden rounded-lg p-0 lg:col-span-2 xl:col-span-1">
           <div className="grid h-full min-h-52 grid-cols-[8rem_minmax(0,1fr)]">
             <div className="flex flex-col justify-between bg-amber-soft p-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
-                Next live room
-              </p>
+              <p className="eyebrow text-amber">Next live call</p>
               <div>
                 <p className="font-display text-5xl leading-none tabular-nums">
                   {format(nextCallDate, "d")}
@@ -415,13 +416,11 @@ function OperatingPriorities({
 
         <Link
           to="/portal/call-prep"
-          className="group flex min-h-52 flex-col justify-between rounded-md border border-foreground/20 bg-elevated p-5 shadow-[0_18px_50px_rgba(15,17,21,0.08)] transition-colors hover:border-foreground/35 hover:bg-background"
+          className="surface-operating group flex min-h-52 flex-col justify-between rounded-lg p-5 transition-all hover:-translate-y-1 hover:border-foreground/28"
         >
           <div>
             <div className="flex items-start justify-between gap-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Prepare the issue
-              </p>
+              <p className="eyebrow text-muted-foreground">Prepare the issue</p>
               <ClipboardList className="h-5 w-5 shrink-0 text-amber" />
             </div>
             <h2 className="mt-3 font-display text-2xl leading-tight">What needs pressure?</h2>
@@ -435,15 +434,15 @@ function OperatingPriorities({
           </span>
         </Link>
 
+        <CompanyBuildPath />
+
         <Link
           to="/portal/replays"
-          className="group flex min-h-52 flex-col justify-between rounded-md border border-hairline bg-background p-4 transition-colors hover:bg-secondary"
+          className="surface-library group flex min-h-52 flex-col justify-between rounded-lg p-4 transition-all hover:-translate-y-0.5 hover:border-foreground/18"
         >
           <div>
             <div className="flex items-start justify-between gap-4">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Latest judgment
-              </p>
+              <p className="eyebrow text-muted-foreground">Latest judgment</p>
               <PlayCircle className="h-5 w-5 shrink-0 text-amber" />
             </div>
             <h2 className="mt-3 line-clamp-3 font-display text-xl leading-tight">
@@ -463,34 +462,40 @@ function OperatingPriorities({
             </span>
           </div>
         </Link>
-
-        <CompanyBuildPath />
       </div>
     </section>
   );
 }
 
 const companyBuildPath = [
-  { label: "Vision", status: "Start here", tone: "bg-emerald-500" },
+  { label: "Vision", status: "Start here", tone: "bg-amber" },
   { label: "People", status: "Build next", tone: "bg-muted-foreground/35" },
   { label: "Numbers", status: "Scorecard", tone: "bg-amber" },
   { label: "Issues", status: "Active room", tone: "bg-amber" },
   { label: "Process", status: "Template library", tone: "bg-muted-foreground/35" },
-  { label: "Traction", status: "Live calls", tone: "bg-emerald-500" },
+  { label: "Traction", status: "Live calls", tone: "bg-foreground/55" },
 ];
 
 function CompanyBuildPath() {
   return (
-    <Card className="border-hairline p-4">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-amber">AOS build path</p>
-      <div className="mt-4 space-y-3">
-        {companyBuildPath.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-3 text-xs">
-            <span className="font-medium">{item.label}</span>
-            <span className="inline-flex items-center gap-2 text-muted-foreground">
-              {item.status}
-              <span className={`h-1.5 w-1.5 rounded-full ${item.tone}`} />
+    <Card className="surface-library system-map p-4">
+      <p className="eyebrow text-amber">AOS build path</p>
+      <div className="mt-5 space-y-3">
+        {companyBuildPath.map((item, index) => (
+          <div
+            key={item.label}
+            className="relative grid grid-cols-[1.5rem_minmax(0,1fr)] gap-3 text-xs"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded-full border border-hairline bg-background font-mono text-[10px] text-amber">
+              {index + 1}
             </span>
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-medium">{item.label}</span>
+              <span className="inline-flex items-center gap-2 text-muted-foreground">
+                {item.status}
+                <span className={`h-1.5 w-1.5 rounded-full ${item.tone}`} />
+              </span>
+            </div>
           </div>
         ))}
       </div>
@@ -525,19 +530,15 @@ function WorkLaneCard({
   return (
     <Link
       to={to}
-      className={`group flex min-h-44 flex-col justify-between p-5 transition-colors ${
+      className={`group flex min-h-44 flex-col justify-between rounded-lg p-5 transition-all ${
         isHomeBase
-          ? "border border-foreground bg-foreground text-background shadow-[0_20px_60px_rgba(15,17,21,0.14)] hover:bg-foreground/95"
-          : "bg-background hover:bg-secondary"
+          ? "surface-command command-panel text-background hover:-translate-y-1"
+          : "surface-library hover:-translate-y-0.5 hover:border-foreground/15"
       }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p
-            className={`font-mono text-xs uppercase tracking-wider ${
-              isHomeBase ? "text-amber" : "text-muted-foreground"
-            }`}
-          >
+          <p className={`eyebrow ${isHomeBase ? "text-amber" : "text-muted-foreground"}`}>
             {eyebrow}
           </p>
           <h3 className="mt-3 font-display text-xl leading-tight">{label}</h3>
@@ -608,7 +609,7 @@ function ResourceLibraryPanel({
           >
             <Link
               to="/portal/templates"
-              className="group grid gap-px border border-hairline bg-hairline transition-colors hover:border-foreground/25 md:grid-cols-[11rem_minmax(0,1fr)_6rem]"
+              className="surface-library group grid gap-px overflow-hidden rounded-lg transition-all hover:-translate-y-0.5 hover:border-foreground/20 md:grid-cols-[11rem_minmax(0,1fr)_6rem]"
             >
               <div className="bg-background p-4">
                 <Badge variant={index === 0 ? "default" : "outline"}>{template.category}</Badge>
@@ -653,7 +654,7 @@ function AnnouncementsPanel({
   }>;
 }) {
   return (
-    <Card className="border-hairline p-6">
+    <Card className="surface-library p-6">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">

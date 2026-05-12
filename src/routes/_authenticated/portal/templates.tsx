@@ -116,10 +116,10 @@ function TemplatesPage() {
   const hasActiveFilters = category !== "all" || normalizedQuery.length > 0;
 
   return (
-    <div className="container-prose py-8 sm:py-10 space-y-8">
+    <div className="container-prose space-y-8 py-8 sm:py-10">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <div className="border border-hairline bg-foreground p-6 text-background sm:p-8 lg:p-10">
-          <p className="font-mono text-xs uppercase tracking-wider text-amber">Member library</p>
+        <div className="surface-command command-panel p-6 sm:p-8 lg:p-10">
+          <p className="eyebrow text-amber">Member library</p>
           <h1 className="mt-3 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">
             Stop rebuilding from scratch.
           </h1>
@@ -128,7 +128,7 @@ function TemplatesPage() {
             work they support.
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-px border border-hairline bg-hairline lg:grid-cols-1">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
           <StatBlock label="Resources" value={String(templates.length)} />
           <StatBlock label="Featured" value={String(featured)} />
           <StatBlock label="Categories" value={String(categories)} />
@@ -157,7 +157,7 @@ function TemplatesPage() {
                   value={query}
                   onChange={(event) => setQuery(event.target.value)}
                   placeholder="Search resources"
-                  className="h-11 rounded-none pl-9 pr-9"
+                  className="h-11 pl-9 pr-9"
                 />
                 {query && (
                   <button
@@ -178,10 +178,10 @@ function TemplatesPage() {
                   key={item.value}
                   type="button"
                   onClick={() => setCategory(item.value)}
-                  className={`border px-3 py-2 text-xs font-medium transition-colors ${
+                  className={`rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
                     category === item.value
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-hairline bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                      ? "surface-command text-background"
+                      : "surface-library text-muted-foreground hover:border-foreground/40 hover:text-foreground"
                   }`}
                 >
                   {item.label}
@@ -203,7 +203,7 @@ function TemplatesPage() {
             </div>
 
             {filteredTemplates.length === 0 ? (
-              <Card className="border-hairline p-8 text-center">
+              <Card className="surface-library p-8 text-center">
                 <h3 className="font-display text-2xl">No matching resources</h3>
                 <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
                   Try a different keyword or category.
@@ -212,7 +212,10 @@ function TemplatesPage() {
             ) : (
               <div className="grid gap-3">
                 {filteredTemplates.map((template) => (
-                  <Card key={template.id} className="border-hairline p-0 shadow-sm">
+                  <Card
+                    key={template.id}
+                    className="surface-library asset-stack overflow-hidden p-0"
+                  >
                     <div className="grid gap-px bg-hairline md:grid-cols-[12rem_minmax(0,1fr)_11rem]">
                       <div className="bg-background p-5">
                         <Badge variant={template.featured ? "default" : "outline"}>
@@ -276,7 +279,7 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
   return (
     <section className="space-y-4">
       <div className="max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-wider text-amber">Prescribed path</p>
+        <p className="eyebrow text-amber">Prescribed path</p>
         <h2 className="mt-2 font-display text-2xl leading-tight">
           Start building the operating system
         </h2>
@@ -285,11 +288,13 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
         </p>
       </div>
 
-      <div className="grid gap-px border border-hairline bg-hairline lg:grid-cols-5">
+      <div className="grid gap-3 lg:grid-cols-5">
         {templates.map((template, index) => (
           <div
             key={template.id}
-            className="flex min-h-64 flex-col justify-between bg-background p-5"
+            className={`asset-stack flex min-h-64 flex-col justify-between p-5 ${
+              index === 0 ? "surface-operating" : "surface-library"
+            }`}
           >
             <div>
               <Badge variant={index === 0 ? "default" : "outline"}>
@@ -298,9 +303,13 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
               <p className="mt-5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Step {index + 1}
               </p>
-              <h3 className="mt-3 font-display text-xl leading-tight">{template.title}</h3>
+              <h3 className="mt-3 font-display text-xl leading-tight">
+                {index === 0 ? "ALP/EOS Operating System - Complete Playbook" : template.title}
+              </h3>
               <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
-                {template.description}
+                {index === 0
+                  ? "The first operating asset for turning Contractor Circle pressure into a weekly company rhythm."
+                  : template.description}
               </p>
             </div>
             <TemplateAction
@@ -349,8 +358,8 @@ function TemplateAction({
 
 function StatBlock({ label, value }: { label: string; value: string }) {
   return (
-    <div className="bg-background p-5">
-      <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
+    <div className="surface-library rounded-lg p-5">
+      <p className="eyebrow text-muted-foreground">{label}</p>
       <p className="mt-2 font-display text-2xl tabular-nums">{value}</p>
     </div>
   );
@@ -368,7 +377,7 @@ function TemplateSkeleton() {
 
 function EmptyState() {
   return (
-    <Card className="border-hairline p-8 text-center">
+    <Card className="surface-library p-8 text-center">
       <h2 className="font-display text-2xl">Template room is being loaded</h2>
       <p className="mx-auto mt-3 max-w-md text-sm text-muted-foreground">
         Published templates will appear here as the Circle library is loaded into the new portal.

@@ -183,7 +183,7 @@ function CallPrepPage() {
     "5. What would make this a win on the call?",
     win.trim() || "[add win condition]",
     "",
-    `Likely output: ${selectedOutcome.label}`,
+    `Intended output: ${selectedOutcome.label}`,
     outputSummary.trim() ? `Captured output: ${outputSummary.trim()}` : "",
     owner.trim() ? `Owner: ${owner.trim()}` : "",
     dueDate.trim() ? `Due date: ${dueDate.trim()}` : "",
@@ -293,19 +293,20 @@ function CallPrepPage() {
   return (
     <div className="mx-auto max-w-[82rem] space-y-8 px-5 py-7 sm:px-6 sm:py-10 2xl:max-w-[88rem]">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <div className="relative overflow-hidden border border-hairline bg-background p-6 sm:p-8 lg:p-10">
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 border-l border-hairline bg-[linear-gradient(180deg,rgba(210,122,38,0.08),transparent_42%,rgba(210,122,38,0.06))]" />
+        <div className="surface-operating relative overflow-hidden rounded-xl p-6 sm:p-8 lg:p-10">
+          <div className="blueprint-fade pointer-events-none absolute inset-0 opacity-50" />
+          <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-amber/10 blur-3xl" />
 
-          <p className="font-mono text-xs uppercase tracking-wider text-amber">Call prep</p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
+          <p className="eyebrow relative z-10 text-amber">Call prep</p>
+          <h1 className="relative z-10 mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
             What needs pressure before the next call?
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="relative z-10 mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             Bring one stuck decision into the open. A good Contractor Circle issue should turn into
             a decision, to-do, SOP gap, scorecard metric, or AOS issue.
           </p>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="relative z-10 mt-8 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {categories.map((item) => {
               const Icon = item.icon;
               const active = item.id === categoryId;
@@ -315,10 +316,10 @@ function CallPrepPage() {
                   key={item.id}
                   type="button"
                   onClick={() => setCategoryId(item.id)}
-                  className={`min-h-32 border p-4 text-left transition-colors ${
+                  className={`min-h-36 rounded-lg border p-4 text-left transition-all ${
                     active
-                      ? "border-foreground bg-foreground text-background"
-                      : "border-hairline bg-background hover:bg-secondary"
+                      ? "surface-command command-panel text-background"
+                      : "surface-library hover:-translate-y-0.5 hover:border-foreground/18"
                   }`}
                 >
                   <Icon className="h-5 w-5 text-amber" />
@@ -338,21 +339,19 @@ function CallPrepPage() {
           </div>
         </div>
 
-        <Card className="border-hairline p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Issue packet
-          </p>
+        <Card className="surface-command command-panel p-6">
+          <p className="eyebrow relative z-10 text-amber">Packet status</p>
           <h2 className="mt-2 font-display text-2xl leading-tight">{category.label}</h2>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{category.prompt}</p>
+          <p className="mt-3 text-sm leading-relaxed text-background/68">{category.prompt}</p>
 
           <div className="mt-6 space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Prep strength</span>
+              <span className="font-medium text-background/82">Prep strength</span>
               <Badge variant={completedCount >= 4 ? "default" : "outline"}>
                 {completedCount}/5 answered
               </Badge>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-secondary">
+            <div className="h-2 overflow-hidden rounded-full bg-background/12">
               <div
                 className="h-full bg-amber transition-all"
                 style={{ width: `${(completedCount / 5) * 100}%` }}
@@ -360,58 +359,21 @@ function CallPrepPage() {
             </div>
           </div>
 
-          <div className="mt-7 space-y-3">
-            <Button className="w-full" onClick={saveIssuePacket} disabled={!canSave}>
-              {saving ? (
-                <>
-                  Saving <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-                </>
-              ) : saved ? (
-                <>
-                  Packet saved <CheckCircle2 className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  Save issue packet <Save className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-            <Button asChild variant="outline" className="w-full">
-              <Link to="/portal/alp-os">
-                Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-            <Button type="button" variant="outline" className="w-full" disabled>
-              Future: Send to AOS <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button variant="outline" className="w-full" onClick={copyIssuePacket}>
-              {copied ? (
-                <>
-                  Copied <CheckCircle2 className="ml-2 h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  Copy issue packet <Copy className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-            {saveError ? (
-              <p className="text-xs leading-relaxed text-destructive">{saveError}</p>
-            ) : null}
-          </div>
+          <p className="mt-7 border-t border-background/10 pt-4 text-xs leading-relaxed text-background/58">
+            Save the packet here, copy it into the live room, then move the output into AOS when the
+            external destination is ready.
+          </p>
         </Card>
       </section>
 
       <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
-        <Card className="border-hairline p-5 sm:p-6">
+        <Card className="surface-operating p-5 sm:p-6">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-hairline bg-secondary text-amber">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-hairline bg-amber-soft text-amber">
               <MessageSquareText className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-amber">
-                Build the issue
-              </p>
+              <p className="eyebrow text-amber">Build the issue</p>
               <h2 className="mt-2 font-display text-2xl leading-tight">
                 Make the problem specific enough to solve
               </h2>
@@ -489,15 +451,13 @@ function CallPrepPage() {
           </div>
         </Card>
 
-        <Card className="border-hairline p-5 sm:p-6">
+        <Card className="surface-operating operating-brief h-fit p-5 sm:p-6 lg:sticky lg:top-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-hairline bg-foreground text-background">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-hairline bg-foreground text-background">
               <ClipboardCheck className="h-5 w-5 text-amber" />
             </div>
             <div>
-              <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-                Issue packet
-              </p>
+              <p className="eyebrow text-muted-foreground">Issue Packet</p>
               <h2 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h2>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 Built for AOS or the live room.
@@ -505,9 +465,57 @@ function CallPrepPage() {
             </div>
           </div>
 
-          <pre className="mt-5 max-h-[34rem] overflow-auto whitespace-pre-wrap border border-hairline bg-secondary p-4 font-sans text-sm leading-relaxed text-muted-foreground">
-            {issuePacket}
-          </pre>
+          <div className="mt-5 max-h-[34rem] overflow-auto rounded-md border border-hairline bg-background/80 p-5 shadow-inner">
+            <IssuePacketBrief
+              category={category.label}
+              issue={issue}
+              tried={tried}
+              avoiding={avoiding}
+              consequence={consequence}
+              win={win}
+              output={selectedOutcome.label}
+              owner={owner}
+              dueDate={dueDate}
+              outputSummary={outputSummary}
+            />
+          </div>
+
+          <div className="mt-5 grid gap-2">
+            <Button
+              className="w-full justify-between"
+              onClick={saveIssuePacket}
+              disabled={!canSave}
+            >
+              {saving ? (
+                <>
+                  Saving <Loader2 className="h-4 w-4 animate-spin" />
+                </>
+              ) : saved ? (
+                <>
+                  Packet saved <CheckCircle2 className="h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Save issue packet <Save className="h-4 w-4" />
+                </>
+              )}
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-between">
+              <Link to="/portal/alp-os">
+                Open AOS <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button type="button" variant="outline" className="w-full justify-between" disabled>
+              Future: Send to AOS <ArrowUpRight className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" className="w-full justify-between" onClick={copyIssuePacket}>
+              {copied ? "Copied" : "Copy issue packet"}
+              {copied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+            </Button>
+            {saveError ? (
+              <p className="text-xs leading-relaxed text-destructive">{saveError}</p>
+            ) : null}
+          </div>
         </Card>
       </section>
 
@@ -520,18 +528,19 @@ function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
   return (
     <section className="space-y-4">
       <div className="max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-wider text-amber">Call prep history</p>
+        <p className="eyebrow text-amber">Call prep history</p>
         <h2 className="mt-2 font-display text-2xl leading-tight">Make the pressure cumulative</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Saved packets stay in Contractor Circle for follow-through. Copy them into the live room
-          now; move them into AOS when the external integration is ready.
+          Saved packets stay in Contractor Circle so the pressure does not disappear after the call.
+          Copy them into the live room now; move them into AOS when the external integration is
+          ready.
         </p>
       </div>
 
       {packets.length ? (
-        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {packets.slice(0, 4).map((packet) => (
-            <div key={packet.id} className="bg-background p-5">
+            <div key={packet.id} className="surface-operating operating-brief rounded-lg p-5">
               <div className="flex items-center justify-between gap-3">
                 <Badge variant={packet.status === "converted" ? "default" : "outline"}>
                   {statusLabels[packet.status]}
@@ -551,10 +560,11 @@ function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
           ))}
         </div>
       ) : (
-        <Card className="border-hairline p-6">
+        <Card className="surface-operating operating-brief p-6">
           <h3 className="font-display text-2xl">No saved packets yet</h3>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Build one strong issue before the next call. The saved history will appear here.
+            Saved packets stay in Contractor Circle so the pressure does not disappear after the
+            call.
           </p>
         </Card>
       )}
@@ -571,8 +581,8 @@ function OutcomeSelector({
 }) {
   return (
     <div className="space-y-3">
-      <Label className="text-sm font-medium">Likely output</Label>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+      <Label className="text-sm font-medium">What should this become?</Label>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {outcomeOptions.map((outcome) => {
           const active = outcome.id === value;
 
@@ -581,10 +591,10 @@ function OutcomeSelector({
               key={outcome.id}
               type="button"
               onClick={() => onChange(outcome.id)}
-              className={`min-h-28 border p-3 text-left transition-colors ${
+              className={`min-h-28 rounded-lg border p-3 text-left transition-all ${
                 active
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-hairline bg-background hover:bg-secondary"
+                  ? "surface-command command-panel text-background"
+                  : "surface-library hover:-translate-y-0.5 hover:border-foreground/18"
               }`}
             >
               <span className="block font-display text-lg leading-tight">{outcome.label}</span>
@@ -598,6 +608,69 @@ function OutcomeSelector({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function IssuePacketBrief({
+  category,
+  issue,
+  tried,
+  avoiding,
+  consequence,
+  win,
+  output,
+  owner,
+  dueDate,
+  outputSummary,
+}: {
+  category: string;
+  issue: string;
+  tried: string;
+  avoiding: string;
+  consequence: string;
+  win: string;
+  output: string;
+  owner: string;
+  dueDate: string;
+  outputSummary: string;
+}) {
+  const fields = [
+    { label: "Category", value: category },
+    { label: "What needs pressure", value: issue || "[add issue]" },
+    { label: "What we already tried", value: tried || "[add prior attempts]" },
+    { label: "Decision we are avoiding", value: avoiding || "[add avoided decision]" },
+    { label: "Financial consequence", value: consequence || "[add financial consequence]" },
+    { label: "What would make this a win", value: win || "[add win condition]" },
+    { label: "Intended output", value: output },
+    { label: "Owner", value: owner || "Unassigned" },
+    { label: "Due date", value: dueDate || "Not set" },
+  ];
+
+  return (
+    <div>
+      <div className="border-b border-hairline pb-4">
+        <p className="eyebrow text-amber">Issue Packet</p>
+        <h3 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h3>
+      </div>
+      <div className="mt-1">
+        {fields.map((field) => (
+          <div key={field.label} className="brief-row">
+            <p className="eyebrow text-muted-foreground">{field.label}</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {field.value}
+            </p>
+          </div>
+        ))}
+        {outputSummary ? (
+          <div className="brief-row">
+            <p className="eyebrow text-muted-foreground">Captured call output</p>
+            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {outputSummary}
+            </p>
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -636,7 +709,7 @@ function PrepQuestion({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="min-h-24 resize-y"
+        className="min-h-28 resize-y"
       />
     </div>
   );

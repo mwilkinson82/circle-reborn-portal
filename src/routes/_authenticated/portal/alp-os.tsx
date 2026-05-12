@@ -161,9 +161,11 @@ function AlpOsPage() {
   return (
     <div className="container-prose space-y-8 py-8 sm:py-10">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="border border-hairline bg-foreground p-6 text-background sm:p-8 lg:p-10">
-          <AosMark className="w-20" imageClassName="w-12 rounded-xl" showRings={false} />
-          <p className="mt-7 font-mono text-xs uppercase tracking-wider text-amber">AOS</p>
+        <div className="surface-command command-panel p-6 sm:p-8 lg:p-10">
+          <div className="relative z-10">
+            <AosMark className="w-24" imageClassName="w-14 rounded-2xl" />
+          </div>
+          <p className="eyebrow relative z-10 mt-7 text-amber">AOS</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
             Install the operating system before you scale the work.
           </h1>
@@ -212,10 +214,8 @@ function AlpOsPage() {
           </div>
         </div>
 
-        <Card className="border-hairline p-6">
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Owner promise
-          </p>
+        <Card className="surface-operating p-6">
+          <p className="eyebrow text-muted-foreground">Owner promise</p>
           <h2 className="mt-2 font-display text-2xl leading-tight">
             Less owner drag. More company value.
           </h2>
@@ -238,15 +238,27 @@ function AlpOsPage() {
           title="Six parts of the company operating system"
           body="This is the path members follow in the dedicated AOS app. Contractor Circle keeps the pressure and guidance moving toward these six parts."
         />
-        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-3">
-          {buildSequence.map((step) => (
-            <div key={step.label} className="bg-background p-5">
+        <div className="system-map relative grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {buildSequence.map((step, index) => (
+            <div
+              key={step.label}
+              className={`surface-operating system-node group relative overflow-hidden p-5 pl-12 transition-all hover:-translate-y-1 hover:border-foreground/20 ${
+                index === 0 ? "ring-1 ring-amber/25" : ""
+              }`}
+            >
+              <div
+                aria-hidden="true"
+                className="absolute right-4 top-4 font-display text-6xl leading-none text-foreground/[0.035] transition-colors group-hover:text-amber/10"
+              >
+                {String(index + 1).padStart(2, "0")}
+              </div>
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <p className="font-mono text-[10px] uppercase tracking-wider text-amber">
-                    {step.tool}
-                  </p>
+                  <p className="eyebrow text-amber">{index === 0 ? "Start here" : step.tool}</p>
                   <h3 className="mt-3 font-display text-2xl leading-tight">{step.label}</h3>
+                  {index === 0 ? (
+                    <p className="mt-1 text-xs font-medium text-muted-foreground">{step.tool}</p>
+                  ) : null}
                 </div>
                 <step.icon className="h-5 w-5 text-amber" />
               </div>
@@ -278,7 +290,7 @@ function AlpOsPage() {
               ))}
             </div>
           ) : (
-            <Card className="border-hairline p-8">
+            <Card className="surface-operating p-8">
               <h3 className="font-display text-2xl">OS assets are being loaded</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 The AOS library will appear here as soon as the member catalog is available.
@@ -295,7 +307,7 @@ function AlpOsPage() {
           />
           <div className="grid gap-3">
             {orchestrationTools.map((tool) => (
-              <Card key={tool.label} className="border-hairline p-5">
+              <Card key={tool.label} className="surface-library p-5">
                 <Badge variant="outline">{tool.status}</Badge>
                 <h3 className="mt-4 font-display text-xl leading-tight">{tool.label}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{tool.body}</p>
@@ -335,7 +347,7 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
         </Button>
       </div>
 
-      <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         <MetricTile label="Ready packets" value={String(ready)} />
         <MetricTile label="Converted outputs" value={String(converted)} />
         <MetricTile
@@ -358,7 +370,7 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
           ))}
         </div>
       ) : (
-        <Card className="border-hairline p-8">
+        <Card className="surface-operating p-8">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-hairline bg-secondary text-amber">
               <ClipboardList className="h-5 w-5" />
@@ -390,10 +402,8 @@ function MetricTile({
   compact?: boolean;
 }) {
   return (
-    <div className="bg-background p-5">
-      <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
+    <div className="surface-operating rounded-lg p-5">
+      <p className="eyebrow text-muted-foreground">{label}</p>
       <p className={`mt-3 font-display leading-none ${compact ? "text-3xl" : "text-5xl"}`}>
         {value}
       </p>
@@ -405,7 +415,7 @@ function PacketCard({ packet }: { packet: CallPrepPacket }) {
   const converted = packet.status === "converted";
 
   return (
-    <Card className="border-hairline p-0">
+    <Card className="surface-operating operating-brief overflow-hidden p-0">
       <div className="grid gap-px bg-hairline lg:grid-cols-[11rem_minmax(0,1fr)_18rem]">
         <div className="bg-background p-5">
           <Badge variant={converted ? "default" : "outline"}>{formatStatus(packet.status)}</Badge>
@@ -439,9 +449,7 @@ function PacketCard({ packet }: { packet: CallPrepPacket }) {
           <div className="flex items-start gap-3">
             <UserRound className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
             <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Owner
-              </p>
+              <p className="eyebrow text-muted-foreground">Owner</p>
               <p className="mt-1 text-sm font-medium">{packet.owner || "Unassigned"}</p>
             </div>
           </div>
@@ -485,7 +493,7 @@ function formatStatus(status: CallPrepPacket["status"]) {
 function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: string; body: string }) {
   return (
     <div className="max-w-2xl">
-      <p className="font-mono text-xs uppercase tracking-wider text-amber">{eyebrow}</p>
+      <p className="eyebrow text-amber">{eyebrow}</p>
       <h2 className="mt-2 font-display text-2xl leading-tight">{title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
@@ -493,12 +501,22 @@ function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: strin
 }
 
 function OsAssetCard({ template, index }: { template: OsTemplate; index: number }) {
+  const isFirst = index === 0;
+
   return (
-    <Card className="border-hairline p-0">
-      <div className="grid gap-px bg-hairline md:grid-cols-[10rem_minmax(0,1fr)_9rem]">
-        <div className="bg-background p-5">
-          <Badge variant={index === 0 ? "default" : "outline"}>
-            {index === 0 ? "Start here" : template.badge || "OS asset"}
+    <Card
+      className={`${isFirst ? "surface-operating asset-stack" : "surface-library asset-stack"} overflow-hidden p-0`}
+    >
+      <div
+        className={`grid gap-px bg-hairline ${
+          isFirst
+            ? "md:grid-cols-[11rem_minmax(0,1fr)_12rem]"
+            : "md:grid-cols-[10rem_minmax(0,1fr)_9rem]"
+        }`}
+      >
+        <div className={`${isFirst ? "bg-amber-soft/70" : "bg-background"} p-5`}>
+          <Badge variant={isFirst ? "default" : "outline"}>
+            {isFirst ? "Start here" : template.badge || "OS asset"}
           </Badge>
           <p className="mt-4 font-mono text-xs uppercase text-muted-foreground">
             {template.file_type}
@@ -506,13 +524,17 @@ function OsAssetCard({ template, index }: { template: OsTemplate; index: number 
           </p>
         </div>
         <div className="bg-background p-5">
-          <h3 className="font-display text-xl leading-tight">{template.title}</h3>
+          <h3 className={`font-display leading-tight ${isFirst ? "text-2xl" : "text-xl"}`}>
+            {isFirst ? "ALP/EOS Operating System - Complete Playbook" : template.title}
+          </h3>
           <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
-            {template.long_description ?? template.description}
+            {isFirst
+              ? "The first operating asset for turning Contractor Circle pressure into a weekly company rhythm: vision, people, numbers, issues, process, and traction."
+              : (template.long_description ?? template.description)}
           </p>
         </div>
         <div className="flex items-center bg-background p-5">
-          <AssetAction downloadUrl={template.download_url ?? null} isFirst={index === 0} />
+          <AssetAction downloadUrl={template.download_url ?? null} isFirst={isFirst} />
         </div>
       </div>
     </Card>
