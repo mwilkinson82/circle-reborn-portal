@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { format, formatDistanceToNow } from "date-fns";
 import { getDashboard } from "@/lib/dashboard.functions";
-import { AOS_APP_URL, getAosHost } from "@/lib/aos-link";
+import { AOS_APP_URL } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -206,9 +206,9 @@ function DashboardPage() {
           title="Use field tools when the work calls for them"
           body="AOS is the home base. ConstructLine, Basis, Baseline, and the pricing libraries support live pursuits, estimates, schedules, and cost questions when that is the problem in front of you."
         />
-        <div className="grid gap-3 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,2fr)]">
+        <div className="surface-tool-row grid gap-3 rounded-xl p-3 lg:grid-cols-[minmax(16rem,0.82fr)_minmax(0,2fr)]">
           <WorkLaneCard {...aosHomeBaseTool} isHomeBase />
-          <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {fieldSupportTools.map((tool) => (
               <WorkLaneCard key={tool.to} {...tool} />
             ))}
@@ -240,27 +240,27 @@ function CircleHomeHero({ firstName }: { firstName: string }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="relative isolate grid overflow-hidden py-6 lg:grid-cols-[minmax(0,1fr)_29rem] lg:items-center lg:gap-8"
+      className="relative isolate grid overflow-hidden rounded-[1.35rem] border border-hairline bg-[linear-gradient(105deg,oklch(0.99_0.006_82)_0%,oklch(0.975_0.012_78)_48%,oklch(0.955_0.012_75)_100%)] px-0 py-5 shadow-[0_30px_90px_rgba(35,24,12,0.08)] lg:grid-cols-[minmax(0,1fr)_27rem] lg:items-center lg:gap-6 xl:grid-cols-[minmax(0,1fr)_29rem]"
     >
       <HeroSketchLayer />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-[-8rem] top-[-10rem] z-0 h-[30rem] w-[30rem] rounded-full bg-amber/10 blur-3xl"
+        className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(circle_at_32%_22%,oklch(0.82_0.08_62/0.16),transparent_19rem),radial-gradient(circle_at_78%_52%,oklch(0.45_0.025_260/0.08),transparent_22rem),linear-gradient(90deg,transparent,oklch(0.98_0.006_82/0.65)_48%,transparent)]"
       />
 
-      <div className="relative z-10 max-w-3xl py-8 sm:py-10">
+      <div className="relative z-10 max-w-3xl px-5 py-8 sm:px-7 sm:py-10 lg:py-12">
         <GreetingLine firstName={firstName} />
-        <h1 className="mt-4 max-w-3xl font-display text-[clamp(3rem,6vw,4.85rem)] leading-[1.04]">
+        <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,5.3vw,4.55rem)] leading-[1.02]">
           Build the company <span className="text-amber">behind</span> the projects.
         </h1>
-        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-foreground/68 sm:text-base">
           Contractor Circle gives you live guidance, peer pressure, and AOS to turn stuck decisions
           into structure. Bring the problems here, pressure-test them with Marshall, and build the
           company machine one week at a time.
         </p>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 px-5 pb-3 sm:px-7 lg:px-0 lg:pb-0 lg:pr-6">
         <NextMoveCard />
       </div>
     </motion.section>
@@ -271,18 +271,18 @@ function HeroSketchLayer() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -bottom-20 -left-32 -top-20 z-0 hidden w-[78%] overflow-hidden rounded-[4rem] sm:block lg:w-[69%]"
+      className="pointer-events-none absolute -bottom-12 -left-10 -top-10 z-0 hidden w-[76%] overflow-hidden rounded-[3rem] opacity-80 sm:block lg:w-[68%]"
     >
       <img
         src="/contractor-circle-hero-sketch.jpg"
         alt=""
-        className="h-full w-full object-cover object-left-top opacity-62 mix-blend-multiply grayscale-[10%] sepia-[8%]"
+        className="h-full w-full object-cover object-left-top opacity-34 mix-blend-multiply grayscale-[18%] sepia-[10%]"
       />
-      <div className="absolute inset-0 blueprint-fade opacity-60" />
-      <div className="absolute inset-y-0 right-0 w-3/4 bg-gradient-to-r from-background/0 via-background/76 to-background" />
-      <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-background via-background/70 to-background/0" />
-      <div className="absolute inset-x-0 bottom-0 h-36 bg-gradient-to-t from-background via-background/75 to-background/0" />
-      <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-background to-background/0" />
+      <div className="absolute inset-0 blueprint-fade opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_22%,oklch(0.81_0.09_62/0.2),transparent_18rem),linear-gradient(90deg,oklch(0.985_0.006_82/0.6),oklch(0.985_0.006_82/0.38)_40%,oklch(0.985_0.006_82/0.92)_88%)]" />
+      <div className="absolute inset-y-0 right-0 w-2/3 bg-gradient-to-r from-background/0 via-background/72 to-background" />
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-background via-background/60 to-background/0" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-background via-background/68 to-background/0" />
     </div>
   );
 }
@@ -309,38 +309,24 @@ function getGreeting() {
 }
 
 function NextMoveCard() {
-  const aosHost = getAosHost();
-
   return (
-    <Card className="surface-command command-panel min-h-60 p-6">
+    <Card className="surface-command command-panel min-h-60 p-6 shadow-[0_34px_100px_rgba(28,20,12,0.2)]">
       <div className="relative z-10 grid h-full gap-6 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center">
         <div>
           <p className="eyebrow text-amber">Your next move</p>
-          <h2 className="mt-3 font-display text-3xl leading-tight">Prepare the AOS handoff</h2>
+          <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
-            Capture the stuck decision here, then carry the clean output into the dedicated AOS
-            workspace.
+            Bring one stuck decision into the operating system before the next live call.
           </p>
           <div className="mt-6 grid gap-2 sm:max-w-52">
-            {AOS_APP_URL ? (
-              <Button
-                asChild
-                className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
-              >
-                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
-                  Open AOS app <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            ) : (
-              <Button
-                asChild
-                className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
-              >
-                <Link to="/portal/alp-os">
-                  View AOS bridge <ArrowUpRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            )}
+            <Button
+              asChild
+              className="bg-amber text-white shadow-[0_16px_40px_rgba(210,122,38,0.24)] hover:bg-amber/90"
+            >
+              <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
             <Button
               asChild
               variant="outline"
@@ -351,11 +337,6 @@ function NextMoveCard() {
               </Link>
             </Button>
           </div>
-          <p className="mt-3 text-[11px] leading-relaxed text-background/48">
-            {aosHost
-              ? `External destination: ${aosHost}`
-              : "External AOS destination is not configured yet."}
-          </p>
         </div>
         <AosMark className="mx-auto w-40 sm:w-44" imageClassName="w-24 rounded-2xl sm:w-28" />
       </div>
@@ -499,7 +480,7 @@ const companyBuildPath = [
 function CompanyBuildPath() {
   return (
     <Card className="surface-library system-map p-4">
-      <p className="eyebrow text-amber">AOS handoff path</p>
+      <p className="eyebrow text-amber">AOS build path</p>
       <div className="mt-5 space-y-3">
         {companyBuildPath.map((item, index) => (
           <div
@@ -520,9 +501,9 @@ function CompanyBuildPath() {
         ))}
       </div>
       <Button asChild variant="ghost" size="sm" className="mt-4 w-full justify-between px-0">
-        <Link to="/portal/alp-os">
-          View bridge <ArrowUpRight className="h-4 w-4" />
-        </Link>
+        <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+          Open AOS <ArrowUpRight className="h-4 w-4" />
+        </a>
       </Button>
     </Card>
   );
@@ -578,7 +559,7 @@ function WorkLaneCard({
           <span className={`font-medium ${isHomeBase ? "text-background" : "text-foreground"}`}>
             {value}
           </span>
-          <span> / {hint}</span>
+          <span> / {isHomeBase ? "Where pressure becomes structure." : hint}</span>
         </p>
         <ArrowUpRight
           className={`h-4 w-4 shrink-0 transition-opacity group-hover:opacity-100 ${
@@ -608,8 +589,8 @@ function ResourceLibraryPanel({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <SectionHeader
           eyebrow="Template library"
-          title="Stop rebuilding from scratch"
-          body="The most useful assets should feel close to the work: operating system docs, SOPs, contracts, checklists, and scripts."
+          title="Implementation assets for the next move"
+          body="The most useful assets should feel close to the work: operating-system docs, SOPs, contracts, checklists, and scripts."
         />
         <Link
           to="/portal/templates"
@@ -629,7 +610,7 @@ function ResourceLibraryPanel({
           >
             <Link
               to="/portal/templates"
-              className="surface-library group grid gap-px overflow-hidden rounded-lg transition-all hover:-translate-y-0.5 hover:border-foreground/20 md:grid-cols-[11rem_minmax(0,1fr)_6rem]"
+              className="surface-library asset-stack group grid gap-px overflow-hidden rounded-lg transition-all hover:-translate-y-0.5 hover:border-foreground/20 md:grid-cols-[12rem_minmax(0,1fr)_7rem]"
             >
               <div className="bg-background p-4">
                 <Badge variant={index === 0 ? "default" : "outline"}>{template.category}</Badge>

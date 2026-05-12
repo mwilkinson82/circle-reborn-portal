@@ -303,34 +303,45 @@ function ImplementationSequence({ templates }: { templates: TemplateResource[] }
         </p>
       </div>
 
-      <div className="grid gap-3 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {templates.map((template, index) => (
           <div
             key={template.id}
-            className={`asset-stack flex min-h-64 flex-col justify-between p-5 ${
-              index === 0 ? "surface-operating" : "surface-library"
+            className={`asset-stack flex min-h-72 flex-col justify-between p-6 ${
+              index === 0 ? "surface-operating md:col-span-2 xl:col-span-1" : "surface-library"
             }`}
           >
             <div>
-              <Badge variant={index === 0 ? "default" : "outline"}>
-                {sequenceLabels[index] ?? "Use with AOS"}
-              </Badge>
-              <p className="mt-5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              <div className="flex items-start justify-between gap-4">
+                <Badge variant={index === 0 ? "default" : "outline"}>
+                  {sequenceLabels[index] ?? "Use with AOS"}
+                </Badge>
+                <span className="font-display text-5xl leading-none text-foreground/[0.06]">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+              </div>
+              <p className="mt-6 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Step {index + 1}
               </p>
-              <h3 className="mt-3 font-display text-xl leading-tight">
+              <h3
+                className={`mt-3 font-display leading-tight ${
+                  index === 0 ? "text-3xl" : "text-2xl"
+                }`}
+              >
                 {index === 0 ? "ALP/EOS Operating System - Complete Playbook" : template.title}
               </h3>
-              <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+              <p className="mt-3 line-clamp-5 text-sm leading-relaxed text-muted-foreground">
                 {index === 0
                   ? "The first operating asset for turning Contractor Circle pressure into a weekly company rhythm."
                   : template.description}
               </p>
             </div>
-            <TemplateAction
-              downloadUrl={template.download_url ?? null}
-              label={index === 0 ? "Start here" : "Open"}
-            />
+            <div className="mt-6">
+              <TemplateAction
+                downloadUrl={template.download_url ?? null}
+                label={index === 0 ? "Start here" : "Open"}
+              />
+            </div>
           </div>
         ))}
       </div>

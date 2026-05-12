@@ -21,7 +21,7 @@ import {
   type PacketOutputType,
 } from "@/lib/call-prep.functions";
 import { getTemplateLibrary } from "@/lib/dashboard.functions";
-import { AOS_APP_URL, getAosHost } from "@/lib/aos-link";
+import { AOS_APP_URL } from "@/lib/aos-link";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -156,41 +156,29 @@ function AlpOsPage() {
   );
   const assets = osTemplates.length ? osTemplates : fallbackTemplates;
   const featured = assets[0];
-  const aosHost = getAosHost();
 
   return (
     <div className="container-prose space-y-8 py-8 sm:py-10">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="surface-command command-panel p-6 sm:p-8 lg:p-10">
+        <div className="surface-command command-panel p-6 sm:p-7 lg:p-8">
           <div className="relative z-10">
             <AosMark className="w-24" imageClassName="w-14 rounded-2xl" />
           </div>
-          <p className="eyebrow relative z-10 mt-7 text-amber">AOS</p>
+          <p className="eyebrow relative z-10 mt-6 text-amber">AOS</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
             Install the operating system before you scale the work.
           </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-relaxed text-background/68 sm:text-base">
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/68 sm:text-base">
             AOS is where Contractor Circle becomes structure: vision, people, numbers, issues,
             process, and traction. Use this portal to bring the pressure, prepare the issue packet,
             and carry the output into the dedicated AOS app.
           </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            {AOS_APP_URL ? (
-              <Button asChild variant="secondary" className="bg-background text-foreground">
-                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
-                  Open AOS app <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            ) : (
-              <Button
-                type="button"
-                variant="secondary"
-                className="bg-background text-foreground"
-                disabled
-              >
-                AOS app pending
-              </Button>
-            )}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button asChild variant="secondary" className="bg-background text-foreground">
+              <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
             {featured?.download_url ? (
               <Button
                 asChild
@@ -208,18 +196,13 @@ function AlpOsPage() {
               className="border-background/15 bg-transparent text-background hover:bg-background/10 hover:text-background"
             >
               <Link to="/portal/call-prep">
-                Prepare a company issue <ArrowUpRight className="ml-2 h-4 w-4" />
+                Prepare call issue <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>
-          <p className="mt-4 text-xs leading-relaxed text-background/48">
-            {aosHost
-              ? `External destination: ${aosHost}`
-              : "This bridge is ready. Add VITE_AOS_APP_URL when the external AOS app should open from here."}
-          </p>
         </div>
 
-        <Card className="surface-operating p-6">
+        <Card className="surface-operating p-6 shadow-[0_30px_80px_rgba(35,24,12,0.08)]">
           <p className="eyebrow text-muted-foreground">Owner promise</p>
           <h2 className="mt-2 font-display text-2xl leading-tight">
             Less owner drag. More company value.
@@ -342,7 +325,7 @@ function PacketLoop({ packets, isLoading }: { packets: CallPrepPacket[]; isLoadi
         <SectionHeader
           eyebrow="Issue packet loop"
           title="Bring the pressure, then carry it into AOS"
-          body="Saved call-prep packets keep the weekly rhythm from becoming disposable. Copy the packet for the live room today; send it into AOS when the external integration is ready."
+          body="Saved call-prep packets keep the weekly rhythm from becoming disposable. Copy the packet for the live room today; open AOS when the decision needs to become company memory."
         />
         <Button asChild>
           <Link to="/portal/call-prep">

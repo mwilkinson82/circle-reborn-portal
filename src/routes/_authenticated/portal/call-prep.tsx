@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -164,7 +164,6 @@ function CallPrepPage() {
   const selectedOutcome =
     outcomeOptions.find((outcome) => outcome.id === expectedOutput) ?? outcomeOptions[0];
   const canSave = issue.trim().length > 0 && !saving;
-  const openAosLabel = AOS_APP_URL ? "Open AOS app" : "View AOS bridge";
 
   const issuePacket = [
     "Contractor Circle Call Prep",
@@ -362,13 +361,13 @@ function CallPrepPage() {
           </div>
 
           <p className="mt-7 border-t border-background/10 pt-4 text-xs leading-relaxed text-background/58">
-            Save the packet here, copy it into the live room, then move the output into AOS when the
-            external destination is ready.
+            Save the packet here, copy it into the live room, then open AOS and carry the output
+            into the operating system.
           </p>
         </Card>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_24rem]">
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] xl:gap-7">
         <Card className="surface-operating p-5 sm:p-6">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-hairline bg-amber-soft text-amber">
@@ -382,8 +381,9 @@ function CallPrepPage() {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-5">
+          <div className="mt-6 grid gap-6">
             <PrepQuestion
+              step="01"
               id="issue"
               label="What needs pressure?"
               value={issue}
@@ -391,6 +391,7 @@ function CallPrepPage() {
               placeholder="Example: We keep missing billing events because PMs do not close out change-order documentation."
             />
             <PrepQuestion
+              step="02"
               id="tried"
               label="What have you already tried?"
               value={tried}
@@ -398,6 +399,7 @@ function CallPrepPage() {
               placeholder="List the attempts, conversations, rules, meetings, or fixes that have not held."
             />
             <PrepQuestion
+              step="03"
               id="avoiding"
               label="What decision are you avoiding?"
               value={avoiding}
@@ -405,6 +407,7 @@ function CallPrepPage() {
               placeholder="Name the hard call: a person, process, pricing, accountability, customer, or leadership decision."
             />
             <PrepQuestion
+              step="04"
               id="consequence"
               label="What is the financial consequence?"
               value={consequence}
@@ -412,6 +415,7 @@ function CallPrepPage() {
               placeholder="Estimate the dollars, margin, cash, time, capacity, or reputation at risk."
             />
             <PrepQuestion
+              step="05"
               id="win"
               label="What would make this a win on the call?"
               value={win}
@@ -429,6 +433,7 @@ function CallPrepPage() {
                   value={owner}
                   onChange={(event) => setOwner(event.target.value)}
                   placeholder="Who owns the next move?"
+                  className="premium-input"
                 />
               </div>
               <div className="space-y-2">
@@ -440,10 +445,12 @@ function CallPrepPage() {
                   type="date"
                   value={dueDate}
                   onChange={(event) => setDueDate(event.target.value)}
+                  className="premium-input"
                 />
               </div>
             </div>
             <PrepQuestion
+              step="After"
               id="outcomeSummary"
               label="Captured call output"
               value={outputSummary}
@@ -453,7 +460,7 @@ function CallPrepPage() {
           </div>
         </Card>
 
-        <Card className="surface-operating operating-brief h-fit p-5 sm:p-6 lg:sticky lg:top-5">
+        <Card className="surface-operating operating-brief h-fit p-5 sm:p-6 lg:sticky lg:top-20">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-hairline bg-foreground text-background">
               <ClipboardCheck className="h-5 w-5 text-amber" />
@@ -467,7 +474,7 @@ function CallPrepPage() {
             </div>
           </div>
 
-          <div className="mt-5 max-h-[34rem] overflow-auto rounded-md border border-hairline bg-background/80 p-5 shadow-inner">
+          <div className="mt-5 max-h-[34rem] overflow-auto rounded-lg border border-amber/20 bg-[linear-gradient(180deg,oklch(0.998_0.004_82),oklch(0.982_0.008_82))] p-5 shadow-inner">
             <IssuePacketBrief
               category={category.label}
               issue={issue}
@@ -503,15 +510,9 @@ function CallPrepPage() {
               )}
             </Button>
             <Button asChild variant="outline" className="w-full justify-between">
-              {AOS_APP_URL ? (
-                <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
-                  {openAosLabel} <ArrowUpRight className="h-4 w-4" />
-                </a>
-              ) : (
-                <Link to="/portal/alp-os">
-                  {openAosLabel} <ArrowUpRight className="h-4 w-4" />
-                </Link>
-              )}
+              <a href={AOS_APP_URL} target="_blank" rel="noopener noreferrer">
+                Open AOS <ArrowUpRight className="h-4 w-4" />
+              </a>
             </Button>
             <Button type="button" variant="outline" className="w-full justify-between" disabled>
               Future: Send packet to AOS <ArrowUpRight className="h-4 w-4" />
@@ -540,8 +541,8 @@ function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
         <h2 className="mt-2 font-display text-2xl leading-tight">Make the pressure cumulative</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Saved packets stay in Contractor Circle so the pressure does not disappear after the call.
-          Copy them into the live room now; move them into AOS when the external integration is
-          ready.
+          Copy them into the live room now; open AOS and place the final decision where the company
+          will keep operating from it.
         </p>
       </div>
 
@@ -695,12 +696,14 @@ function formatCategory(category: CallPrepPacket["category"]) {
 }
 
 function PrepQuestion({
+  step,
   id,
   label,
   value,
   onChange,
   placeholder,
 }: {
+  step: string;
   id: string;
   label: string;
   value: string;
@@ -708,16 +711,19 @@ function PrepQuestion({
   placeholder: string;
 }) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </Label>
+    <div className="call-prep-question space-y-2">
+      <div className="flex items-center gap-3">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-amber">{step}</span>
+        <Label htmlFor={id} className="text-sm font-medium">
+          {label}
+        </Label>
+      </div>
       <Textarea
         id={id}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        className="min-h-28 resize-y"
+        className="premium-input min-h-28 resize-y"
       />
     </div>
   );

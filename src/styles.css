@@ -238,6 +238,28 @@
       0 32px 90px rgb(var(--warm-shadow) / 0.16),
       inset 0 1px 0 oklch(1 0 0 / 8%);
   }
+  .surface-command h1,
+  .surface-command h2,
+  .surface-command h3 {
+    color: oklch(0.985 0.006 82);
+  }
+  .surface-command p,
+  .surface-command span,
+  .surface-command li {
+    color: inherit;
+  }
+  .surface-command .text-foreground,
+  .surface-command .text-muted-foreground {
+    color: oklch(0.83 0.012 80 / 78%);
+  }
+  .surface-command .eyebrow,
+  .surface-command .text-amber {
+    color: var(--color-amber);
+  }
+  .surface-command [data-slot="badge"],
+  .surface-command .bg-background {
+    color: var(--color-foreground);
+  }
   .surface-command::before {
     content: "";
     position: absolute;
@@ -286,6 +308,13 @@
     border: 1px solid oklch(0.89 0.009 80);
     background: oklch(0.99 0.004 82 / 78%);
     box-shadow: 0 10px 30px rgb(var(--warm-shadow) / 0.045);
+  }
+  .surface-tool-row {
+    border: 1px solid oklch(0.89 0.011 80);
+    background:
+      linear-gradient(90deg, oklch(0.96 0.018 78 / 56%), transparent 28%),
+      oklch(0.992 0.004 82 / 86%);
+    box-shadow: 0 24px 70px rgb(var(--warm-shadow) / 0.07);
   }
   .operating-brief {
     border-radius: 0.875rem;
@@ -339,6 +368,41 @@
     border-radius: 0.875rem;
     background:
       linear-gradient(180deg, oklch(0.998 0.004 82), oklch(0.976 0.008 82)), var(--color-background);
+  }
+  .judgment-thumb {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 78% 20%, oklch(0.72 0.15 55 / 24%), transparent 15rem),
+      radial-gradient(circle at 20% 92%, oklch(0.48 0.07 255 / 24%), transparent 15rem),
+      linear-gradient(135deg, oklch(0.13 0.014 260), oklch(0.22 0.018 260) 58%, oklch(0.18 0.045 55));
+  }
+  .judgment-thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(oklch(1 0 0 / 4%) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 4%) 1px, transparent 1px);
+    background-size: 38px 38px;
+    mask-image: radial-gradient(circle at 72% 28%, black, transparent 62%);
+  }
+  .judgment-thumb::after {
+    content: "";
+    position: absolute;
+    right: -5rem;
+    bottom: -6rem;
+    width: 18rem;
+    height: 18rem;
+    border: 1px solid oklch(0.74 0.15 55 / 18%);
+    border-radius: 999px;
+    box-shadow:
+      0 0 0 38px oklch(0.74 0.15 55 / 5%),
+      0 0 0 76px oklch(1 0 0 / 3%);
+  }
+  .call-prep-question {
+    border-left: 3px solid oklch(0.74 0.15 55 / 28%);
+    padding-left: 1rem;
   }
   .eyebrow {
     font-family: var(--font-mono);
