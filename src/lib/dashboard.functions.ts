@@ -6,6 +6,7 @@ import {
   circleTemplateCatalog,
   shouldUseReplayCatalogFallback,
   shouldUseTemplateCatalogFallback,
+  withTemplateLibraryFallbackUrls,
 } from "@/lib/library-catalog";
 import { titleCase } from "@/lib/membership-plan";
 import { attachAuthHeader } from "./auth-client-middleware";
@@ -39,8 +40,10 @@ function dashboardTemplateFallback() {
     .filter((template): template is (typeof circleTemplateCatalog)[number] => Boolean(template));
 
   return priority.length >= 3
-    ? priority
-    : circleTemplateCatalog.filter((template) => template.featured).slice(0, 3);
+    ? withTemplateLibraryFallbackUrls(priority)
+    : withTemplateLibraryFallbackUrls(
+        circleTemplateCatalog.filter((template) => template.featured).slice(0, 3),
+      );
 }
 
 function friendlyNameFromEmail(email: string | null | undefined) {
@@ -148,7 +151,7 @@ export const getDashboard = createServerFn({ method: "GET" })
         : dashboardReplays,
       featuredTemplates: shouldUseTemplateCatalogFallback(dashboardTemplates)
         ? dashboardTemplateFallback()
-        : dashboardTemplates,
+        : withTemplateLibraryFallbackUrls(dashboardTemplates),
       announcements: announcementsRes.data ?? [],
     };
   });
@@ -185,5 +188,7 @@ export const getTemplateLibrary = createServerFn({ method: "GET" })
       .limit(48);
 
     const templates = data ?? [];
-    return shouldUseTemplateCatalogFallback(templates) ? circleTemplateCatalog : templates;
+    return withTemplateLibraryFallbackUrls(
+      shouldUseTemplateCatalogFallback(templates) ? circleTemplateCatalog : templates,
+    );
   });

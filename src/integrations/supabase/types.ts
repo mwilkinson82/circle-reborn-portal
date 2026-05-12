@@ -151,6 +151,60 @@ export type Database = {
         };
         Relationships: [];
       };
+      intensive_applications: {
+        Row: {
+          already_tried: string;
+          annual_revenue_range: string;
+          applying_for: string;
+          biggest_challenge: string;
+          company_name: string;
+          created_at: string;
+          email: string;
+          email_error: string | null;
+          email_status: string;
+          full_name: string;
+          id: string;
+          phone: string;
+          status: string;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          already_tried: string;
+          annual_revenue_range: string;
+          applying_for: string;
+          biggest_challenge: string;
+          company_name: string;
+          created_at?: string;
+          email: string;
+          email_error?: string | null;
+          email_status?: string;
+          full_name: string;
+          id?: string;
+          phone: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          already_tried?: string;
+          annual_revenue_range?: string;
+          applying_for?: string;
+          biggest_challenge?: string;
+          company_name?: string;
+          created_at?: string;
+          email?: string;
+          email_error?: string | null;
+          email_status?: string;
+          full_name?: string;
+          id?: string;
+          phone?: string;
+          status?: string;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [];
+      };
       announcements: {
         Row: {
           body: string | null;

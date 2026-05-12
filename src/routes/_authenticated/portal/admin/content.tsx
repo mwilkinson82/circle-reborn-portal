@@ -370,11 +370,11 @@ function ReplayEditor({
             onChange={(event) => setForm({ ...form, title: event.target.value })}
           />
         </Field>
-        <Field label="Video link or Cloudflare Stream ID">
+        <Field label="Embed code, video link, or Cloudflare Stream ID">
           <Input
             value={form.videoUrl}
             onChange={(event) => setForm({ ...form, videoUrl: event.target.value })}
-            placeholder="Zoom embed URL or 32-character Cloudflare ID"
+            placeholder="Paste Zoom embed code/URL or 32-character Cloudflare ID"
           />
         </Field>
         <div className="grid gap-4 md:grid-cols-2">

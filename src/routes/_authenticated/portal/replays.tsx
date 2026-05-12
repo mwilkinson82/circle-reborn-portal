@@ -3,12 +3,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { ArrowUpRight, Calendar, Clock, PlayCircle, Search, Video, X } from "lucide-react";
+import { Calendar, Clock, PlayCircle, Search, Video, X } from "lucide-react";
 import { getReplayLibrary } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -32,6 +39,7 @@ function ReplaysPage() {
   const { user, loading } = useAuth();
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState("all");
+  const [activeReplay, setActiveReplay] = useState<ReplayItem | null>(null);
   const fetchReplays = useServerFn(getReplayLibrary);
   const { data, isLoading } = useQuery({
     queryKey: ["replay-library", user?.id],
@@ -109,7 +117,7 @@ function ReplaysPage() {
         <EmptyState />
       ) : (
         <>
-          {featured ? <FeaturedReplay replay={featured} /> : null}
+          {featured ? <FeaturedReplay replay={featured} onWatch={setActiveReplay} /> : null}
 
           <section className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
@@ -181,18 +189,25 @@ function ReplaysPage() {
             ) : (
               <div className="grid gap-4">
                 {filteredReplays.map((replay) => (
-                  <ReplayCard key={replay.id} replay={replay} />
+                  <ReplayCard key={replay.id} replay={replay} onWatch={setActiveReplay} />
                 ))}
               </div>
             )}
           </section>
         </>
       )}
+      <ReplayPlayerDialog replay={activeReplay} onOpenChange={setActiveReplay} />
     </div>
   );
 }
 
-function FeaturedReplay({ replay }: { replay: ReplayItem }) {
+function FeaturedReplay({
+  replay,
+  onWatch,
+}: {
+  replay: ReplayItem;
+  onWatch: (replay: ReplayItem) => void;
+}) {
   return (
     <Card className="surface-operating asset-stack overflow-hidden p-0">
       <div className="grid gap-px bg-hairline lg:grid-cols-[minmax(0,1fr)_22rem]">
@@ -215,14 +230,20 @@ function FeaturedReplay({ replay }: { replay: ReplayItem }) {
             <ReplayBestFor replay={replay} />
             <ReplayMeta replay={replay} />
           </div>
-          <ReplayAction replay={replay} className="mt-6 w-full justify-between" />
+          <ReplayAction replay={replay} onWatch={onWatch} className="mt-6 w-full justify-between" />
         </div>
       </div>
     </Card>
   );
 }
 
-function ReplayCard({ replay }: { replay: ReplayItem }) {
+function ReplayCard({
+  replay,
+  onWatch,
+}: {
+  replay: ReplayItem;
+  onWatch: (replay: ReplayItem) => void;
+}) {
   return (
     <Card className="surface-library asset-stack overflow-hidden p-0">
       <div className="grid gap-px bg-hairline lg:grid-cols-[17rem_minmax(0,1fr)_12rem]">
@@ -244,7 +265,7 @@ function ReplayCard({ replay }: { replay: ReplayItem }) {
           <ReplayMeta replay={replay} />
         </div>
         <div className="flex items-center bg-background p-5">
-          <ReplayAction replay={replay} className="w-full justify-between" />
+          <ReplayAction replay={replay} onWatch={onWatch} className="w-full justify-between" />
         </div>
       </div>
     </Card>
@@ -319,7 +340,15 @@ function ReplayBestFor({ replay }: { replay: ReplayItem }) {
   );
 }
 
-function ReplayAction({ replay, className }: { replay: ReplayItem; className?: string }) {
+function ReplayAction({
+  replay,
+  onWatch,
+  className,
+}: {
+  replay: ReplayItem;
+  onWatch: (replay: ReplayItem) => void;
+  className?: string;
+}) {
   if (!replay.video_url) {
     return (
       <Button type="button" variant="outline" disabled className={className}>
@@ -329,12 +358,71 @@ function ReplayAction({ replay, className }: { replay: ReplayItem; className?: s
   }
 
   return (
-    <Button asChild className={className}>
-      <a href={replay.video_url} target="_blank" rel="noopener noreferrer">
-        Watch replay <ArrowUpRight className="ml-2 h-4 w-4" />
-      </a>
+    <Button type="button" onClick={() => onWatch(replay)} className={className}>
+      Watch replay <PlayCircle className="ml-2 h-4 w-4" />
     </Button>
   );
+}
+
+function ReplayPlayerDialog({
+  replay,
+  onOpenChange,
+}: {
+  replay: ReplayItem | null;
+  onOpenChange: (replay: ReplayItem | null) => void;
+}) {
+  const embedUrl = replay?.video_url ? toEmbedUrl(replay.video_url) : null;
+
+  return (
+    <Dialog open={!!replay} onOpenChange={(open) => !open && onOpenChange(null)}>
+      <DialogContent className="max-w-[min(94vw,72rem)] overflow-hidden p-0">
+        <DialogHeader className="surface-command px-5 py-4 text-left text-background sm:px-6">
+          <DialogTitle className="font-display text-2xl">{replay?.title ?? "Replay"}</DialogTitle>
+          <DialogDescription className="text-background/64">
+            {replay ? formatReplayDate(replay.recorded_at) : "Contractor Circle replay"}
+          </DialogDescription>
+        </DialogHeader>
+        <div className="bg-foreground">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              title={replay?.title ?? "Contractor Circle replay"}
+              className="aspect-video h-auto w-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+              allowFullScreen
+              referrerPolicy="strict-origin-when-cross-origin"
+            />
+          ) : (
+            <div className="flex aspect-video items-center justify-center text-sm text-background/70">
+              Replay link pending.
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function toEmbedUrl(value: string) {
+  const trimmed = value.trim().replace(/&amp;/g, "&");
+  const srcMatch = trimmed.match(/src=["']([^"']+)["']/i);
+  const raw = srcMatch?.[1]?.trim() ?? trimmed;
+
+  if (raw.includes("zoom.us/clips/share/")) {
+    return raw.replace("/clips/share/", "/clips/embed/");
+  }
+
+  const cloudflareIdMatch = raw.match(/^[a-f0-9]{32}$/i);
+  if (cloudflareIdMatch) {
+    return `https://iframe.videodelivery.net/${raw}`;
+  }
+
+  const cloudflareDeliveryMatch = raw.match(/videodelivery\.net\/([a-f0-9]{32})/i);
+  if (cloudflareDeliveryMatch?.[1] && !raw.includes("iframe.videodelivery.net")) {
+    return `https://iframe.videodelivery.net/${cloudflareDeliveryMatch[1]}`;
+  }
+
+  return raw;
 }
 
 function getUnavailableLabel(replay: ReplayItem) {

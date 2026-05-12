@@ -12,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import { getTemplateLibrary } from "@/lib/dashboard.functions";
+import { TEMPLATE_LIBRARY_DRIVE_URL } from "@/lib/resource-links";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -140,6 +141,13 @@ function TemplatesPage() {
             <LibraryCue label="1" body="Prepare the issue" />
             <LibraryCue label="2" body="Open the matching asset" />
             <LibraryCue label="3" body="Carry the output into AOS" />
+          </div>
+          <div className="mt-6">
+            <Button asChild variant="secondary">
+              <a href={TEMPLATE_LIBRARY_DRIVE_URL} target="_blank" rel="noopener noreferrer">
+                Open full Drive library <ArrowUpRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
@@ -387,7 +395,8 @@ function TemplateAction({
     <Button asChild>
       <a href={downloadUrl} target="_blank" rel="noopener noreferrer">
         <Download className="mr-2 h-4 w-4" />
-        {label} <ArrowUpRight className="ml-2 h-4 w-4" />
+        {downloadUrl === TEMPLATE_LIBRARY_DRIVE_URL ? "Open in Drive" : label}{" "}
+        <ArrowUpRight className="ml-2 h-4 w-4" />
       </a>
     </Button>
   );

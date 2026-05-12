@@ -1,3 +1,5 @@
+import { LEAD_MAGNET_DOWNLOADS, TEMPLATE_LIBRARY_DRIVE_URL } from "@/lib/resource-links";
+
 export type LibraryTemplateCategory =
   | "proposals"
   | "contracts"
@@ -40,6 +42,22 @@ export type LibraryReplay = {
 const cloudflareStreamUrl = (id: string) => `https://iframe.videodelivery.net/${id}`;
 const cloudflareThumbnailUrl = (id: string) =>
   `https://videodelivery.net/${id}/thumbnails/thumbnail.jpg?time=1s`;
+
+function isFragileTemplateUrl(value: string | null | undefined) {
+  if (!value) return false;
+  return value.includes("drive.google.com/file/") && value.includes("/copy");
+}
+
+export function withTemplateLibraryFallbackUrls<T extends { download_url?: string | null }>(
+  templates: T[],
+) {
+  return templates.map((template) => ({
+    ...template,
+    download_url: isFragileTemplateUrl(template.download_url)
+      ? TEMPLATE_LIBRARY_DRIVE_URL
+      : (template.download_url ?? TEMPLATE_LIBRARY_DRIVE_URL),
+  }));
+}
 
 export const PLACEHOLDER_TEMPLATE_TITLES = new Set([
   "Subcontractor Bid Submittal Form",
@@ -542,8 +560,7 @@ export const circleTemplateCatalog = [
       "A systematic, step-by-step estimating process that ensures nothing gets missed. This 7-page checklist walks through every phase of a construction estimate: Contract Document Review, Site Visit & Field Conditions, Exclusions & Clarifications, Quantity Takeoff for major materials, Labor & Man-Hour Calculations, Subcontractor Bid Collection & Management, Equipment & Tool Requirements, General Conditions & Indirect Costs, Escalation & Market Conditions, Markup Strategy, and Final Review & Quality Check. Stop estimating from memory — start estimating from a system.",
     category: "estimating",
     file_type: "pdf",
-    download_url:
-      "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/Construction_Estimating_Checklist_be88d436.pdf",
+    download_url: LEAD_MAGNET_DOWNLOADS.estimating,
     featured: true,
     badge: "New",
     pages: "7 pages",
@@ -698,8 +715,7 @@ export const circleTemplateCatalog = [
       "The Three Silos Framework is the diagnostic tool that reveals why most contractors stay stuck. Every contracting business runs on three silos: Sales & Marketing (how you get work), Operations & Production (how you deliver work), and Finance & Admin (how you keep the money). Most contractors are strong in one silo and weak in the other two — and that imbalance is what kills growth. This framework walks through each silo with diagnostic questions, failure statistics (82% of construction businesses fail due to cash flow problems, 70% of contractors undercharge by 15-30%), and the specific actions required to build a self-sustaining business engine. Includes the Warren Buffett test: 'Would you buy your own company at its current valuation?' If the answer is no, this framework shows you exactly what to fix.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ALP_Three_Silos_Framework_v3_3ba50529.pdf",
+    download_url: LEAD_MAGNET_DOWNLOADS.silos,
     featured: true,
     badge: "New",
     pages: "5 pages",

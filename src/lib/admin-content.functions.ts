@@ -49,18 +49,33 @@ function cloudflareThumbnailUrl(id: string) {
 }
 
 function normalizeReplayVideoUrl(value: string) {
-  const trimmed = value.trim();
+  const trimmed = value.trim().replace(/&amp;/g, "&");
   if (!trimmed) return { video_url: null, thumbnail_url: null };
 
-  const cloudflareIdMatch = trimmed.match(/^[a-f0-9]{32}$/i);
+  const srcMatch = trimmed.match(/src=["']([^"']+)["']/i);
+  const raw = srcMatch?.[1]?.trim() ?? trimmed;
+
+  const cloudflareIdMatch = raw.match(/^[a-f0-9]{32}$/i);
   if (cloudflareIdMatch) {
     return {
-      video_url: cloudflareStreamUrl(trimmed),
-      thumbnail_url: cloudflareThumbnailUrl(trimmed),
+      video_url: cloudflareStreamUrl(raw),
+      thumbnail_url: cloudflareThumbnailUrl(raw),
     };
   }
 
-  return { video_url: trimmed, thumbnail_url: null };
+  const cloudflareDeliveryMatch = raw.match(/videodelivery\.net\/([a-f0-9]{32})/i);
+  if (cloudflareDeliveryMatch?.[1] && !raw.includes("iframe.videodelivery.net")) {
+    return {
+      video_url: cloudflareStreamUrl(cloudflareDeliveryMatch[1]),
+      thumbnail_url: cloudflareThumbnailUrl(cloudflareDeliveryMatch[1]),
+    };
+  }
+
+  if (raw.includes("zoom.us/clips/share/")) {
+    return { video_url: raw.replace("/clips/share/", "/clips/embed/"), thumbnail_url: null };
+  }
+
+  return { video_url: raw, thumbnail_url: null };
 }
 
 function tagsFromText(value: string) {

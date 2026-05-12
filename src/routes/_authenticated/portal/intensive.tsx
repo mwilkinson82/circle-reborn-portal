@@ -1,7 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, CheckCircle2, Clock, LockKeyhole, MessageSquareText } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useMutation } from "@tanstack/react-query";
+import {
+  CheckCircle2,
+  Clock,
+  LockKeyhole,
+  MessageSquareText,
+  Send,
+  ShieldCheck,
+} from "lucide-react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/use-auth";
+import { submitIntensiveApplication } from "@/lib/intensive.functions";
 
 export const Route = createFileRoute("/_authenticated/portal/intensive")({
   head: () => ({ meta: [{ title: "Work With Marshall — Contractor Circle" }] }),
@@ -22,7 +46,61 @@ const fitSignals = [
   "The business is growing faster than the current operating system can hold.",
 ];
 
+const revenueRanges = ["Under $1M", "$1M-$3M", "$3M-$5M", "$5M-$10M", "$10M-$25M", "$25M+"];
+
+const applicationOptions = [
+  "Six-Week Contractor Intensive — $5,000",
+  "Strategy Session — $1,000",
+  "Ongoing Advisory — Custom Pricing",
+];
+
+const initialForm = {
+  fullName: "",
+  companyName: "",
+  annualRevenueRange: "",
+  biggestChallenge: "",
+  alreadyTried: "",
+  applyingFor: applicationOptions[0],
+  email: "",
+  phone: "",
+};
+
 function IntensivePage() {
+  const { user } = useAuth();
+  const submitApplication = useServerFn(submitIntensiveApplication);
+  const [form, setForm] = useState(initialForm);
+  const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (user?.email && !form.email) {
+      setForm((current) => ({ ...current, email: user.email ?? "" }));
+    }
+  }, [form.email, user?.email]);
+
+  const mutation = useMutation({
+    mutationFn: () => submitApplication({ data: form }),
+    onSuccess: (result) => {
+      setSubmitted(true);
+      if (result.emailSent) {
+        toast.success("Application submitted to Marshall.");
+      } else {
+        toast.warning("Application saved. Email delivery needs provider configuration.");
+      }
+    },
+    onError: (error) =>
+      toast.error(error instanceof Error ? error.message : "Application could not be submitted."),
+  });
+
+  const canSubmit =
+    form.fullName.trim().length >= 2 &&
+    form.companyName.trim().length >= 2 &&
+    form.annualRevenueRange &&
+    form.biggestChallenge.trim().length >= 12 &&
+    form.alreadyTried.trim().length >= 8 &&
+    form.applyingFor &&
+    form.email.includes("@") &&
+    form.phone.trim().length >= 7;
+
   return (
     <div className="container-prose space-y-8 py-8 sm:py-10">
       <section className="surface-command command-panel overflow-hidden p-6 sm:p-8 lg:p-10">
@@ -38,10 +116,8 @@ function IntensivePage() {
               with direct guidance.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild>
-                <a href="mailto:marshall@alpcoaching.com?subject=Six-Week%20Contractor%20Intensive%20Request">
-                  Request Intensive <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
+              <Button asChild variant="secondary">
+                <a href="#intensive-application">Apply from the portal</a>
               </Button>
               <Button asChild variant="secondary">
                 <Link to="/portal/command-tools">Run owner scorecard</Link>
@@ -109,6 +185,162 @@ function IntensivePage() {
           </p>
         </Card>
       </section>
+
+      <section id="intensive-application" className="grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
+        <Card className="surface-command p-6 text-background">
+          <p className="eyebrow text-amber">Application</p>
+          <h2 className="mt-3 font-display text-3xl">Apply for advisory access.</h2>
+          <p className="mt-3 text-sm leading-relaxed text-background/68">
+            Marshall reviews every application. Complete all fields honestly. This is how he
+            determines fit.
+          </p>
+          <div className="mt-6 grid gap-3 text-sm text-background/68">
+            <p className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+              Applications are sent to Marshall for review.
+            </p>
+            <p className="flex gap-3">
+              <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+              This does not create unlimited private consulting access.
+            </p>
+          </div>
+        </Card>
+
+        <Card className="surface-operating p-5 sm:p-6">
+          {submitted ? (
+            <div className="flex min-h-96 flex-col justify-center text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-soft text-amber">
+                <CheckCircle2 className="h-7 w-7" />
+              </div>
+              <h2 className="mt-5 font-display text-3xl">Application received.</h2>
+              <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
+                Marshall will review the application and decide whether the Intensive is the right
+                next step. Contractor Circle remains your group operating room while this is being
+                reviewed.
+              </p>
+              <div className="mt-6">
+                <Button asChild variant="outline">
+                  <Link to="/portal">Back to command center</Link>
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <form
+              className="grid gap-5"
+              onSubmit={(event) => {
+                event.preventDefault();
+                if (canSubmit) mutation.mutate();
+              }}
+            >
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField label="Full Name *">
+                  <Input
+                    value={form.fullName}
+                    onChange={(event) => setForm({ ...form, fullName: event.target.value })}
+                    placeholder="John Smith"
+                  />
+                </FormField>
+                <FormField label="Company Name *">
+                  <Input
+                    value={form.companyName}
+                    onChange={(event) => setForm({ ...form, companyName: event.target.value })}
+                    placeholder="Acme Corp"
+                  />
+                </FormField>
+              </div>
+
+              <FormField label="Annual Revenue Range *">
+                <Select
+                  value={form.annualRevenueRange}
+                  onValueChange={(value) => setForm({ ...form, annualRevenueRange: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select revenue range" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {revenueRanges.map((range) => (
+                      <SelectItem key={range} value={range}>
+                        {range}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+
+              <FormField label="Biggest Business Challenge Right Now *">
+                <Textarea
+                  value={form.biggestChallenge}
+                  onChange={(event) => setForm({ ...form, biggestChallenge: event.target.value })}
+                  className="min-h-28"
+                  placeholder="Be specific. What's the problem keeping you up at night?"
+                />
+              </FormField>
+
+              <FormField label="What Have You Already Tried? *">
+                <Textarea
+                  value={form.alreadyTried}
+                  onChange={(event) => setForm({ ...form, alreadyTried: event.target.value })}
+                  className="min-h-28"
+                  placeholder="What approaches, programs, or strategies have you already attempted?"
+                />
+              </FormField>
+
+              <FormField label="Which Option Are You Applying For? *">
+                <Select
+                  value={form.applyingFor}
+                  onValueChange={(value) => setForm({ ...form, applyingFor: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {applicationOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField label="Email Address *">
+                  <Input
+                    type="email"
+                    value={form.email}
+                    onChange={(event) => setForm({ ...form, email: event.target.value })}
+                    placeholder="you@company.com"
+                  />
+                </FormField>
+                <FormField label="Phone Number *">
+                  <Input
+                    value={form.phone}
+                    onChange={(event) => setForm({ ...form, phone: event.target.value })}
+                    placeholder="+1 (555) 000-0000"
+                  />
+                </FormField>
+              </div>
+
+              <Button type="submit" disabled={!canSubmit || mutation.isPending} className="h-12">
+                {mutation.isPending ? "Submitting..." : "Submit Application"}
+                <Send className="ml-2 h-4 w-4" />
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Marshall reviews every application personally. No spam, no sales calls.
+              </p>
+            </form>
+          )}
+        </Card>
+      </section>
+    </div>
+  );
+}
+
+function FormField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <Label>{label}</Label>
+      {children}
     </div>
   );
 }
