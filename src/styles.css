@@ -65,7 +65,7 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.5rem;
 
   /* Canvas: warm off-white. Foreground: deep ink. */
   --canvas: oklch(0.985 0.005 80);
@@ -186,7 +186,7 @@
   h4 {
     font-family: var(--font-display);
     font-optical-sizing: auto;
-    letter-spacing: -0.015em;
+    letter-spacing: 0;
   }
 
   /* Tabular numerals everywhere data lives */
@@ -214,6 +214,9 @@
   }
   .display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+  }
+  .tracking-tight {
+    letter-spacing: 0;
   }
 }

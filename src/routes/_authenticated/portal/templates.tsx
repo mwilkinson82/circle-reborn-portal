@@ -27,6 +27,32 @@ const categoryOrder = [
   "contractor_circle",
 ];
 
+const implementationSequenceIds = [
+  "legacy-template-20",
+  "legacy-template-34",
+  "legacy-template-25",
+  "legacy-template-31",
+  "legacy-template-35",
+];
+
+const sequenceLabels = [
+  "Start here",
+  "Core operating asset",
+  "Use with AOS",
+  "Supports Scorecard",
+  "Owner drag diagnostic",
+];
+
+type TemplateResource = {
+  id: string;
+  title: string;
+  description: string | null;
+  long_description?: string | null;
+  file_type: string | null;
+  download_url?: string | null;
+  pages: string | null;
+};
+
 function TemplatesPage() {
   const { user, loading } = useAuth();
   const [query, setQuery] = useState("");
@@ -80,18 +106,26 @@ function TemplatesPage() {
       return categoryMatch && (!normalizedQuery || searchable.includes(normalizedQuery));
     });
   }, [category, normalizedQuery, templates]);
+  const implementationSequence = useMemo(
+    () =>
+      implementationSequenceIds
+        .map((id) => templates.find((template) => template.id === id))
+        .filter((template): template is (typeof templates)[number] => Boolean(template)),
+    [templates],
+  );
   const hasActiveFilters = category !== "all" || normalizedQuery.length > 0;
 
   return (
     <div className="container-prose py-8 sm:py-10 space-y-8">
       <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
         <div className="border border-hairline bg-foreground p-6 text-background sm:p-8 lg:p-10">
-          <p className="font-mono text-xs uppercase tracking-wider text-amber">Member Library</p>
+          <p className="font-mono text-xs uppercase tracking-wider text-amber">Member library</p>
           <h1 className="mt-3 max-w-2xl font-display text-4xl leading-tight sm:text-5xl">
-            Templates for real bids, not blank-page theory.
+            Stop rebuilding from scratch.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/65">
-            Proposal tools, review checklists, financial templates, and bid-room documents.
+            Operating-system docs, SOPs, contracts, checklists, and scripts arranged close to the
+            work they support.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-px border border-hairline bg-hairline lg:grid-cols-1">
@@ -106,129 +140,177 @@ function TemplatesPage() {
       ) : templates.length === 0 ? (
         <EmptyState />
       ) : (
-        <section className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
-            <div>
-              <h2 className="font-display text-2xl">Template library</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {filteredTemplates.length} of {templates.length} resources
-              </p>
+        <>
+          <ImplementationSequence templates={implementationSequence} />
+
+          <section className="space-y-4">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
+              <div>
+                <h2 className="font-display text-2xl">Template library</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {filteredTemplates.length} of {templates.length} resources
+                </p>
+              </div>
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Search resources"
+                  className="h-11 rounded-none pl-9 pr-9"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+                    aria-label="Clear search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search resources"
-                className="h-11 rounded-none pl-9 pr-9"
-              />
-              {query && (
+
+            <div className="flex flex-wrap gap-2">
+              {categoryFilters.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setCategory(item.value)}
+                  className={`border px-3 py-2 text-xs font-medium transition-colors ${
+                    category === item.value
+                      ? "border-foreground bg-foreground text-background"
+                      : "border-hairline bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                  <span className="ml-2 font-mono opacity-70">{item.count}</span>
+                </button>
+              ))}
+              {hasActiveFilters && (
                 <button
                   type="button"
-                  onClick={() => setQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
-                  aria-label="Clear search"
+                  onClick={() => {
+                    setCategory("all");
+                    setQuery("");
+                  }}
+                  className="border border-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <X className="h-4 w-4" />
+                  Reset
                 </button>
               )}
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-2">
-            {categoryFilters.map((item) => (
-              <button
-                key={item.value}
-                type="button"
-                onClick={() => setCategory(item.value)}
-                className={`border px-3 py-2 text-xs font-medium transition-colors ${
-                  category === item.value
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-hairline bg-background text-muted-foreground hover:border-foreground/40 hover:text-foreground"
-                }`}
-              >
-                {item.label}
-                <span className="ml-2 font-mono opacity-70">{item.count}</span>
-              </button>
-            ))}
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCategory("all");
-                  setQuery("");
-                }}
-                className="border border-transparent px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Reset
-              </button>
-            )}
-          </div>
-
-          {filteredTemplates.length === 0 ? (
-            <Card className="border-hairline p-8 text-center">
-              <h3 className="font-display text-2xl">No matching resources</h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Try a different keyword or category.
-              </p>
-            </Card>
-          ) : (
-            <div className="grid gap-3">
-              {filteredTemplates.map((template) => (
-                <Card key={template.id} className="border-hairline p-0 shadow-sm">
-                  <div className="grid gap-px bg-hairline md:grid-cols-[12rem_minmax(0,1fr)_11rem]">
-                    <div className="bg-background p-5">
-                      <Badge variant={template.featured ? "default" : "outline"}>
-                        {formatCategory(template.category)}
-                      </Badge>
-                      {template.badge && (
-                        <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-amber">
-                          {template.badge}
-                        </p>
-                      )}
-                      <p className="mt-4 font-mono text-xs uppercase text-muted-foreground">
-                        {template.file_type}
-                        {template.pages ? ` · ${template.pages}` : ""}
-                      </p>
-                    </div>
-
-                    <div className="bg-background p-5">
-                      <div className="flex items-start gap-3">
-                        <FileText className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
-                        <div className="min-w-0">
-                          <h3 className="font-display text-xl leading-tight">{template.title}</h3>
-                          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-                            {template.long_description ?? template.description}
+            {filteredTemplates.length === 0 ? (
+              <Card className="border-hairline p-8 text-center">
+                <h3 className="font-display text-2xl">No matching resources</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                  Try a different keyword or category.
+                </p>
+              </Card>
+            ) : (
+              <div className="grid gap-3">
+                {filteredTemplates.map((template) => (
+                  <Card key={template.id} className="border-hairline p-0 shadow-sm">
+                    <div className="grid gap-px bg-hairline md:grid-cols-[12rem_minmax(0,1fr)_11rem]">
+                      <div className="bg-background p-5">
+                        <Badge variant={template.featured ? "default" : "outline"}>
+                          {formatCategory(template.category)}
+                        </Badge>
+                        {template.badge && (
+                          <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-amber">
+                            {template.badge}
                           </p>
-                        </div>
+                        )}
+                        <p className="mt-4 font-mono text-xs uppercase text-muted-foreground">
+                          {template.file_type}
+                          {template.pages ? ` · ${template.pages}` : ""}
+                        </p>
                       </div>
 
-                      {template.highlights?.length ? (
-                        <ul className="mt-4 grid gap-2 lg:grid-cols-2">
-                          {template.highlights.slice(0, 4).map((highlight) => (
-                            <li
-                              key={highlight}
-                              className="flex gap-2 text-sm text-muted-foreground"
-                            >
-                              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
-                              <span>{highlight}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
-                    </div>
+                      <div className="bg-background p-5">
+                        <div className="flex items-start gap-3">
+                          <FileText className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                          <div className="min-w-0">
+                            <h3 className="font-display text-xl leading-tight">{template.title}</h3>
+                            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                              {template.long_description ?? template.description}
+                            </p>
+                          </div>
+                        </div>
 
-                    <div className="flex items-center justify-start bg-background p-5 md:justify-center">
-                      <TemplateAction downloadUrl={template.download_url} />
+                        {template.highlights?.length ? (
+                          <ul className="mt-4 grid gap-2 lg:grid-cols-2">
+                            {template.highlights.slice(0, 4).map((highlight) => (
+                              <li
+                                key={highlight}
+                                className="flex gap-2 text-sm text-muted-foreground"
+                              >
+                                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+                                <span>{highlight}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+
+                      <div className="flex items-center justify-start bg-background p-5 md:justify-center">
+                        <TemplateAction downloadUrl={template.download_url} />
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </section>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </section>
+        </>
       )}
     </div>
+  );
+}
+
+function ImplementationSequence({ templates }: { templates: TemplateResource[] }) {
+  if (!templates.length) return null;
+
+  return (
+    <section className="space-y-4">
+      <div className="max-w-2xl">
+        <p className="font-mono text-xs uppercase tracking-wider text-amber">Prescribed path</p>
+        <h2 className="mt-2 font-display text-2xl leading-tight">
+          Start building the operating system
+        </h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Use these first assets in order before wandering the full library.
+        </p>
+      </div>
+
+      <div className="grid gap-px border border-hairline bg-hairline lg:grid-cols-5">
+        {templates.map((template, index) => (
+          <div
+            key={template.id}
+            className="flex min-h-64 flex-col justify-between bg-background p-5"
+          >
+            <div>
+              <Badge variant={index === 0 ? "default" : "outline"}>
+                {sequenceLabels[index] ?? "Use with AOS"}
+              </Badge>
+              <p className="mt-5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Step {index + 1}
+              </p>
+              <h3 className="mt-3 font-display text-xl leading-tight">{template.title}</h3>
+              <p className="mt-3 line-clamp-4 text-sm leading-relaxed text-muted-foreground">
+                {template.description}
+              </p>
+            </div>
+            <TemplateAction
+              downloadUrl={template.download_url ?? null}
+              label={index === 0 ? "Start here" : "Open"}
+            />
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -240,7 +322,13 @@ function formatCategory(value: string) {
     .join(" ");
 }
 
-function TemplateAction({ downloadUrl }: { downloadUrl: string | null }) {
+function TemplateAction({
+  downloadUrl,
+  label = "Open",
+}: {
+  downloadUrl: string | null;
+  label?: string;
+}) {
   if (!downloadUrl) {
     return (
       <Button type="button" variant="outline" disabled>
@@ -253,7 +341,7 @@ function TemplateAction({ downloadUrl }: { downloadUrl: string | null }) {
     <Button asChild>
       <a href={downloadUrl} target="_blank" rel="noopener noreferrer">
         <Download className="mr-2 h-4 w-4" />
-        Open <ArrowUpRight className="ml-2 h-4 w-4" />
+        {label} <ArrowUpRight className="ml-2 h-4 w-4" />
       </a>
     </Button>
   );

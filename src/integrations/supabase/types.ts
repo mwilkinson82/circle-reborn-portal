@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      call_prep_packets: {
+        Row: {
+          avoiding: string | null
+          category: Database["public"]["Enums"]["call_prep_category"]
+          consequence: string | null
+          created_at: string
+          due_date: string | null
+          expected_output: Database["public"]["Enums"]["call_prep_output"]
+          id: string
+          issue: string
+          output_summary: string | null
+          owner: string | null
+          status: Database["public"]["Enums"]["call_prep_status"]
+          tried: string | null
+          updated_at: string
+          user_id: string
+          win: string | null
+        }
+        Insert: {
+          avoiding?: string | null
+          category: Database["public"]["Enums"]["call_prep_category"]
+          consequence?: string | null
+          created_at?: string
+          due_date?: string | null
+          expected_output?: Database["public"]["Enums"]["call_prep_output"]
+          id?: string
+          issue: string
+          output_summary?: string | null
+          owner?: string | null
+          status?: Database["public"]["Enums"]["call_prep_status"]
+          tried?: string | null
+          updated_at?: string
+          user_id: string
+          win?: string | null
+        }
+        Update: {
+          avoiding?: string | null
+          category?: Database["public"]["Enums"]["call_prep_category"]
+          consequence?: string | null
+          created_at?: string
+          due_date?: string | null
+          expected_output?: Database["public"]["Enums"]["call_prep_output"]
+          id?: string
+          issue?: string
+          output_summary?: string | null
+          owner?: string | null
+          status?: Database["public"]["Enums"]["call_prep_status"]
+          tried?: string | null
+          updated_at?: string
+          user_id?: string
+          win?: string | null
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           body: string | null
@@ -366,6 +420,9 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "member" | "beta"
+      call_prep_category: "leadership" | "people" | "cash" | "sales" | "production"
+      call_prep_output: "decision" | "todo" | "sop_gap" | "scorecard_metric" | "aos_issue"
+      call_prep_status: "draft" | "ready" | "discussed" | "converted"
       subscription_status:
         | "trialing"
         | "active"

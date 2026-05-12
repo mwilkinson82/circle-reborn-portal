@@ -33,16 +33,17 @@ const LIVE_CALL_EXCEPTIONS: Record<string, { movedTo: Date; note: string }> = {
   },
 };
 
-const commandCenterTools = [
-  {
-    to: "/portal/alp-os",
-    icon: ClipboardList,
-    image: "/aos-logo.png",
-    label: "AOS",
-    eyebrow: "Company OS",
-    value: "Build the company",
-    hint: "Vision, accountability, process, KPIs",
-  },
+const aosHomeBaseTool = {
+  to: "/portal/alp-os",
+  icon: ClipboardList,
+  image: "/aos-logo.png",
+  label: "AOS",
+  eyebrow: "Home base",
+  value: "Build the company",
+  hint: "Where live pressure becomes structure",
+};
+
+const fieldSupportTools = [
   {
     to: "/portal/constructline",
     icon: Hammer,
@@ -188,7 +189,7 @@ function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-[82rem] space-y-8 px-5 py-5 sm:px-6 sm:py-7 2xl:max-w-[88rem]">
-      <CircleHomeHero firstName={firstName} nextCallDate={nextCallDate} />
+      <CircleHomeHero firstName={firstName} />
 
       <OperatingPriorities
         nextCallDate={nextCallDate}
@@ -204,10 +205,13 @@ function DashboardPage() {
           title="Use field tools when the work calls for them"
           body="AOS is the home base. ConstructLine, Basis, Baseline, and the pricing libraries support live pursuits, estimates, schedules, and cost questions when that is the problem in front of you."
         />
-        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-5">
-          {commandCenterTools.map((tool) => (
-            <WorkLaneCard key={tool.to} {...tool} />
-          ))}
+        <div className="grid gap-3 lg:grid-cols-[minmax(15rem,0.8fr)_minmax(0,2fr)]">
+          <WorkLaneCard {...aosHomeBaseTool} isHomeBase />
+          <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-4">
+            {fieldSupportTools.map((tool) => (
+              <WorkLaneCard key={tool.to} {...tool} />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -229,7 +233,7 @@ function SectionHeader({ eyebrow, title, body }: { eyebrow: string; title: strin
   );
 }
 
-function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCallDate: Date }) {
+function CircleHomeHero({ firstName }: { firstName: string }) {
   return (
     <motion.section
       initial={{ opacity: 0, y: 8 }}
@@ -252,7 +256,7 @@ function CircleHomeHero({ firstName, nextCallDate }: { firstName: string; nextCa
       </div>
 
       <div className="relative z-10">
-        <NextMoveCard nextCallDate={nextCallDate} />
+        <NextMoveCard />
       </div>
     </motion.section>
   );
@@ -267,7 +271,7 @@ function HeroSketchLayer() {
       <img
         src="/contractor-circle-hero-sketch.jpg"
         alt=""
-        className="h-full w-full object-cover object-left-top opacity-45 mix-blend-multiply grayscale-[18%]"
+        className="h-full w-full object-cover object-left-top opacity-55 mix-blend-multiply grayscale-[14%]"
       />
       <div className="absolute inset-y-0 right-0 w-2/3 bg-gradient-to-r from-background/0 via-background/75 to-background" />
       <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-background via-background/70 to-background/0" />
@@ -298,7 +302,7 @@ function getGreeting() {
   return "Good evening";
 }
 
-function NextMoveCard({ nextCallDate }: { nextCallDate: Date }) {
+function NextMoveCard() {
   return (
     <Card className="relative min-h-60 overflow-hidden border-0 bg-foreground p-6 text-background shadow-[0_22px_70px_rgba(15,17,21,0.18)]">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_45%,rgba(210,122,38,0.18),transparent_36%)]" />
@@ -309,8 +313,7 @@ function NextMoveCard({ nextCallDate }: { nextCallDate: Date }) {
           </p>
           <h2 className="mt-3 font-display text-3xl leading-tight">Open AOS</h2>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-background/72">
-            Bring one stuck decision into the company operating system before the next live call on{" "}
-            {format(nextCallDate, "MMM d")}.
+            Bring one stuck decision into the company operating system before the next live call.
           </p>
           <div className="mt-6 grid gap-2 sm:max-w-52">
             <Button asChild className="bg-amber text-white shadow-lg hover:bg-amber/90">
@@ -358,7 +361,7 @@ function OperatingPriorities({
   return (
     <section className="space-y-3">
       <p className="font-mono text-xs uppercase tracking-wider text-amber">
-        Today's operating priorities
+        This week's operating priorities
       </p>
       <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[minmax(0,1.35fr)_minmax(14rem,0.85fr)_minmax(14rem,0.85fr)_16rem]">
         <Card className="overflow-hidden border-hairline p-0 lg:col-span-2 xl:col-span-1">
@@ -412,7 +415,7 @@ function OperatingPriorities({
 
         <Link
           to="/portal/call-prep"
-          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+          className="group flex min-h-52 flex-col justify-between rounded-md border border-foreground/20 bg-elevated p-5 shadow-[0_18px_50px_rgba(15,17,21,0.08)] transition-colors hover:border-foreground/35 hover:bg-background"
         >
           <div>
             <div className="flex items-start justify-between gap-4">
@@ -421,7 +424,7 @@ function OperatingPriorities({
               </p>
               <ClipboardList className="h-5 w-5 shrink-0 text-amber" />
             </div>
-            <h2 className="mt-3 font-display text-xl leading-tight">What needs pressure?</h2>
+            <h2 className="mt-3 font-display text-2xl leading-tight">What needs pressure?</h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Turn a people, cash, sales, production, or systems problem into a call-ready issue.
             </p>
@@ -434,7 +437,7 @@ function OperatingPriorities({
 
         <Link
           to="/portal/replays"
-          className="group flex min-h-52 flex-col justify-between rounded-xl border border-hairline bg-background p-4 shadow transition-colors hover:bg-secondary"
+          className="group flex min-h-52 flex-col justify-between rounded-md border border-hairline bg-background p-4 transition-colors hover:bg-secondary"
         >
           <div>
             <div className="flex items-start justify-between gap-4">
@@ -470,7 +473,7 @@ function OperatingPriorities({
 const companyBuildPath = [
   { label: "Vision", status: "Start here", tone: "bg-emerald-500" },
   { label: "People", status: "Build next", tone: "bg-muted-foreground/35" },
-  { label: "Data", status: "Build next", tone: "bg-amber" },
+  { label: "Numbers", status: "Scorecard", tone: "bg-amber" },
   { label: "Issues", status: "Active room", tone: "bg-amber" },
   { label: "Process", status: "Template library", tone: "bg-muted-foreground/35" },
   { label: "Traction", status: "Live calls", tone: "bg-emerald-500" },
@@ -508,6 +511,7 @@ function WorkLaneCard({
   eyebrow,
   value,
   hint,
+  isHomeBase = false,
 }: {
   to: string;
   icon: IconComponent;
@@ -516,15 +520,24 @@ function WorkLaneCard({
   eyebrow: string;
   value: string;
   hint: string;
+  isHomeBase?: boolean;
 }) {
   return (
     <Link
       to={to}
-      className="group flex min-h-44 flex-col justify-between bg-background p-5 transition-colors hover:bg-secondary"
+      className={`group flex min-h-44 flex-col justify-between p-5 transition-colors ${
+        isHomeBase
+          ? "border border-foreground bg-foreground text-background shadow-[0_20px_60px_rgba(15,17,21,0.14)] hover:bg-foreground/95"
+          : "bg-background hover:bg-secondary"
+      }`}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+          <p
+            className={`font-mono text-xs uppercase tracking-wider ${
+              isHomeBase ? "text-amber" : "text-muted-foreground"
+            }`}
+          >
             {eyebrow}
           </p>
           <h3 className="mt-3 font-display text-xl leading-tight">{label}</h3>
@@ -536,11 +549,21 @@ function WorkLaneCard({
         )}
       </div>
       <div className="mt-6 flex items-end justify-between gap-3">
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          <span className="font-medium text-foreground">{value}</span>
+        <p
+          className={`text-xs leading-relaxed ${
+            isHomeBase ? "text-background/62" : "text-muted-foreground"
+          }`}
+        >
+          <span className={`font-medium ${isHomeBase ? "text-background" : "text-foreground"}`}>
+            {value}
+          </span>
           <span> / {hint}</span>
         </p>
-        <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+        <ArrowUpRight
+          className={`h-4 w-4 shrink-0 transition-opacity group-hover:opacity-100 ${
+            isHomeBase ? "text-amber opacity-100" : "text-muted-foreground opacity-0"
+          }`}
+        />
       </div>
     </Link>
   );

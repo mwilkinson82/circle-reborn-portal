@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   BadgeDollarSign,
@@ -9,12 +11,22 @@ import {
   ClipboardList,
   Copy,
   Factory,
+  Loader2,
   MessageSquareText,
+  Save,
   Users,
 } from "lucide-react";
+import {
+  createCallPrepPacket,
+  getCallPrepPackets,
+  type CallPrepPacket,
+  type PacketOutputType,
+} from "@/lib/call-prep.functions";
+import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -59,20 +71,98 @@ const categories = [
 ] as const;
 
 type CategoryId = (typeof categories)[number]["id"];
+type DraftField =
+  | "categoryId"
+  | "issue"
+  | "tried"
+  | "avoiding"
+  | "consequence"
+  | "win"
+  | "expectedOutput"
+  | "outputSummary"
+  | "owner"
+  | "dueDate";
+
+type CallPrepDraft = Record<DraftField, string>;
+
+const DRAFT_STORAGE_KEY = "contractor-circle-call-prep-draft";
+
+const outcomeOptions: Array<{
+  id: PacketOutputType;
+  label: string;
+  helper: string;
+}> = [
+  {
+    id: "decision",
+    label: "Decision",
+    helper: "The call should force a clear leadership choice.",
+  },
+  {
+    id: "todo",
+    label: "To-do",
+    helper: "The call should create a named next action.",
+  },
+  {
+    id: "sop_gap",
+    label: "SOP gap",
+    helper: "The call should expose a process that needs documented.",
+  },
+  {
+    id: "scorecard_metric",
+    label: "Scorecard metric",
+    helper: "The call should identify a number to track weekly.",
+  },
+  {
+    id: "aos_issue",
+    label: "AOS issue",
+    helper: "This should move into the AOS app's issues list.",
+  },
+];
+
+const outputLabels = Object.fromEntries(
+  outcomeOptions.map((outcome) => [outcome.id, outcome.label]),
+) as Record<PacketOutputType, string>;
+
+const statusLabels: Record<CallPrepPacket["status"], string> = {
+  draft: "Draft",
+  ready: "Ready",
+  discussed: "Discussed",
+  converted: "Converted",
+};
 
 function CallPrepPage() {
+  const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
+  const savePacket = useServerFn(createCallPrepPacket);
+  const fetchPackets = useServerFn(getCallPrepPackets);
+  const { data: packets = [] } = useQuery({
+    queryKey: ["call-prep-packets", user?.id],
+    queryFn: () => fetchPackets(),
+    enabled: !!user && !loading,
+  });
   const [categoryId, setCategoryId] = useState<CategoryId>("leadership");
   const [issue, setIssue] = useState("");
   const [tried, setTried] = useState("");
   const [avoiding, setAvoiding] = useState("");
   const [consequence, setConsequence] = useState("");
   const [win, setWin] = useState("");
+  const [expectedOutput, setExpectedOutput] = useState<PacketOutputType>("decision");
+  const [outputSummary, setOutputSummary] = useState("");
+  const [owner, setOwner] = useState("");
+  const [dueDate, setDueDate] = useState("");
   const [copied, setCopied] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [hydratedDraft, setHydratedDraft] = useState(false);
 
   const category = categories.find((item) => item.id === categoryId) ?? categories[0];
   const completedCount = [issue, tried, avoiding, consequence, win].filter(
     (value) => value.trim().length > 0,
   ).length;
+  const selectedOutcome =
+    outcomeOptions.find((outcome) => outcome.id === expectedOutput) ?? outcomeOptions[0];
+  const canSave = issue.trim().length > 0 && !saving;
 
   const issuePacket = [
     "Contractor Circle Call Prep",
@@ -93,8 +183,71 @@ function CallPrepPage() {
     "5. What would make this a win on the call?",
     win.trim() || "[add win condition]",
     "",
-    "Likely output: decision, to-do, SOP gap, scorecard metric, or AOS issue.",
-  ].join("\n");
+    `Likely output: ${selectedOutcome.label}`,
+    outputSummary.trim() ? `Captured output: ${outputSummary.trim()}` : "",
+    owner.trim() ? `Owner: ${owner.trim()}` : "",
+    dueDate.trim() ? `Due date: ${dueDate.trim()}` : "",
+  ]
+    .filter((line, index, lines) => line || lines[index - 1] !== "")
+    .join("\n");
+
+  useEffect(() => {
+    const savedDraft = window.localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!savedDraft) {
+      setHydratedDraft(true);
+      return;
+    }
+
+    try {
+      const draft = JSON.parse(savedDraft) as Partial<CallPrepDraft>;
+      if (draft.categoryId && categories.some((item) => item.id === draft.categoryId)) {
+        setCategoryId(draft.categoryId as CategoryId);
+      }
+      if (draft.issue) setIssue(draft.issue);
+      if (draft.tried) setTried(draft.tried);
+      if (draft.avoiding) setAvoiding(draft.avoiding);
+      if (draft.consequence) setConsequence(draft.consequence);
+      if (draft.win) setWin(draft.win);
+      if (draft.expectedOutput && outcomeOptions.some((item) => item.id === draft.expectedOutput)) {
+        setExpectedOutput(draft.expectedOutput as PacketOutputType);
+      }
+      if (draft.outputSummary) setOutputSummary(draft.outputSummary);
+      if (draft.owner) setOwner(draft.owner);
+      if (draft.dueDate) setDueDate(draft.dueDate);
+    } finally {
+      setHydratedDraft(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hydratedDraft) return;
+
+    const draft: CallPrepDraft = {
+      categoryId,
+      issue,
+      tried,
+      avoiding,
+      consequence,
+      win,
+      expectedOutput,
+      outputSummary,
+      owner,
+      dueDate,
+    };
+    window.localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft));
+  }, [
+    avoiding,
+    categoryId,
+    consequence,
+    dueDate,
+    expectedOutput,
+    hydratedDraft,
+    issue,
+    outputSummary,
+    owner,
+    tried,
+    win,
+  ]);
 
   const copyIssuePacket = async () => {
     try {
@@ -103,6 +256,37 @@ function CallPrepPage() {
       window.setTimeout(() => setCopied(false), 1600);
     } catch {
       setCopied(false);
+    }
+  };
+
+  const saveIssuePacket = async () => {
+    if (!canSave) return;
+    setSaving(true);
+    setSaveError(null);
+    setSaved(false);
+
+    try {
+      await savePacket({
+        data: {
+          category: categoryId,
+          issue,
+          tried,
+          avoiding,
+          consequence,
+          win,
+          expectedOutput,
+          outputSummary,
+          owner,
+          dueDate,
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["call-prep-packets"] });
+      setSaved(true);
+      window.setTimeout(() => setSaved(false), 2200);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "Could not save this issue packet.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -156,7 +340,7 @@ function CallPrepPage() {
 
         <Card className="border-hairline p-6">
           <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-            Current packet
+            Issue packet
           </p>
           <h2 className="mt-2 font-display text-2xl leading-tight">{category.label}</h2>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{category.prompt}</p>
@@ -177,10 +361,28 @@ function CallPrepPage() {
           </div>
 
           <div className="mt-7 space-y-3">
-            <Button asChild className="w-full">
+            <Button className="w-full" onClick={saveIssuePacket} disabled={!canSave}>
+              {saving ? (
+                <>
+                  Saving <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                </>
+              ) : saved ? (
+                <>
+                  Packet saved <CheckCircle2 className="ml-2 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Save issue packet <Save className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+            <Button asChild variant="outline" className="w-full">
               <Link to="/portal/alp-os">
                 Open AOS <ArrowUpRight className="ml-2 h-4 w-4" />
               </Link>
+            </Button>
+            <Button type="button" variant="outline" className="w-full" disabled>
+              Future: Send to AOS <ArrowUpRight className="ml-2 h-4 w-4" />
             </Button>
             <Button variant="outline" className="w-full" onClick={copyIssuePacket}>
               {copied ? (
@@ -193,6 +395,9 @@ function CallPrepPage() {
                 </>
               )}
             </Button>
+            {saveError ? (
+              <p className="text-xs leading-relaxed text-destructive">{saveError}</p>
+            ) : null}
           </div>
         </Card>
       </section>
@@ -249,6 +454,38 @@ function CallPrepPage() {
               onChange={setWin}
               placeholder="Example: Leave with a clear owner, one action item, and the scorecard number we will track weekly."
             />
+            <OutcomeSelector value={expectedOutput} onChange={setExpectedOutput} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="owner" className="text-sm font-medium">
+                  Owner
+                </Label>
+                <Input
+                  id="owner"
+                  value={owner}
+                  onChange={(event) => setOwner(event.target.value)}
+                  placeholder="Who owns the next move?"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dueDate" className="text-sm font-medium">
+                  Due date
+                </Label>
+                <Input
+                  id="dueDate"
+                  type="date"
+                  value={dueDate}
+                  onChange={(event) => setDueDate(event.target.value)}
+                />
+              </div>
+            </div>
+            <PrepQuestion
+              id="outcomeSummary"
+              label="Captured call output"
+              value={outputSummary}
+              onChange={setOutputSummary}
+              placeholder="After the call: write the decision, to-do, SOP gap, or scorecard metric that came out of the conversation."
+            />
           </div>
         </Card>
 
@@ -261,9 +498,10 @@ function CallPrepPage() {
               <p className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
                 Issue packet
               </p>
-              <h2 className="mt-2 font-display text-2xl leading-tight">
-                Ready for AOS or the live room
-              </h2>
+              <h2 className="mt-2 font-display text-2xl leading-tight">Ready to pressure-test</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                Built for AOS or the live room.
+              </p>
             </div>
           </div>
 
@@ -272,8 +510,107 @@ function CallPrepPage() {
           </pre>
         </Card>
       </section>
+
+      <CallPrepHistory packets={packets} />
     </div>
   );
+}
+
+function CallPrepHistory({ packets }: { packets: CallPrepPacket[] }) {
+  return (
+    <section className="space-y-4">
+      <div className="max-w-2xl">
+        <p className="font-mono text-xs uppercase tracking-wider text-amber">Call prep history</p>
+        <h2 className="mt-2 font-display text-2xl leading-tight">Make the pressure cumulative</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          Saved packets stay in Contractor Circle for follow-through. Copy them into the live room
+          now; move them into AOS when the external integration is ready.
+        </p>
+      </div>
+
+      {packets.length ? (
+        <div className="grid gap-px border border-hairline bg-hairline md:grid-cols-2 xl:grid-cols-4">
+          {packets.slice(0, 4).map((packet) => (
+            <div key={packet.id} className="bg-background p-5">
+              <div className="flex items-center justify-between gap-3">
+                <Badge variant={packet.status === "converted" ? "default" : "outline"}>
+                  {statusLabels[packet.status]}
+                </Badge>
+                <span className="font-mono text-[10px] uppercase text-muted-foreground">
+                  {outputLabels[packet.expected_output]}
+                </span>
+              </div>
+              <h3 className="mt-4 line-clamp-3 font-display text-xl leading-tight">
+                {packet.issue}
+              </h3>
+              <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+                {formatCategory(packet.category)}
+                {packet.owner ? ` / Owner: ${packet.owner}` : ""}
+              </p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <Card className="border-hairline p-6">
+          <h3 className="font-display text-2xl">No saved packets yet</h3>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Build one strong issue before the next call. The saved history will appear here.
+          </p>
+        </Card>
+      )}
+    </section>
+  );
+}
+
+function OutcomeSelector({
+  value,
+  onChange,
+}: {
+  value: PacketOutputType;
+  onChange: (value: PacketOutputType) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <Label className="text-sm font-medium">Likely output</Label>
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+        {outcomeOptions.map((outcome) => {
+          const active = outcome.id === value;
+
+          return (
+            <button
+              key={outcome.id}
+              type="button"
+              onClick={() => onChange(outcome.id)}
+              className={`min-h-28 border p-3 text-left transition-colors ${
+                active
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-hairline bg-background hover:bg-secondary"
+              }`}
+            >
+              <span className="block font-display text-lg leading-tight">{outcome.label}</span>
+              <span
+                className={`mt-2 block text-xs leading-relaxed ${
+                  active ? "text-background/65" : "text-muted-foreground"
+                }`}
+              >
+                {outcome.helper}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function formatCategory(category: CallPrepPacket["category"]) {
+  return {
+    leadership: "Leadership/System",
+    people: "People",
+    cash: "Cash/Billing",
+    sales: "Sales/Estimating",
+    production: "Production",
+  }[category];
 }
 
 function PrepQuestion({
