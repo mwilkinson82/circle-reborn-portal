@@ -142,13 +142,6 @@ function TemplatesPage() {
             <LibraryCue label="2" body="Open the matching asset" />
             <LibraryCue label="3" body="Carry the output into AOS" />
           </div>
-          <div className="mt-6">
-            <Button asChild variant="secondary">
-              <a href={TEMPLATE_LIBRARY_DRIVE_URL} target="_blank" rel="noopener noreferrer">
-                Open full Drive library <ArrowUpRight className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          </div>
         </div>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
           <StatBlock label="Resources" value={String(templates.length)} />

@@ -1,4 +1,4 @@
-import { LEAD_MAGNET_DOWNLOADS, TEMPLATE_LIBRARY_DRIVE_URL } from "@/lib/resource-links";
+import { LEAD_MAGNET_DOWNLOADS } from "@/lib/resource-links";
 
 export type LibraryTemplateCategory =
   | "proposals"
@@ -54,8 +54,8 @@ export function withTemplateLibraryFallbackUrls<T extends { download_url?: strin
   return templates.map((template) => ({
     ...template,
     download_url: isFragileTemplateUrl(template.download_url)
-      ? TEMPLATE_LIBRARY_DRIVE_URL
-      : (template.download_url ?? TEMPLATE_LIBRARY_DRIVE_URL),
+      ? null
+      : (template.download_url ?? null),
   }));
 }
 

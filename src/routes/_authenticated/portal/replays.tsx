@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { format } from "date-fns";
-import { Calendar, Clock, PlayCircle, Search, Video, X } from "lucide-react";
+import { ArrowUpRight, Calendar, Clock, PlayCircle, Search, Video, X } from "lucide-react";
 import { getReplayLibrary } from "@/lib/dashboard.functions";
 import { useAuth } from "@/hooks/use-auth";
 import { Badge } from "@/components/ui/badge";
@@ -357,6 +357,16 @@ function ReplayAction({
     );
   }
 
+  if (isZoomClipUrl(replay.video_url)) {
+    return (
+      <Button asChild className={className}>
+        <a href={toExternalReplayUrl(replay.video_url)} target="_blank" rel="noopener noreferrer">
+          Open replay <ArrowUpRight className="ml-2 h-4 w-4" />
+        </a>
+      </Button>
+    );
+  }
+
   return (
     <Button type="button" onClick={() => onWatch(replay)} className={className}>
       Watch replay <PlayCircle className="ml-2 h-4 w-4" />
@@ -423,6 +433,14 @@ function toEmbedUrl(value: string) {
   }
 
   return raw;
+}
+
+function isZoomClipUrl(value: string | null | undefined) {
+  return Boolean(value?.includes("zoom.us/clips/"));
+}
+
+function toExternalReplayUrl(value: string) {
+  return value.trim().replace(/&amp;/g, "&").replace("/clips/embed/", "/clips/share/");
 }
 
 function getUnavailableLabel(replay: ReplayItem) {
