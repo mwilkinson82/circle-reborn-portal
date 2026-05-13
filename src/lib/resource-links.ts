@@ -4,6 +4,7 @@ export const TEMPLATE_LIBRARY_DRIVE_URL =
 export const LEAD_MAGNET_DOWNLOADS = {
   estimating:
     "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/Construction_Estimating_Checklist_ee83b54a.pdf",
+  // Cutover TODO: rehost this lead magnet before replacing the Manus portal.
   silos: "https://alpcontractorcircle.com/manus-storage/ALP_Three_Silos_Framework_v3_3ba50529.pdf",
   q2: "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/Q1_Q2_Framework_ALP_Contractor_Circle_8578e990.pdf",
 } as const;

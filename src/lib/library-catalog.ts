@@ -45,7 +45,10 @@ const cloudflareThumbnailUrl = (id: string) =>
 
 function isFragileTemplateUrl(value: string | null | undefined) {
   if (!value) return false;
-  return value.includes("drive.google.com/file/") && value.includes("/copy");
+  return (
+    (value.includes("drive.google.com/file/") && value.includes("/copy")) ||
+    value.includes("alpcontractorcircle.com/manus-storage")
+  );
 }
 
 export function withTemplateLibraryFallbackUrls<T extends { download_url?: string | null }>(

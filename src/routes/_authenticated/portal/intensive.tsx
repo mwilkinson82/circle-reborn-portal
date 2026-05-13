@@ -108,7 +108,7 @@ function IntensivePage() {
           <div>
             <p className="eyebrow text-amber">Work With Marshall</p>
             <h1 className="mt-3 max-w-3xl font-display text-4xl leading-tight sm:text-5xl">
-              When the group room is not enough.
+              Six private sessions to install the next operating constraint.
             </h1>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-background/70">
               Contractor Circle gives you the operating room. The Intensive gives you six private
@@ -189,15 +189,15 @@ function IntensivePage() {
       <section id="intensive-application" className="grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <Card className="surface-command p-6 text-background">
           <p className="eyebrow text-amber">Application</p>
-          <h2 className="mt-3 font-display text-3xl">Apply for advisory access.</h2>
+          <h2 className="mt-3 font-display text-3xl">Apply for the Six-Week Intensive.</h2>
           <p className="mt-3 text-sm leading-relaxed text-background/68">
-            Marshall reviews every application. Complete all fields honestly. This is how he
-            determines fit.
+            Applications are reviewed for fit. Complete all fields honestly so the next step is
+            clear.
           </p>
           <div className="mt-6 grid gap-3 text-sm text-background/68">
             <p className="flex gap-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
-              Applications are sent to Marshall for review.
+              Applications are submitted for review before any private engagement is accepted.
             </p>
             <p className="flex gap-3">
               <LockKeyhole className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
@@ -214,9 +214,8 @@ function IntensivePage() {
               </div>
               <h2 className="mt-5 font-display text-3xl">Application received.</h2>
               <p className="mx-auto mt-3 max-w-lg text-sm leading-relaxed text-muted-foreground">
-                Marshall will review the application and decide whether the Intensive is the right
-                next step. Contractor Circle remains your group operating room while this is being
-                reviewed.
+                The application will be reviewed for fit. Contractor Circle remains your group
+                operating room while this is being reviewed.
               </p>
               <div className="mt-6">
                 <Button asChild variant="outline">
@@ -326,7 +325,7 @@ function IntensivePage() {
                 <Send className="ml-2 h-4 w-4" />
               </Button>
               <p className="text-center text-xs text-muted-foreground">
-                Marshall reviews every application personally. No spam, no sales calls.
+                Submitting does not guarantee acceptance into private advisory work.
               </p>
             </form>
           )}

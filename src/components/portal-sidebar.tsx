@@ -61,10 +61,11 @@ const tools: NavItem[] = [
 const account: NavItem[] = [
   { title: "Work With Marshall", url: "/portal/intensive", icon: MessageSquareHeart },
   { title: "Profile", url: "/portal/account", icon: UserCircle },
-  { title: "Admin", url: "/portal/admin", icon: Shield },
 ];
 
-export function PortalSidebar() {
+const admin: NavItem[] = [{ title: "Admin", url: "/portal/admin", icon: Shield }];
+
+export function PortalSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -140,11 +141,20 @@ export function PortalSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Admin</SidebarGroupLabel>
+          <SidebarGroupLabel>Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>{renderItems(account)}</SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {isAdmin ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>{renderItems(admin)}</SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ) : null}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">

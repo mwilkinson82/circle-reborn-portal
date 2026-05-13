@@ -2,7 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { ArrowLeft, CheckCircle2, Edit3, Save, Video } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowLeft,
+  CheckCircle2,
+  Edit3,
+  ExternalLink,
+  Save,
+  Video,
+} from "lucide-react";
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
@@ -54,6 +62,37 @@ type AdminQuestion = {
   admin_note: string | null;
   created_at: string;
   user_id: string;
+};
+
+type AdminIntensiveApplication = {
+  id: string;
+  full_name: string;
+  company_name: string;
+  annual_revenue_range: string;
+  biggest_challenge: string;
+  already_tried: string;
+  applying_for: string;
+  email: string;
+  phone: string;
+  status: "submitted" | "reviewed" | "accepted" | "declined";
+  email_status: string;
+  email_error: string | null;
+  created_at: string;
+};
+
+type AdminDiagnostics = {
+  templateCount: number;
+  replayCount: number;
+  placeholderTemplateCount: number;
+  placeholderReplayCount: number;
+  manusTemplateUrlCount: number;
+  usingTemplateFallback: boolean;
+  usingReplayFallback: boolean;
+  supabaseAdminEnv: {
+    ready: boolean;
+    missing: string[];
+    message: string | null;
+  };
 };
 
 const blankReplay = {
@@ -145,6 +184,11 @@ function AdminContentPage() {
   const replays = ((content.data?.replays ?? []) as AdminReplay[]).slice(0, 12);
   const sessions = ((content.data?.sessions ?? []) as AdminSession[]).slice(0, 6);
   const questions = ((content.data?.questions ?? []) as AdminQuestion[]).slice(0, 12);
+  const applications = ((content.data?.applications ?? []) as AdminIntensiveApplication[]).slice(
+    0,
+    10,
+  );
+  const diagnostics = content.data?.diagnostics as AdminDiagnostics | undefined;
 
   if (content.isLoading) {
     return <div className="p-10 text-sm text-muted-foreground">Loading content command...</div>;
@@ -182,6 +226,8 @@ function AdminContentPage() {
           </p>
         </div>
       </div>
+
+      {diagnostics ? <LibraryDiagnostics diagnostics={diagnostics} /> : null}
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_26rem]">
         <ReplayEditor
@@ -265,6 +311,51 @@ function AdminContentPage() {
           </div>
         </Card>
       </section>
+
+      <Card className="surface-operating p-5 sm:p-6">
+        <p className="eyebrow text-amber">Intensive applications</p>
+        <h2 className="mt-2 font-display text-3xl">Six-Week Contractor Intensive queue</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Review applications submitted from the portal. Status updates are still handled manually
+          until an admin decision workflow is added.
+        </p>
+        <div className="mt-6 grid gap-3">
+          {applications.map((application) => (
+            <div key={application.id} className="border border-hairline bg-background p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">{application.full_name}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {application.company_name} · {application.annual_revenue_range}
+                  </p>
+                </div>
+                <Badge variant={application.status === "submitted" ? "outline" : "default"}>
+                  {application.status}
+                </Badge>
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                {application.biggest_challenge}
+              </p>
+              <div className="mt-4 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
+                <span>{application.applying_for}</span>
+                <span>{application.email}</span>
+                <span>{format(new Date(application.created_at), "MMM d, yyyy")}</span>
+              </div>
+              {application.email_status !== "sent" ? (
+                <p className="mt-3 text-xs text-amber">
+                  Email status: {application.email_status}
+                  {application.email_error ? ` · ${application.email_error}` : ""}
+                </p>
+              ) : null}
+            </div>
+          ))}
+          {applications.length === 0 ? (
+            <p className="border border-hairline bg-background p-4 text-sm text-muted-foreground">
+              No intensive applications submitted yet.
+            </p>
+          ) : null}
+        </div>
+      </Card>
 
       <Card className="surface-operating p-5 sm:p-6">
         <p className="eyebrow text-amber">Bootcamp questions</p>
@@ -352,6 +443,8 @@ function ReplayEditor({
   onSave: () => void;
   saving: boolean;
 }) {
+  const replayTestUrl = getReplayTestUrl(form.videoUrl);
+
   return (
     <Card className="surface-operating p-5 sm:p-6">
       <div className="flex items-center gap-3">
@@ -419,6 +512,13 @@ function ReplayEditor({
             <Save className="mr-2 h-4 w-4" />
             {saving ? "Saving..." : "Save replay"}
           </Button>
+          {replayTestUrl ? (
+            <Button asChild variant="outline">
+              <a href={replayTestUrl} target="_blank" rel="noopener noreferrer">
+                Test replay <ExternalLink className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+          ) : null}
           {form.id ? (
             <Button variant="outline" onClick={() => setForm(blankReplay)}>
               New replay
@@ -428,6 +528,70 @@ function ReplayEditor({
       </div>
     </Card>
   );
+}
+
+function LibraryDiagnostics({ diagnostics }: { diagnostics: AdminDiagnostics }) {
+  const warnings = [
+    diagnostics.usingTemplateFallback
+      ? `Template library is still using fallback data (${diagnostics.templateCount} Supabase rows, ${diagnostics.placeholderTemplateCount} placeholders).`
+      : null,
+    diagnostics.usingReplayFallback
+      ? `Replay library is still using fallback data (${diagnostics.replayCount} Supabase rows, ${diagnostics.placeholderReplayCount} placeholders).`
+      : null,
+    diagnostics.manusTemplateUrlCount
+      ? `${diagnostics.manusTemplateUrlCount} Supabase template URLs still point at Manus storage.`
+      : null,
+    diagnostics.supabaseAdminEnv.ready ? null : diagnostics.supabaseAdminEnv.message,
+  ].filter((warning): warning is string => Boolean(warning));
+
+  return (
+    <Card className="surface-library p-5">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow text-amber">Production readiness</p>
+          <h2 className="mt-2 font-display text-2xl">Library source status</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Admin view of whether members are seeing Supabase content or local fallback catalogs.
+          </p>
+        </div>
+        <Badge variant={warnings.length ? "outline" : "default"}>
+          {warnings.length ? "Needs migration" : "Supabase ready"}
+        </Badge>
+      </div>
+      {warnings.length ? (
+        <div className="mt-4 grid gap-2">
+          {warnings.map((warning) => (
+            <p key={warning} className="flex gap-2 text-sm text-muted-foreground">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber" />
+              {warning}
+            </p>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Templates and replays are coming from Supabase without placeholder fallback triggers.
+        </p>
+      )}
+    </Card>
+  );
+}
+
+function getReplayTestUrl(value: string) {
+  const raw = extractReplaySource(value);
+  if (!raw) return null;
+  if (/^[a-f0-9]{32}$/i.test(raw)) return `https://iframe.videodelivery.net/${raw}`;
+  if (raw.includes("zoom.us/clips/")) return raw.replace("/clips/embed/", "/clips/share/");
+  const cloudflareDeliveryMatch = raw.match(/videodelivery\.net\/([a-f0-9]{32})/i);
+  if (cloudflareDeliveryMatch?.[1]) {
+    return `https://iframe.videodelivery.net/${cloudflareDeliveryMatch[1]}`;
+  }
+  return /^https?:\/\//i.test(raw) ? raw : null;
+}
+
+function extractReplaySource(value: string) {
+  const trimmed = value.trim().replace(/&amp;/g, "&");
+  const srcMatch = trimmed.match(/src=["']([^"']+)["']/i);
+  return srcMatch?.[1]?.trim() ?? trimmed;
 }
 
 function BootcampSessionEditor({

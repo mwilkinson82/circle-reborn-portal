@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import type Stripe from "stripe";
 import { createStripeClient } from "@/lib/stripe.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { getSupabaseAdminEnvStatus, supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachAuthHeader } from "@/lib/auth-client-middleware";
 import { isFoundingPlan } from "@/lib/membership-plan";
@@ -465,6 +465,15 @@ export const getMyAdminStatus = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { userId, claims } = context;
     const email = (claims as { email?: string } | undefined)?.email;
+    const envStatus = getSupabaseAdminEnvStatus();
+
+    if (!envStatus.ready && !isConfiguredAdminEmail(email)) {
+      return {
+        isAdmin: false,
+        email: email ?? null,
+        error: envStatus.message ?? "Supabase admin environment is not configured.",
+      };
+    }
 
     try {
       return {

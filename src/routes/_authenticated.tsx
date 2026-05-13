@@ -87,7 +87,7 @@ function AuthenticatedLayout() {
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        <PortalSidebar />
+        <PortalSidebar isAdmin={access.data.isAdmin} />
         <div className="flex min-w-0 flex-1 flex-col">
           <header className="sticky top-0 z-10 flex h-16 items-center justify-between gap-4 border-b border-hairline bg-background/88 px-4 backdrop-blur">
             <div className="flex min-w-0 items-center gap-3">

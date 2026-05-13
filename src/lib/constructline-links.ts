@@ -1,7 +1,16 @@
-// Continuity link-outs to the existing production ConstructLine app.
-// These point at the live alpcontractorcircle.com routes that current
-// members are already using. Do NOT rebuild these tools yet — link out
-// only, open in a new tab, no SSO/identity in URL.
+// Temporary/current linked workspace for ConstructLine.
+// Members still use the existing ConstructLine production tools while this
+// portal rebuild cuts over first. Do NOT rebuild or migrate these tools yet:
+// link out only, open in a new tab, no SSO/identity in URL.
+const DEFAULT_CONSTRUCTLINE_BASE_URL = "https://alpcontractorcircle.com";
+
+const CONSTRUCTLINE_BASE_URL = (
+  import.meta.env.VITE_CONSTRUCTLINE_BASE_URL || DEFAULT_CONSTRUCTLINE_BASE_URL
+).replace(/\/+$/, "");
+
+function constructLineUrl(path: string) {
+  return `${CONSTRUCTLINE_BASE_URL}${path}`;
+}
 
 export type ConstructLineLink = {
   key: string;
@@ -23,7 +32,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
     bestUsedFor: "Live pursuits, bid continuity, and project records.",
     supportNote:
       "Use this when the work needs field execution support, not operating-system setup.",
-    url: "https://alpcontractorcircle.com/portal/constructline",
+    url: constructLineUrl("/portal/constructline"),
   },
   {
     key: "takeoff",
@@ -34,7 +43,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
     bestUsedFor: "Scopes, quantities, line items, and estimate review.",
     supportNote:
       "Bring unclear estimate decisions into Bring One Issue when they need group-session judgment.",
-    url: "https://alpcontractorcircle.com/portal/takeoff",
+    url: constructLineUrl("/portal/takeoff"),
   },
   {
     key: "scheduler",
@@ -44,7 +53,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
       "Use when durations, sequencing, milestones, Gantt logic, or CPM schedule clarity is needed.",
     bestUsedFor: "Durations, sequencing, milestones, and schedule logic.",
     supportNote: "Use Baseline to clarify the plan; use AOS to run the company rhythm around it.",
-    url: "https://alpcontractorcircle.com/portal/scheduler",
+    url: constructLineUrl("/portal/scheduler"),
   },
   {
     key: "cost-library",
@@ -54,7 +63,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
     bestUsedFor: "Assemblies, item costs, price references, and historical cost memory.",
     supportNote:
       "Use pricing evidence here, then carry leadership decisions into a session or AOS.",
-    url: "https://alpcontractorcircle.com/portal/cost-library",
+    url: constructLineUrl("/portal/cost-library"),
   },
   {
     key: "labor-library",
@@ -65,7 +74,7 @@ export const CONSTRUCTLINE_LINKS: ConstructLineLink[] = [
     bestUsedFor: "Crew rates, trade multipliers, labor assumptions, and regional rate checks.",
     supportNote:
       "Use rate clarity to support the bid; use Contractor Circle for the operating decision.",
-    url: "https://alpcontractorcircle.com/portal/labor-library",
+    url: constructLineUrl("/portal/labor-library"),
   },
 ];
 

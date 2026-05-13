@@ -28,6 +28,21 @@ function createSupabaseAdminClient() {
   });
 }
 
+export function getSupabaseAdminEnvStatus() {
+  const missing = [
+    ...(!process.env.SUPABASE_URL ? ["SUPABASE_URL"] : []),
+    ...(!process.env.SUPABASE_SERVICE_ROLE_KEY ? ["SUPABASE_SERVICE_ROLE_KEY"] : []),
+  ];
+
+  return {
+    ready: missing.length === 0,
+    missing,
+    message: missing.length
+      ? `Missing Supabase admin environment variable(s): ${missing.join(", ")}. Configure these in Vercel before using admin workflows.`
+      : null,
+  };
+}
+
 let _supabaseAdmin: ReturnType<typeof createSupabaseAdminClient> | undefined;
 
 // Server-side Supabase client with service role - bypasses RLS

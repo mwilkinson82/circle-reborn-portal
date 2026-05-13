@@ -339,10 +339,12 @@ function BootcampQuestionPanel({
   return (
     <Card className="surface-library p-5">
       <p className="eyebrow text-amber">Monthly bootcamp</p>
-      <h2 className="mt-2 font-display text-2xl leading-tight">Submit a bootcamp question</h2>
+      <h2 className="mt-2 font-display text-2xl leading-tight">
+        Submit a question for consideration
+      </h2>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        Bootcamp questions are reviewed by Marshall. If accepted, you will receive a confirmation
-        when the email workflow is connected.
+        Bootcamp questions are submitted for consideration and selected for broad group value. A
+        submission does not guarantee live review.
       </p>
       <div className="mt-4 border border-hairline bg-background p-3">
         <p className="text-xs text-muted-foreground">Next bootcamp</p>
@@ -358,7 +360,7 @@ function BootcampQuestionPanel({
         <Textarea
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder="What would you like Marshall to consider for the bootcamp?"
+          placeholder="What would you like considered for the bootcamp?"
           className="min-h-24"
         />
         <Textarea
@@ -372,7 +374,7 @@ function BootcampQuestionPanel({
           disabled={question.trim().length < 8 || mutation.isPending}
           onClick={() => mutation.mutate()}
         >
-          {mutation.isPending ? "Submitting..." : "Submit for review"}
+          {mutation.isPending ? "Submitting..." : "Submit for consideration"}
           <Send className="h-4 w-4" />
         </Button>
       </div>
