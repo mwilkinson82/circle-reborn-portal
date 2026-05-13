@@ -1,4 +1,4 @@
--- Repair member library asset URLs from the current template export and old portal file storage.
+-- Repair member library asset URLs from the current template export.
 
 UPDATE public.templates
 SET download_url = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/Construction_Estimating_Checklist_ee83b54a.pdf'
@@ -13,5 +13,18 @@ SET download_url = 'https://alpcontractorcircle.com/manus-storage/ALP_EOS_Compon
 WHERE title = 'EOS Component Connection Map';
 
 UPDATE public.templates
-SET download_url = 'https://drive.google.com/drive/folders/1Kl3c8oVS8K-BnQmy5G-M1dJ4k7X7Zghw?usp=sharing'
-WHERE download_url LIKE 'https://drive.google.com/file/%/copy';
+SET download_url = 'https://docs.google.com/document/d/1HBVZ3oyuLoRQfOJeDSPtTiPjsAN-_mpndM80G4tLmL0/copy'
+WHERE title = 'Follow-Up Email Scripts (7 Scripts)';
+
+UPDATE public.templates
+SET download_url = 'https://docs.google.com/document/d/1f0KTxAAgH1qOVyLK2hESCZFXD-kzFhpzys607TUaerc/copy'
+WHERE title = 'Objection Reframing Guide';
+
+UPDATE public.templates
+SET download_url = NULL,
+    published = false
+WHERE title = 'PM Systems Spreadsheets';
+
+UPDATE public.templates
+SET download_url = '/templates/cpm-scheduling-the-financial-weapon.pdf'
+WHERE title = 'CPM Scheduling — The Financial Weapon';
