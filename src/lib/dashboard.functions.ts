@@ -34,15 +34,16 @@ function newestReplayCatalog() {
 }
 
 function dashboardTemplateFallback() {
+  const publishedTemplates = circleTemplateCatalog.filter((template) => template.published);
   const priorityIds = ["legacy-template-20", "legacy-template-34", "legacy-template-25"];
   const priority = priorityIds
-    .map((id) => circleTemplateCatalog.find((template) => template.id === id))
+    .map((id) => publishedTemplates.find((template) => template.id === id))
     .filter((template): template is (typeof circleTemplateCatalog)[number] => Boolean(template));
 
   return priority.length >= 3
     ? withTemplateLibraryFallbackUrls(priority)
     : withTemplateLibraryFallbackUrls(
-        circleTemplateCatalog.filter((template) => template.featured).slice(0, 3),
+        publishedTemplates.filter((template) => template.featured).slice(0, 3),
       );
 }
 
@@ -189,6 +190,8 @@ export const getTemplateLibrary = createServerFn({ method: "GET" })
 
     const templates = data ?? [];
     return withTemplateLibraryFallbackUrls(
-      shouldUseTemplateCatalogFallback(templates) ? circleTemplateCatalog : templates,
+      shouldUseTemplateCatalogFallback(templates)
+        ? circleTemplateCatalog.filter((template) => template.published)
+        : templates,
     );
   });

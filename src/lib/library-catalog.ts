@@ -133,7 +133,7 @@ export const circleTemplateCatalog = [
     category: "sales",
     file_type: "docx",
     download_url:
-      "https://docs.google.com/document/d/1TxuHOv6lrnMUlpijQuhzPfiUEyjbEZUaiIN076AV85Q/copy",
+      "https://docs.google.com/document/d/1HBVZ3oyuLoRQfOJeDSPtTiPjsAN-_mpndM80G4tLmL0/copy",
     featured: true,
     badge: "Authority Gap",
     pages: "7 emails + 5 texts",
@@ -157,7 +157,7 @@ export const circleTemplateCatalog = [
     category: "sales",
     file_type: "docx",
     download_url:
-      "https://docs.google.com/document/d/1KLLh8yFUk5ZK51v5kpnsvT_YJMvnMWakZZ8i0FyjGSA/copy",
+      "https://docs.google.com/document/d/1f0KTxAAgH1qOVyLK2hESCZFXD-kzFhpzys607TUaerc/copy",
     featured: true,
     badge: "Decision Control",
     pages: "4 core + 4 bonus",
@@ -237,7 +237,7 @@ export const circleTemplateCatalog = [
       "Ready-to-use tracking tools and worksheets",
       "Pair with the PDF for the complete PM system",
     ],
-    published: true,
+    published: false,
     created_at: "2026-04-01T12:06:00.000Z",
   },
   {
@@ -489,7 +489,7 @@ export const circleTemplateCatalog = [
       "CPM Scheduling: The Financial Weapon Most GCs Never Learn. This comprehensive guide covers the Critical Path Method framework for construction project scheduling. Learn how to identify the critical path, compress schedules without sacrificing quality, manage float and slack, and turn your project timeline into a competitive advantage. The scheduling system that enables faster project delivery and better cash flow management.",
     category: "operations",
     file_type: "pdf",
-    download_url: "https://drive.google.com/file/d/1tcDTbADD3V7oIV72OJSvHBqKsFz9-DB8/copy",
+    download_url: "/templates/cpm-scheduling-the-financial-weapon.pdf",
     featured: false,
     badge: "Marshall's System",
     pages: "Full guide",
