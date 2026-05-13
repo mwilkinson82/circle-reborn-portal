@@ -740,8 +740,7 @@ export const circleTemplateCatalog = [
       "The EOS Component Connection Map explains the interlocking architecture of your business operating system. This is not a menu of options — it is a sequenced build where every component relies on the one before it. The map walks through all six components in order: Vision (V/TO as the foundation), People (Accountability Chart creates the seats), Data (Scorecard tracks 5-15 leading indicators), Issues (IDS solves problems permanently), Process (Core Process Documentation), and Traction (Rocks & L10 Meeting). Each section explains the tool, why it comes in that specific order, and how it connects to the next component. Includes a critical section on what happens when you skip a step — with real-world consequences contractors see every day: managing by gut feel, finger-pointing, same problems discussed for years, best people burning out, and quarterly goals forgotten by week three.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ALP_EOS_Component_Connection_Map_0a3bdbab.pdf",
+    download_url: null,
     featured: true,
     badge: "New",
     pages: "5 pages",
@@ -764,8 +763,7 @@ export const circleTemplateCatalog = [
       "A complete visual breakdown of the weekly Project Manager Meeting process and deliverables. Covers the three-step weekly cadence that keeps projects on track: (1) Monday Morning PM Meeting — review each project's Original Contract Value, Revised Contract Value, Cost to Date, Committed Costs, Schedule Status, and the locked One Week Look Ahead from the CPM schedule. (2) One Week Look Ahead Review — all work activities confirmed, materials scheduled and available, subcontractors locked in, manpower committed, and constraints/risks identified before the week begins. Must be locked on Friday before the Monday meeting. (3) Friday L10 Meeting & Lock — Project Managers deliver the locked One Week Look Ahead, confirmation that all subs, manpower, and materials are locked in, and clear readiness for the upcoming week. Includes the Key Rule: no work activity should appear in the One Week Look Ahead unless manpower, materials, and subcontractor commitments are locked in. Client-facing outcomes: better visibility into cost and schedule, improved weekly accountability, fewer execution gaps, and stronger readiness for the week ahead.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ProjectManagerMeetingGraphic_7d272ed6.png",
+    download_url: null,
     featured: true,
     badge: "New",
     pages: "1 page infographic",
@@ -788,8 +786,7 @@ export const circleTemplateCatalog = [
       "Your Roadmap to Profitable Project Execution. This infographic breaks down the 8 numbers that are critical for every project manager meeting. For each project, you must know: (1) Original Contract Value — the contract value at execution. (2) Total Costs to Date — what you've actually spent on the project so far. (3) Total Committed Costs — the total cost you are on the hook for to complete the project (incurred + committed). (4) Revised Contract Value — the new contract value inclusive of approved add and deduct change orders. (5) Paid to Date — exactly what you've been paid on the contract. (6) Remaining to Be Paid — the delta on the contract that's remaining to be paid to you. (7) Original Contract Duration — in weeks, months, or years. (8) CPM Schedule Remaining Duration — the actual remaining duration as reflected in the CPM inclusive of adds and deduct change orders. These numbers are critical for every project manager meeting. By understanding both the financial and time position of the job, you can quickly assess whether you're behind or ahead, identify risks early, and take focused action to protect your margin and drive the job to success. Measure It. Manage It. Execute It. Win It.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ProjectManagerDashboard_9dde9526.png",
+    download_url: null,
     featured: true,
     badge: "New",
     pages: "1 page infographic",
@@ -812,8 +809,7 @@ export const circleTemplateCatalog = [
       "The ALP/EOS Weekly Scorecard is the heartbeat of your Level 10 meeting. This 2-page template shows exactly how to track the numbers that matter most — Revenue Billed, AR Over 60 Days, Cash on Hand, Active Projects on Schedule, Change Orders Pending, Safety Incidents, Bids Submitted, Bid-Hit Rate, New Qualified Prospects, and Employee Satisfaction Pulse. Each measurable has a clear owner (Controller, VP Ops, or CEO), a defined goal, and a 13-week trailing view so you can spot trends before they become problems. The rule is simple: THREE WEEKS RED = ISSUE — any number red for 3 consecutive weeks automatically drops to the Issues List for IDS. Page 2 is the Quarterly Rock Review — a structured tracker for your 90-day priorities with owner, description, and on-track/off-track status. This is the exact scorecard format used by Apex Commercial Contractors in the ALP/EOS bootcamp. Adapt the measurables to your business, but keep the discipline of tracking weekly.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/Scorecard_Apex_Commercial_cdf6e910.pdf",
+    download_url: null,
     featured: true,
     badge: "Bootcamp",
     pages: "2 pages",
@@ -836,8 +832,7 @@ export const circleTemplateCatalog = [
       "The VITO — Vision/Traction Organizer — is the single most important document in your company. This 8-page example, built for Apex Commercial Contractors, shows exactly how to complete every section of the EOS VITO for a construction company. PAGE 1: VISION — Core Values (Own It, Do What You Say, Team First, Get It Done, Safety Always), Core Focus (purpose, niche), 10-Year Target ($100M revenue, 12% net profit, 200+ employees, <5% owner involvement), and Marketing Strategy (target market, three uniques, proven process, guarantee). PAGE 2: TRACTION — 3-Year Picture ($50M, full leadership team, healthcare division at 30%, $25M single-project bonding), 1-Year Plan (7 goals from $30M revenue to implementing ALP/EOS company-wide), and Quarterly Rocks (Q2 2026: Post VP Ops listing, bid 4 healthcare projects, run L10s for 12 weeks, close out 3 lingering projects). Every layer of the VITO cascade pulls toward the layer above it — 10-Year → 3-Year → 1-Year → Quarterly Rocks. Use this as your blueprint to build your own.",
     category: "leadership",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/VITO_Apex_Commercial_Contractors_859f6adb.pdf",
+    download_url: null,
     featured: true,
     badge: "Bootcamp",
     pages: "8 pages",
@@ -860,8 +855,7 @@ export const circleTemplateCatalog = [
       'The April 2026 ALP Contractor Circle Monthly Boot Camp slide deck — "Building the Machine: ALP/EOS Implementation, the APP Framework, and Real-World Problem Solving." This 36-page presentation covers the complete 3-hour bootcamp in 5 blocks: Block 1 — VITO & Accountability Chart Review (45 min): The VITO cascade from 10-Year Target down to Quarterly Rocks, how to build your accountability chart with the 5 major functions (Sales/Marketing, Operations, Finance, Integrator, Visionary), and why structure drives execution. Block 2 — People Analyzer Deep Dive (30 min): The EOS People Analyzer tool for evaluating whether people are in the right seats — GWC (Get It, Want It, Capacity) plus core value alignment scoring. Block 3 — Mock L10 Meeting & IDS (45 min): A live walkthrough of the Level 10 meeting format — segue, scorecard review, rock review, customer/employee headlines, to-do list, and IDS (Identify, Discuss, Solve). Block 4 — The APP Framework (25 min): Marshall\'s proprietary Accountability, Process, Performance framework for building systems that run without the owner. Block 5 — Selected member patterns and implementation discussion (25 min): questions reviewed for broad group value and turned into operating-system lessons.',
     category: "leadership",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ALP_Contractor_Circle_Monthly_Boot_Camp_28fa55ce.pdf",
+    download_url: null,
     featured: true,
     badge: "Bootcamp",
     pages: "36 pages",
@@ -884,8 +878,7 @@ export const circleTemplateCatalog = [
       "The ALP-EOS Command Center is your complete operating system on one page — a Contractor Circle Exclusive. This single-page blueprint maps the entire EOS framework as an interlocking architecture where every component relies on the one before it. The 6 Components: 1. VISION (Tool: VITO) — Core Values, Core Focus, 10-Year Target, Marketing Strategy, 3-Year Picture, 1-Year Plan, Quarterly Rocks, Issues List. The foundational document that defines where the company is going and how it will get there. 2. PEOPLE (Tool: Accountability Chart & People Analyzer) — One Person Per Seat, 5 Core Seats, 3-5 Accountabilities, GWC Evaluation. Structuring the organization for scalability. 3. DATA (Tool: Weekly Scorecard) — 5-15 Numbers Max, Leading Indicators, Single Ownership, Weekly Goal. Running the business on objective numbers. 4. ISSUES (Tool: Issues List & IDS Framework) — Identify root cause, Discuss perspectives, Solve with action items. 5. PROCESS (Tool: Core Process Documentation) — 20/80 Rule, 8 Core GC Processes, FBA Standard. Systematizing the business for consistency and scalability. 6. TRACTION (Tool: Rocks & L10 Meeting) — 90-Day Rocks, L10 Meeting Agenda, Weekly Discipline. The Golden Rules: The Foundation Rule (VITO first, Accountability Chart second), The Accountability Rule (one person per seat), The Scorecard Rule (no narrative — on track or off track), The Issue Rule (three weeks red = IDS'd), The Execution Rule (90% To-Do completion or it's an Issue). The Meeting Pulse: Weekly L10 (90 min), Quarterly Planning (1 Full Day Offsite), Annual Planning (2 Full Days Offsite), State of Company (Quarterly, 45 min). Architecture Note: This is not a menu of options. Every component relies on the one before it. Skip a step, and the system breaks.",
     category: "leadership",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ALP_EOS_Command_Center_Blueprint_393ce9e4.pdf",
+    download_url: null,
     featured: true,
     badge: "New",
     pages: "1 page",
@@ -907,8 +900,7 @@ export const circleTemplateCatalog = [
       "The Owner Dependency Scorecard is a practical self-assessment for contractor owners who want a company that runs without them — a Contractor Circle Exclusive. Every contractor starts as the person who does everything: sell the work, estimate the work, manage the work, pay the bills, handle the problems. But what got you here will not get you to the next level. If your business cannot function without you for 30 days, you do not own a company — you own a job. This scorecard gives you an honest, measurable picture of where you stand today. Rate your company on a scale of 1 (Total Dependency — you do this entirely yourself, it fails without you) to 5 (Zero Dependency — fully delegated to a capable leader with a documented process). The 5 Categories: 1. Vision & Leadership — Can the company set goals, resolve conflicts, and stay aligned without you driving it every day? 2. Sales & Estimating — Can the company generate leads, build relationships, estimate projects, and close deals without you? 3. Operations & Field Production — Can projects be managed, crews scheduled, quality maintained, and problems solved without you? 4. Financial Management — Can the company manage cash flow, job costing, billing, and financial decisions without you? 5. People & Culture — Can the company hire, develop, hold accountable, and retain the right people without you? Each category includes a Coach's Prompt to help you identify where you are still the final approval point, problem-solver, or safety net. Best Practice: Complete the scorecard quickly the first time — your initial reaction is usually the most accurate. Then review the lowest-scoring category and identify one practical improvement that can be delegated, documented, or systematized in the next 90 days. Important: Do not average away a weak function. One low score can still keep the owner trapped in the business.",
     category: "leadership",
     file_type: "pdf",
-    download_url:
-      "https://alpcontractorcircle.com/manus-storage/ALP_Owner_Dependency_Scorecard_Client_Facing_36b1deda.pdf",
+    download_url: null,
     featured: true,
     badge: "New",
     pages: "10 pages",

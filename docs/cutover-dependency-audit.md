@@ -13,12 +13,12 @@ Checked on 2026-05-13.
 
 ## Remaining Manus Or Current-Portal Dependencies
 
-- `src/lib/resource-links.ts`
-  - `LEAD_MAGNET_DOWNLOADS.silos` still points to `https://alpcontractorcircle.com/manus-storage/ALP_Three_Silos_Framework_v3_3ba50529.pdf`.
-  - This is a public lead magnet asset and must be rehosted before final cutover.
+- No active member-facing code paths point to Manus storage.
+- The Three Silos lead magnet is now served by the rebuild at
+  `/lead-magnets/alp-three-silos-framework.pdf`.
 - `src/lib/library-catalog.ts`
-  - Some historical template catalog rows still contain old Manus storage URLs in the local fallback catalog.
-  - Runtime sanitizer now treats those URLs as unavailable so members see the asset as not ready instead of opening Manus storage.
+  - Historical template rows whose assets were not found now use `NULL` download URLs in the local fallback catalog.
+  - Members see those assets as unavailable/Coming next instead of opening Manus storage.
   - The production seed migration writes these as `NULL`.
 - `supabase/migrations/20260511100500_seed_real_member_library.sql` and `20260512053000_repair_template_asset_urls.sql`
   - Historical migrations contain old Manus storage URLs.
