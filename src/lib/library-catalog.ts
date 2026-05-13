@@ -63,7 +63,6 @@ export function withTemplateLibraryFallbackUrls<T extends { download_url?: strin
 }
 
 export const PLACEHOLDER_TEMPLATE_TITLES = new Set([
-  "Subcontractor Bid Submittal Form",
   "Schedule of Values Template",
   "EOS-Lite Operating Playbook",
   "Master Subcontract Agreement",
