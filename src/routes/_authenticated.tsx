@@ -43,7 +43,10 @@ function AuthenticatedLayout() {
     queryFn: () => checkAccess(),
     enabled: !!user && !loading,
     retry: 1,
-    staleTime: 15_000,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   const onSignOut = async () => {
@@ -51,7 +54,7 @@ function AuthenticatedLayout() {
     window.location.href = "/login";
   };
 
-  if (loading || access.isLoading || access.isFetching) {
+  if (loading || access.isLoading) {
     return <MembershipChecking />;
   }
 

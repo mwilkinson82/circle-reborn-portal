@@ -94,7 +94,10 @@ type MembershipRecord = {
   current_period_end: string | null;
   is_comped: boolean | null;
   is_founding: boolean | null;
+  updated_at?: string | null;
 };
+
+const STRIPE_MEMBER_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 type AuthUserLike = {
   email?: string | null;
@@ -147,11 +150,23 @@ function resolveStripeMemberStatus(
   return "canceled";
 }
 
+function shouldRefreshPaidMemberFromStripe(member: MembershipRecord | null) {
+  if (!member?.stripe_subscription_id || member.is_comped === true) return false;
+
+  const currentPeriodEnd = Date.parse(member.current_period_end ?? "");
+  if (!Number.isNaN(currentPeriodEnd) && currentPeriodEnd < Date.now()) return true;
+
+  const lastUpdated = Date.parse(member.updated_at ?? "");
+  if (Number.isNaN(lastUpdated)) return true;
+
+  return Date.now() - lastUpdated > STRIPE_MEMBER_REFRESH_INTERVAL_MS;
+}
+
 async function refreshPaidMemberFromStripe(
   userId: string,
   member: MembershipRecord | null,
 ): Promise<MembershipRecord | null> {
-  if (!member?.stripe_subscription_id || member.is_comped === true) return member;
+  if (!shouldRefreshPaidMemberFromStripe(member)) return member;
 
   const stripe = createStripeClient("live");
   const subscription = await stripe.subscriptions.retrieve(member.stripe_subscription_id);
@@ -606,7 +621,7 @@ export const getMyMembershipAccess = createServerFn({ method: "GET" })
       supabaseAdmin
         .from("members")
         .select(
-          "status, plan, stripe_customer_id, stripe_subscription_id, current_period_end, is_comped, is_founding",
+          "status, plan, stripe_customer_id, stripe_subscription_id, current_period_end, is_comped, is_founding, updated_at",
         )
         .eq("user_id", userId)
         .maybeSingle(),
