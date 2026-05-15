@@ -4,12 +4,33 @@ Checked on 2026-05-13.
 
 ## Intentional External Systems
 
-- Supabase project `qqbwiuqaqjtbvxkvqplo` for portal data.
+- Supabase project `qqbwiuqaqjtbvxkvqplo` is the live legacy database used by
+  the active Manus Contractor Circle portal.
+- Supabase project `eybiraytbghrfbldikhn` is the isolated rebuild database for
+  the Vercel portal.
 - Vercel project `circle-reborn-portal` for hosting.
 - Stripe live keys and webhook secrets for checkout/subscription state.
 - Resend for Intensive application email delivery.
 - AOS remains external and centralized through `src/lib/aos-link.ts`.
 - ConstructLine, Basis, Baseline, Cost Library, and Trade Rate Library remain external/current linked workspaces through `src/lib/constructline-links.ts`.
+
+## Live Database Freeze
+
+Do not apply rebuild migrations, RLS edits, membership schema changes, or seed
+experiments to `qqbwiuqaqjtbvxkvqplo` unless the explicit goal is to repair the
+active Manus portal. New portal auth/member work should target
+`eybiraytbghrfbldikhn`.
+
+Member bootstrap note from 2026-05-15: the active member CSV was imported only
+into `eybiraytbghrfbldikhn`. The import staged 30 pending claims and 19 Stripe
+subscription records; 11 owner-confirmed comped members have no active Stripe
+billing link in the rebuild database.
+
+Emergency repair note from 2026-05-15: the active Manus portal was confirmed to
+use `https://qqbwiuqaqjtbvxkvqplo.supabase.co`. The live access repair restored
+the `public.has_active_subscription(uuid)` authenticated execute path, restored
+legacy email-based member visibility, and restored an active member row. Keep
+any member-specific repair SQL out of the public repo.
 
 ## Remaining Manus Or Current-Portal Dependencies
 

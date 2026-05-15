@@ -1,6 +1,15 @@
 # Production Migration Checklist
 
-Production Supabase project: `qqbwiuqaqjtbvxkvqplo` (`alp-contractor-circle`)
+Production Supabase project recorded during the hardening pass:
+`qqbwiuqaqjtbvxkvqplo` (`alp-contractor-circle`)
+
+Important update from 2026-05-15: this project is also used by the active Manus
+Contractor Circle portal. Treat it as the live legacy database. Do not run new
+rebuild migrations against it unless the explicit goal is repairing the live
+Manus portal.
+
+Isolated rebuild Supabase project created on 2026-05-15:
+`eybiraytbghrfbldikhn` (`https://eybiraytbghrfbldikhn.supabase.co`)
 
 Checked on 2026-05-13 with the Supabase connector.
 
@@ -18,9 +27,56 @@ Checked on 2026-05-13 with the Supabase connector.
 
 ## Must Apply Before Cutover
 
-- `20260513194811_seed_full_library_catalog.sql`
+- Already applied manually: `20260513194811_seed_full_library_catalog.sql`
   - Replaces placeholder template/replay rows with the checked-in rebuild catalog.
   - Keeps old Manus-hosted template assets as `NULL` download URLs so the portal renders them as unavailable instead of linking to Manus storage.
+
+## Next Cutover Rule
+
+Before additional rebuild auth, membership, or portal-data work, provision an
+isolated Supabase project for the Vercel rebuild and point Vercel production
+environment variables to that project. The active Manus project should remain
+stable until traffic is intentionally cut over.
+
+Current target for new rebuild migrations: `eybiraytbghrfbldikhn`.
+
+## Isolated Rebuild Bootstrap
+
+Applied to `eybiraytbghrfbldikhn` on 2026-05-15:
+
+- `bootstrap_rebuild_portal_schema`
+- `seed_rebuild_library_catalog`
+- `add_rebuild_fk_indexes`
+- `restore_has_active_subscription_grant`
+- `add_pending_claim_metadata`
+
+The local shell lacked a Supabase access token, so these were applied through
+the Supabase connector rather than `supabase db push`. Reconcile remote
+migration history before enabling automated Supabase GitHub/CLI migration runs.
+
+Verification result:
+
+- `templates = 35`
+- `replays = 12`
+- `bootcamp_sessions = 1`
+- `pending_claims = 30`
+- `subscriptions = 19`
+- `members = 0`
+- `intensive_applications = 0`
+- key portal tables have RLS enabled
+- `authenticated` can execute `public.has_active_subscription(uuid)`
+- Manus/live-project template URL references = `0`
+
+Member bootstrap result from `members_20260515_174345.csv`:
+
+- 30 rows staged in `pending_claims`
+- 19 Stripe subscription rows staged in `subscriptions`
+- 11 owner-confirmed comped rows staged with no active Stripe billing link
+- 4 legacy customer-only CSV rows preserved as comped metadata only
+- 1 row skipped because it had no email address
+
+Vercel env vars are still intentionally unchanged until member/admin bootstrap
+and authenticated smoke tests are complete.
 
 ## Already Present In Production
 

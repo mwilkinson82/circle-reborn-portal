@@ -324,6 +324,7 @@ export type Database = {
           current_period_end: string | null;
           email: string;
           id: string;
+          metadata: Json;
           price_id: string | null;
           status: string;
           stripe_customer_id: string | null;
@@ -336,6 +337,7 @@ export type Database = {
           current_period_end?: string | null;
           email: string;
           id?: string;
+          metadata?: Json;
           price_id?: string | null;
           status: string;
           stripe_customer_id?: string | null;
@@ -348,6 +350,7 @@ export type Database = {
           current_period_end?: string | null;
           email?: string;
           id?: string;
+          metadata?: Json;
           price_id?: string | null;
           status?: string;
           stripe_customer_id?: string | null;
