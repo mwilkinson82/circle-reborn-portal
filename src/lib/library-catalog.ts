@@ -43,6 +43,73 @@ const cloudflareStreamUrl = (id: string) => `https://iframe.videodelivery.net/${
 const cloudflareThumbnailUrl = (id: string) =>
   `https://videodelivery.net/${id}/thumbnails/thumbnail.jpg?time=1s`;
 
+const rehostedTemplateDownloads = {
+  playbook: "/templates/alp-eos-playbook.pdf",
+  scorecardHandout: "/templates/alp-eos-scorecard-handout.pdf",
+  vitoToolkit: "/templates/alp-eos-vito-toolkit.pdf",
+  callTwoAsset: "/templates/contractor-circle-call-2-your-business-is-your-biggest-asset.pdf",
+  componentMap: "/templates/alp-eos-component-connection-map.pdf",
+  projectManagerMeeting: "/templates/project-manager-meeting-weekly-process.png",
+  projectFinancialDashboard: "/templates/project-financial-schedule-overview-dashboard.png",
+  weeklyScorecard: "/templates/alp-eos-weekly-scorecard-apex-commercial.pdf",
+  vitoExample: "/templates/vito-apex-commercial-contractors.pdf",
+  monthlyBootcamp: "/templates/monthly-boot-camp-building-the-machine-april-2026.pdf",
+  commandCenterBlueprint: "/templates/alp-eos-command-center-blueprint.pdf",
+  ownerDependencyScorecard: "/templates/alp-owner-dependency-scorecard.pdf",
+} as const;
+
+const rehostedTemplateDownloadsById: Record<string, string> = {
+  "legacy-template-20": rehostedTemplateDownloads.playbook,
+  "legacy-template-21": rehostedTemplateDownloads.scorecardHandout,
+  "legacy-template-25": rehostedTemplateDownloads.vitoToolkit,
+  "legacy-template-26": rehostedTemplateDownloads.callTwoAsset,
+  "legacy-template-28": rehostedTemplateDownloads.componentMap,
+  "legacy-template-29": rehostedTemplateDownloads.projectManagerMeeting,
+  "legacy-template-30": rehostedTemplateDownloads.projectFinancialDashboard,
+  "legacy-template-31": rehostedTemplateDownloads.weeklyScorecard,
+  "legacy-template-32": rehostedTemplateDownloads.vitoExample,
+  "legacy-template-33": rehostedTemplateDownloads.monthlyBootcamp,
+  "legacy-template-34": rehostedTemplateDownloads.commandCenterBlueprint,
+  "legacy-template-35": rehostedTemplateDownloads.ownerDependencyScorecard,
+};
+
+function normalizeTemplateTitle(value: string | null | undefined) {
+  return (value ?? "")
+    .toLowerCase()
+    .replace(/[—–]/g, "-")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const rehostedTemplateDownloadsByTitle: Record<string, string> = {
+  [normalizeTemplateTitle("ALP/EOS Operating System - Complete Playbook")]:
+    rehostedTemplateDownloads.playbook,
+  [normalizeTemplateTitle("ALP/EOS Operating System — Complete Playbook")]:
+    rehostedTemplateDownloads.playbook,
+  [normalizeTemplateTitle("ALP/EOS Scorecard")]: rehostedTemplateDownloads.scorecardHandout,
+  [normalizeTemplateTitle("ALP/EOS Vision/Traction Organizer (V/TO)")]:
+    rehostedTemplateDownloads.vitoToolkit,
+  [normalizeTemplateTitle("Presentation from Call #2: Your Business is Your Biggest Asset")]:
+    rehostedTemplateDownloads.callTwoAsset,
+  [normalizeTemplateTitle("EOS Component Connection Map")]: rehostedTemplateDownloads.componentMap,
+  [normalizeTemplateTitle("Project Manager Meeting — Weekly Process & Deliverables")]:
+    rehostedTemplateDownloads.projectManagerMeeting,
+  [normalizeTemplateTitle("Project Financial & Schedule Overview — Job Cost Ledger")]:
+    rehostedTemplateDownloads.projectFinancialDashboard,
+  [normalizeTemplateTitle("ALP/EOS Weekly Scorecard — L10 Measurables & Quarterly Rocks")]:
+    rehostedTemplateDownloads.weeklyScorecard,
+  [normalizeTemplateTitle("Vision/Traction Organizer (VITO) — Complete Example")]:
+    rehostedTemplateDownloads.vitoExample,
+  [normalizeTemplateTitle("Monthly Boot Camp — Building the Machine (April 2026)")]:
+    rehostedTemplateDownloads.monthlyBootcamp,
+  [normalizeTemplateTitle(
+    "ALP-EOS Command Center Blueprint — Your Complete Operating System on One Page",
+  )]: rehostedTemplateDownloads.commandCenterBlueprint,
+  [normalizeTemplateTitle("Owner Dependency Scorecard — How Reliant Is Your Business on You?")]:
+    rehostedTemplateDownloads.ownerDependencyScorecard,
+};
+
 function isFragileTemplateUrl(value: string | null | undefined) {
   if (!value) return false;
   return (
@@ -51,14 +118,21 @@ function isFragileTemplateUrl(value: string | null | undefined) {
   );
 }
 
-export function withTemplateLibraryFallbackUrls<T extends { download_url?: string | null }>(
-  templates: T[],
-) {
+function getRehostedTemplateUrl(template: { id?: string | null; title?: string | null }) {
+  if (template.id && rehostedTemplateDownloadsById[template.id]) {
+    return rehostedTemplateDownloadsById[template.id];
+  }
+  return rehostedTemplateDownloadsByTitle[normalizeTemplateTitle(template.title)];
+}
+
+export function withTemplateLibraryFallbackUrls<
+  T extends { id?: string | null; title?: string | null; download_url?: string | null },
+>(templates: T[]) {
   return templates.map((template) => ({
     ...template,
     download_url: isFragileTemplateUrl(template.download_url)
-      ? null
-      : (template.download_url ?? null),
+      ? (getRehostedTemplateUrl(template) ?? null)
+      : (template.download_url ?? getRehostedTemplateUrl(template) ?? null),
   }));
 }
 
@@ -588,8 +662,7 @@ export const circleTemplateCatalog = [
       "The ALP/EOS Operating System is the foundational business framework adopted by ALP Contractor Circle. Adapted from the Entrepreneurial Operating System (EOS) by Gino Wickman, this implementation layers Marshall Wilkinson's two decades of construction consulting experience — representing over $2.5 billion in completed construction — directly onto the EOS framework. This 31-page comprehensive guide covers all six components in full: Vision/Traction Organizer (V/TO), People (Accountability Chart & People Analyzer), Data (Weekly Scorecard), Issues (IDS — Identify, Discuss, Solve), Process (Core Process Documentation & FBA), and Traction (Rocks & L10 Meeting Pulse). Includes implementation roadmap, construction-specific applications, and a complete terminology glossary.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/ALP_EOS_Playbook_65c0ba61.pdf",
+    download_url: rehostedTemplateDownloads.playbook,
     featured: true,
     badge: "New",
     pages: "31 pages",
@@ -615,8 +688,7 @@ export const circleTemplateCatalog = [
       "The EOS Data Component is your weekly pulse check — know your numbers, run your business. This one-page reference covers everything you need to build and maintain an effective Scorecard: the 5-15 numbers max rule, one owner per number, weekly goals that reset, 13 weeks of trailing data, and weekly L10 review. Breaks down Leading vs. Lagging indicators (your P&L tells you what happened — your Scorecard tells you what's happening), how to find your One Number (for contractors: backlog in months), cascading measurables to every seat (PM, Estimator, AR), and the red flags that mean your Scorecard is broken. Includes a sample Scorecard structure.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/eos_data_handout_Scorecard_df3edffe.pdf",
+    download_url: rehostedTemplateDownloads.scorecardHandout,
     featured: true,
     badge: "New",
     pages: "1 page",
@@ -665,8 +737,7 @@ export const circleTemplateCatalog = [
       "The Vision/Traction Organizer (V/TO) is the two-page document that captures your company's entire strategic plan. Page one is Vision — where you're going. Page two is Traction — how you're going to get there. Every person on your leadership team should be able to recite the answers. If they can't, you don't have alignment — you have assumptions. This toolkit walks through all 8 questions: Core Values, Core Focus, 10-Year Target, Marketing Strategy, 3-Year Picture, 1-Year Plan, Quarterly Rocks, and Issues List. Includes a fully completed example V/TO for a mid-size general contractor (ABC Construction Co.) so you can see exactly what a finished V/TO looks like before you build your own.",
     category: "operations",
     file_type: "pdf",
-    download_url:
-      "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/ALP_EOS_Toolkit_VITO_63e29d87.pdf",
+    download_url: rehostedTemplateDownloads.vitoToolkit,
     featured: true,
     badge: "New",
     pages: "2 pages",
@@ -691,8 +762,7 @@ export const circleTemplateCatalog = [
       "The complete deck from ALP Contractor Circle Call #2: Your Biggest Asset. This presentation reframes the entire ALP Operating System through the lens of building a company with real market value — not just one that pays you while you run it, but one that's worth something when you're ready to step back. Covers real PE/M&A data: which construction sectors get acquired (MEP, roofing, HVAC, water/wastewater), at what multiples (4-8x EBITDA), and by whom (Dycom, TopBuild, Legence, Installed Building Products). Walks through the VITO framework with exit-lens framing, then goes deep on the People Component — Accountability Charts, the People Analyzer, GWC, and the Right Person / Right Seat matrix with real contractor examples. Includes the ALP Operating System = PE Due Diligence Checklist mapping table.",
     category: "contractor_circle",
     file_type: "pdf",
-    download_url:
-      "https://d2xsxph8kpxj0f.cloudfront.net/310519663332724241/JYLdJEaFQZebZwtiasWNpQ/ALP_Call2_Your_Biggest_Asset_a98da66c.pdf",
+    download_url: rehostedTemplateDownloads.callTwoAsset,
     featured: true,
     badge: "New",
     pages: "Full Deck",
@@ -740,7 +810,7 @@ export const circleTemplateCatalog = [
       "The EOS Component Connection Map explains the interlocking architecture of your business operating system. This is not a menu of options — it is a sequenced build where every component relies on the one before it. The map walks through all six components in order: Vision (V/TO as the foundation), People (Accountability Chart creates the seats), Data (Scorecard tracks 5-15 leading indicators), Issues (IDS solves problems permanently), Process (Core Process Documentation), and Traction (Rocks & L10 Meeting). Each section explains the tool, why it comes in that specific order, and how it connects to the next component. Includes a critical section on what happens when you skip a step — with real-world consequences contractors see every day: managing by gut feel, finger-pointing, same problems discussed for years, best people burning out, and quarterly goals forgotten by week three.",
     category: "operations",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.componentMap,
     featured: true,
     badge: "New",
     pages: "5 pages",
@@ -762,8 +832,8 @@ export const circleTemplateCatalog = [
     long_description:
       "A complete visual breakdown of the weekly Project Manager Meeting process and deliverables. Covers the three-step weekly cadence that keeps projects on track: (1) Monday Morning PM Meeting — review each project's Original Contract Value, Revised Contract Value, Cost to Date, Committed Costs, Schedule Status, and the locked One Week Look Ahead from the CPM schedule. (2) One Week Look Ahead Review — all work activities confirmed, materials scheduled and available, subcontractors locked in, manpower committed, and constraints/risks identified before the week begins. Must be locked on Friday before the Monday meeting. (3) Friday L10 Meeting & Lock — Project Managers deliver the locked One Week Look Ahead, confirmation that all subs, manpower, and materials are locked in, and clear readiness for the upcoming week. Includes the Key Rule: no work activity should appear in the One Week Look Ahead unless manpower, materials, and subcontractor commitments are locked in. Client-facing outcomes: better visibility into cost and schedule, improved weekly accountability, fewer execution gaps, and stronger readiness for the week ahead.",
     category: "operations",
-    file_type: "pdf",
-    download_url: null,
+    file_type: "png",
+    download_url: rehostedTemplateDownloads.projectManagerMeeting,
     featured: true,
     badge: "New",
     pages: "1 page infographic",
@@ -785,8 +855,8 @@ export const circleTemplateCatalog = [
     long_description:
       "Your Roadmap to Profitable Project Execution. This infographic breaks down the 8 numbers that are critical for every project manager meeting. For each project, you must know: (1) Original Contract Value — the contract value at execution. (2) Total Costs to Date — what you've actually spent on the project so far. (3) Total Committed Costs — the total cost you are on the hook for to complete the project (incurred + committed). (4) Revised Contract Value — the new contract value inclusive of approved add and deduct change orders. (5) Paid to Date — exactly what you've been paid on the contract. (6) Remaining to Be Paid — the delta on the contract that's remaining to be paid to you. (7) Original Contract Duration — in weeks, months, or years. (8) CPM Schedule Remaining Duration — the actual remaining duration as reflected in the CPM inclusive of adds and deduct change orders. These numbers are critical for every project manager meeting. By understanding both the financial and time position of the job, you can quickly assess whether you're behind or ahead, identify risks early, and take focused action to protect your margin and drive the job to success. Measure It. Manage It. Execute It. Win It.",
     category: "operations",
-    file_type: "pdf",
-    download_url: null,
+    file_type: "png",
+    download_url: rehostedTemplateDownloads.projectFinancialDashboard,
     featured: true,
     badge: "New",
     pages: "1 page infographic",
@@ -809,7 +879,7 @@ export const circleTemplateCatalog = [
       "The ALP/EOS Weekly Scorecard is the heartbeat of your Level 10 meeting. This 2-page template shows exactly how to track the numbers that matter most — Revenue Billed, AR Over 60 Days, Cash on Hand, Active Projects on Schedule, Change Orders Pending, Safety Incidents, Bids Submitted, Bid-Hit Rate, New Qualified Prospects, and Employee Satisfaction Pulse. Each measurable has a clear owner (Controller, VP Ops, or CEO), a defined goal, and a 13-week trailing view so you can spot trends before they become problems. The rule is simple: THREE WEEKS RED = ISSUE — any number red for 3 consecutive weeks automatically drops to the Issues List for IDS. Page 2 is the Quarterly Rock Review — a structured tracker for your 90-day priorities with owner, description, and on-track/off-track status. This is the exact scorecard format used by Apex Commercial Contractors in the ALP/EOS bootcamp. Adapt the measurables to your business, but keep the discipline of tracking weekly.",
     category: "operations",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.weeklyScorecard,
     featured: true,
     badge: "Bootcamp",
     pages: "2 pages",
@@ -832,7 +902,7 @@ export const circleTemplateCatalog = [
       "The VITO — Vision/Traction Organizer — is the single most important document in your company. This 8-page example, built for Apex Commercial Contractors, shows exactly how to complete every section of the EOS VITO for a construction company. PAGE 1: VISION — Core Values (Own It, Do What You Say, Team First, Get It Done, Safety Always), Core Focus (purpose, niche), 10-Year Target ($100M revenue, 12% net profit, 200+ employees, <5% owner involvement), and Marketing Strategy (target market, three uniques, proven process, guarantee). PAGE 2: TRACTION — 3-Year Picture ($50M, full leadership team, healthcare division at 30%, $25M single-project bonding), 1-Year Plan (7 goals from $30M revenue to implementing ALP/EOS company-wide), and Quarterly Rocks (Q2 2026: Post VP Ops listing, bid 4 healthcare projects, run L10s for 12 weeks, close out 3 lingering projects). Every layer of the VITO cascade pulls toward the layer above it — 10-Year → 3-Year → 1-Year → Quarterly Rocks. Use this as your blueprint to build your own.",
     category: "leadership",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.vitoExample,
     featured: true,
     badge: "Bootcamp",
     pages: "8 pages",
@@ -855,7 +925,7 @@ export const circleTemplateCatalog = [
       'The April 2026 ALP Contractor Circle Monthly Boot Camp slide deck — "Building the Machine: ALP/EOS Implementation, the APP Framework, and Real-World Problem Solving." This 36-page presentation covers the complete 3-hour bootcamp in 5 blocks: Block 1 — VITO & Accountability Chart Review (45 min): The VITO cascade from 10-Year Target down to Quarterly Rocks, how to build your accountability chart with the 5 major functions (Sales/Marketing, Operations, Finance, Integrator, Visionary), and why structure drives execution. Block 2 — People Analyzer Deep Dive (30 min): The EOS People Analyzer tool for evaluating whether people are in the right seats — GWC (Get It, Want It, Capacity) plus core value alignment scoring. Block 3 — Mock L10 Meeting & IDS (45 min): A live walkthrough of the Level 10 meeting format — segue, scorecard review, rock review, customer/employee headlines, to-do list, and IDS (Identify, Discuss, Solve). Block 4 — The APP Framework (25 min): Marshall\'s proprietary Accountability, Process, Performance framework for building systems that run without the owner. Block 5 — Selected member patterns and implementation discussion (25 min): questions reviewed for broad group value and turned into operating-system lessons.',
     category: "leadership",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.monthlyBootcamp,
     featured: true,
     badge: "Bootcamp",
     pages: "36 pages",
@@ -878,7 +948,7 @@ export const circleTemplateCatalog = [
       "The ALP-EOS Command Center is your complete operating system on one page — a Contractor Circle Exclusive. This single-page blueprint maps the entire EOS framework as an interlocking architecture where every component relies on the one before it. The 6 Components: 1. VISION (Tool: VITO) — Core Values, Core Focus, 10-Year Target, Marketing Strategy, 3-Year Picture, 1-Year Plan, Quarterly Rocks, Issues List. The foundational document that defines where the company is going and how it will get there. 2. PEOPLE (Tool: Accountability Chart & People Analyzer) — One Person Per Seat, 5 Core Seats, 3-5 Accountabilities, GWC Evaluation. Structuring the organization for scalability. 3. DATA (Tool: Weekly Scorecard) — 5-15 Numbers Max, Leading Indicators, Single Ownership, Weekly Goal. Running the business on objective numbers. 4. ISSUES (Tool: Issues List & IDS Framework) — Identify root cause, Discuss perspectives, Solve with action items. 5. PROCESS (Tool: Core Process Documentation) — 20/80 Rule, 8 Core GC Processes, FBA Standard. Systematizing the business for consistency and scalability. 6. TRACTION (Tool: Rocks & L10 Meeting) — 90-Day Rocks, L10 Meeting Agenda, Weekly Discipline. The Golden Rules: The Foundation Rule (VITO first, Accountability Chart second), The Accountability Rule (one person per seat), The Scorecard Rule (no narrative — on track or off track), The Issue Rule (three weeks red = IDS'd), The Execution Rule (90% To-Do completion or it's an Issue). The Meeting Pulse: Weekly L10 (90 min), Quarterly Planning (1 Full Day Offsite), Annual Planning (2 Full Days Offsite), State of Company (Quarterly, 45 min). Architecture Note: This is not a menu of options. Every component relies on the one before it. Skip a step, and the system breaks.",
     category: "leadership",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.commandCenterBlueprint,
     featured: true,
     badge: "New",
     pages: "1 page",
@@ -900,7 +970,7 @@ export const circleTemplateCatalog = [
       "The Owner Dependency Scorecard is a practical self-assessment for contractor owners who want a company that runs without them — a Contractor Circle Exclusive. Every contractor starts as the person who does everything: sell the work, estimate the work, manage the work, pay the bills, handle the problems. But what got you here will not get you to the next level. If your business cannot function without you for 30 days, you do not own a company — you own a job. This scorecard gives you an honest, measurable picture of where you stand today. Rate your company on a scale of 1 (Total Dependency — you do this entirely yourself, it fails without you) to 5 (Zero Dependency — fully delegated to a capable leader with a documented process). The 5 Categories: 1. Vision & Leadership — Can the company set goals, resolve conflicts, and stay aligned without you driving it every day? 2. Sales & Estimating — Can the company generate leads, build relationships, estimate projects, and close deals without you? 3. Operations & Field Production — Can projects be managed, crews scheduled, quality maintained, and problems solved without you? 4. Financial Management — Can the company manage cash flow, job costing, billing, and financial decisions without you? 5. People & Culture — Can the company hire, develop, hold accountable, and retain the right people without you? Each category includes a Coach's Prompt to help you identify where you are still the final approval point, problem-solver, or safety net. Best Practice: Complete the scorecard quickly the first time — your initial reaction is usually the most accurate. Then review the lowest-scoring category and identify one practical improvement that can be delegated, documented, or systematized in the next 90 days. Important: Do not average away a weak function. One low score can still keep the owner trapped in the business.",
     category: "leadership",
     file_type: "pdf",
-    download_url: null,
+    download_url: rehostedTemplateDownloads.ownerDependencyScorecard,
     featured: true,
     badge: "New",
     pages: "10 pages",

@@ -100,7 +100,7 @@ function AdminPage() {
             <div>
               <h2 className="font-display text-2xl">Stripe subscription backfill</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Import active Stripe subscriptions and stage unclaimed members.
+                Optional Stripe sync. The current member roster was already imported from the CSV.
               </p>
             </div>
           </div>

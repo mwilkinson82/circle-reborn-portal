@@ -91,7 +91,7 @@ export const getDashboard = createServerFn({ method: "GET" })
         .maybeSingle(),
       supabase
         .from("members")
-        .select("status, plan, joined_at, current_period_end")
+        .select("status, plan, joined_at, current_period_end, stripe_customer_id")
         .eq("user_id", userId)
         .maybeSingle(),
       supabase
@@ -134,6 +134,7 @@ export const getDashboard = createServerFn({ method: "GET" })
           plan: "comped",
           joined_at: memberRes.data?.joined_at ?? new Date().toISOString(),
           current_period_end: null,
+          stripe_customer_id: memberRes.data?.stripe_customer_id ?? null,
         }
       : memberRes.data;
 

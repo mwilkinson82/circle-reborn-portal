@@ -95,8 +95,8 @@ function IntensivePage() {
     form.fullName.trim().length >= 2 &&
     form.companyName.trim().length >= 2 &&
     form.annualRevenueRange &&
-    form.biggestChallenge.trim().length >= 12 &&
-    form.alreadyTried.trim().length >= 8 &&
+    form.biggestChallenge.trim().length >= 2 &&
+    form.alreadyTried.trim().length >= 2 &&
     form.applyingFor &&
     form.email.includes("@") &&
     form.phone.trim().length >= 7;

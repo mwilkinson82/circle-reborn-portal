@@ -82,6 +82,10 @@ function BackfillPage() {
 
   return (
     <div className="container-prose py-12 space-y-8">
+      <Button asChild variant="outline">
+        <Link to="/portal/admin">Back to admin</Link>
+      </Button>
+
       <div>
         <p className="font-mono text-xs uppercase tracking-wider text-amber">Admin · One-time</p>
         <h1 className="font-display text-3xl mt-2">Backfill existing Stripe subscriptions</h1>
@@ -92,8 +96,14 @@ function BackfillPage() {
         </p>
       </div>
 
+      <div className="border border-amber/30 bg-amber-soft p-4 text-sm text-foreground">
+        The member CSV import already staged the current roster in the rebuild Supabase project.
+        Only run this if you intentionally want to resync live Stripe subscriptions into this new
+        project.
+      </div>
+
       <Button size="lg" onClick={onRun} disabled={running}>
-        {running ? "Running…" : "Run backfill"}
+        {running ? "Running..." : "Run Stripe sync"}
       </Button>
 
       {error && (

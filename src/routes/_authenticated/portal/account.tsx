@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { CreditCard, UserCircle } from "lucide-react";
+import { toast } from "sonner";
 import { getDashboard } from "@/lib/dashboard.functions";
 import { createPortalSession } from "@/lib/payments.functions";
 import { useAuth } from "@/hooks/use-auth";
@@ -23,12 +24,23 @@ function AccountPage() {
     queryFn: () => fetchDashboard(),
     enabled: !!user && !loading,
   });
+  const isComped = data?.member?.plan === "comped";
+  const canManageBilling = Boolean(data?.member?.stripe_customer_id) && !isComped;
 
   const openBilling = async () => {
-    const url = await createPortal({
-      data: { returnUrl: `${window.location.origin}/portal/account` },
-    });
-    if (url) window.location.href = url;
+    if (!canManageBilling) {
+      toast.info("This comped account is not connected to a Stripe billing portal.");
+      return;
+    }
+
+    try {
+      const url = await createPortal({
+        data: { returnUrl: `${window.location.origin}/portal/account` },
+      });
+      if (url) window.location.href = url;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Billing portal could not be opened.");
+    }
   };
 
   return (
@@ -74,12 +86,14 @@ function AccountPage() {
           <div>
             <h2 className="font-display text-2xl">Billing</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Manage payment method, invoices, and cancellation in Stripe.
+              {isComped
+                ? "This comped account has no Stripe billing portal attached."
+                : "Manage payment method, invoices, and cancellation in Stripe."}
             </p>
           </div>
-          <Button onClick={openBilling}>
+          <Button onClick={openBilling} disabled={!canManageBilling}>
             <CreditCard className="mr-2 h-4 w-4" />
-            Manage billing
+            {isComped ? "Comped account" : "Manage billing"}
           </Button>
         </div>
       </Card>

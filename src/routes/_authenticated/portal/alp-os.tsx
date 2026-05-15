@@ -92,31 +92,31 @@ const orchestrationTools = [
     what: "A short diagnostic for spotting where every decision still runs through the owner.",
     why: "Owner drag is usually the first place growth stalls and accountability stays vague.",
     output: "Creates a session-ready owner-dependency pressure packet.",
-    cta: "Preview",
+    cta: "Open tool",
   },
   {
     label: "Scorecard metric prompt",
-    status: "Next",
+    status: "Active",
     what: "A guided prompt for choosing the weekly number that should make the issue visible.",
     why: "If the number is not watched weekly, the same problem will keep reappearing as a story.",
     output: "Creates a candidate AOS scorecard metric.",
-    cta: "Coming next",
+    cta: "Open tool",
   },
   {
     label: "SOP gap prompt",
-    status: "Next",
+    status: "Active",
     what: "A helper for turning repeated friction into the missing process that needs written.",
     why: "Most recurring issues are not solved by advice; they need a way of working.",
     output: "Creates a candidate SOP gap for AOS follow-through.",
-    cta: "Coming next",
+    cta: "Open tool",
   },
   {
     label: "Decision packet",
-    status: "Coming into the system",
+    status: "Active",
     what: "A lightweight capture format for decisions clarified during sessions or implementation work.",
     why: "A useful session should leave company memory, not just a good conversation.",
     output: "Creates a decision summary to carry into AOS.",
-    cta: "Coming next",
+    cta: "Open tool",
   },
 ];
 
@@ -318,16 +318,15 @@ function AlpOsPage() {
             {orchestrationTools.map((tool) => (
               <Card key={tool.label} className="surface-library p-5">
                 <div className="flex items-start justify-between gap-3">
-                  <Badge variant={tool.status === "Seeded" ? "default" : "outline"}>
+                  <Badge
+                    variant={
+                      tool.status === "Active" || tool.status === "Seeded" ? "default" : "outline"
+                    }
+                  >
                     {tool.status}
                   </Badge>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={tool.cta !== "Preview"}
-                  >
-                    {tool.cta}
+                  <Button asChild type="button" variant="outline" size="sm">
+                    <Link to="/portal/command-tools">{tool.cta}</Link>
                   </Button>
                 </div>
                 <h3 className="mt-4 font-display text-xl leading-tight">{tool.label}</h3>
