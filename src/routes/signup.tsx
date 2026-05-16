@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
-import { Mail, MessageCircle } from "lucide-react";
+import { Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,6 @@ export const Route = createFileRoute("/signup")({
 function SignupPage() {
   const [email, setEmail] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
-  const [discordLoading, setDiscordLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
   const onEmail = async (event: FormEvent<HTMLFormElement>) => {
@@ -47,19 +46,6 @@ function SignupPage() {
 
     setEmailSent(true);
     toast.success("Check your email for a secure sign-in link.");
-  };
-
-  const onDiscord = async () => {
-    setDiscordLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "discord",
-      options: {
-        redirectTo: window.location.origin + "/portal",
-        scopes: "identify email",
-      },
-    });
-    setDiscordLoading(false);
-    if (error) toast.error(error.message);
   };
 
   return (
@@ -94,7 +80,7 @@ function SignupPage() {
           />
           <Button className="w-full" type="submit" disabled={emailLoading}>
             <Mail className="mr-2 h-4 w-4" />
-            {emailLoading ? "Sending link…" : "Email me a secure login link"}
+            {emailLoading ? "Sending link..." : "Email me a setup link"}
           </Button>
           {emailSent ? (
             <p className="text-xs leading-relaxed text-muted-foreground">
@@ -104,23 +90,9 @@ function SignupPage() {
           ) : null}
         </form>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-hairline" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-3 text-muted-foreground">Community sign-in</span>
-          </div>
-        </div>
-
-        <Button className="w-full" variant="outline" onClick={onDiscord} disabled={discordLoading}>
-          <MessageCircle className="mr-2 h-4 w-4" />
-          {discordLoading ? "Opening Discord…" : "Continue with Discord"}
-        </Button>
-
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Use the same email that was used at checkout. Discord remains the community layer after
-          the member account is active.
+          Use the same email that was used at checkout or comped into the Circle. Password sign-in
+          is the standard path into the portal.
         </p>
 
         <Button asChild variant="ghost" className="w-full">

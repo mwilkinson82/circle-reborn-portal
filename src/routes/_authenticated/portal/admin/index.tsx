@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
-import { DatabaseZap, ShieldCheck, Video } from "lucide-react";
+import { DatabaseZap, MailCheck, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -114,17 +114,17 @@ function AdminPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-md bg-amber-soft text-amber">
-              <ShieldCheck className="h-6 w-6" />
+              <MailCheck className="h-6 w-6" />
             </div>
             <div>
-              <h2 className="font-display text-2xl">Access gate test</h2>
+              <h2 className="font-display text-2xl">Member access</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Create safe Gmail aliases to prove members get in and non-members stay blocked.
+                Preview password setup emails and create safe access-test aliases for QA.
               </p>
             </div>
           </div>
           <Button asChild variant="outline">
-            <Link to="/portal/admin/access-test">Open test</Link>
+            <Link to="/portal/admin/access-test">Open access</Link>
           </Button>
         </div>
       </Card>

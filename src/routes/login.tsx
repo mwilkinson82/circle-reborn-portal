@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
-import { Lock, Mail, MessageCircle } from "lucide-react";
+import { Lock, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,6 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [emailLoading, setEmailLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
-  const [discordLoading, setDiscordLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
   const onEmail = async (event: FormEvent<HTMLFormElement>) => {
@@ -78,19 +77,6 @@ function LoginPage() {
     window.location.assign("/portal");
   };
 
-  const onDiscord = async () => {
-    setDiscordLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "discord",
-      options: {
-        redirectTo: window.location.origin + "/portal",
-        scopes: "identify email",
-      },
-    });
-    setDiscordLoading(false);
-    if (error) toast.error(error.message);
-  };
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="hidden lg:flex flex-col justify-between p-12 bg-foreground text-background">
@@ -117,8 +103,8 @@ function LoginPage() {
           <div>
             <h1 className="font-display text-3xl">Sign in</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Use the email tied to your paid or comped Contractor Circle membership. Password is
-              the fastest path into the portal.
+              Use the email tied to your paid or comped Contractor Circle membership. Password
+              sign-in is the standard path into the portal.
             </p>
             <p className="mt-2 text-sm text-muted-foreground">
               Not a member yet?{" "}
@@ -211,30 +197,6 @@ function LoginPage() {
               </form>
             </TabsContent>
           </Tabs>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-hairline" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-3 text-muted-foreground">Community sign-in</span>
-            </div>
-          </div>
-
-          <Button
-            className="w-full"
-            variant="outline"
-            onClick={onDiscord}
-            disabled={discordLoading}
-          >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            {discordLoading ? "Opening Discord…" : "Continue with Discord"}
-          </Button>
-
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Discord remains the community layer. If your purchase email and Discord email are
-            different, use email sign-in first.
-          </p>
         </div>
       </div>
     </div>

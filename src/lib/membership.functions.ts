@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import type Stripe from "stripe";
+import { z } from "zod";
 import { createStripeClient } from "@/lib/stripe.server";
 import { getSupabaseAdminEnvStatus, supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -57,6 +58,10 @@ function isFoundingClaim(priceId: string | null | undefined, status: string | nu
   return isFoundingPlan(priceId) || normalizeClaimStatus(status) === "founding";
 }
 
+function isPasswordSetupEligibleClaim(status: string | null | undefined) {
+  return PASSWORD_SETUP_STATUSES.has(normalizeClaimStatus(status));
+}
+
 type PendingClaim = {
   id: string;
   email: string;
@@ -65,6 +70,8 @@ type PendingClaim = {
   price_id: string | null;
   status: string;
   current_period_end: string | null;
+  claimed_at?: string | null;
+  metadata?: unknown;
 };
 
 type ClaimResult = {
@@ -86,6 +93,23 @@ type AccessTestResult = {
   preparedAt: string;
 };
 
+type PasswordSetupCampaignResult = {
+  mode: "preview" | "send";
+  generatedAt: string;
+  totalPendingClaims: number;
+  readyToEmail: number;
+  alreadySent: number;
+  sent: number;
+  failed: Array<{ email: string; error: string }>;
+  skipped: {
+    invalidEmail: number;
+    ineligibleStatus: number;
+    duplicateEmail: number;
+  };
+  sampleEmails: string[];
+  emailConfigReady: boolean;
+};
+
 type MembershipRecord = {
   status: string | null;
   plan: string | null;
@@ -98,6 +122,18 @@ type MembershipRecord = {
 };
 
 const STRIPE_MEMBER_REFRESH_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const PASSWORD_SETUP_STATUSES = new Set([
+  "active",
+  "trialing",
+  "past_due",
+  "comped",
+  "manual",
+  "founding",
+]);
+
+const passwordSetupCampaignInputSchema = z.object({
+  limit: z.number().int().min(1).max(200).optional(),
+});
 
 type AuthUserLike = {
   email?: string | null;
@@ -329,7 +365,7 @@ function createPlusAlias(email: string, tag: string) {
   return `${cleanLocal}+${tag}@${domain}`.toLowerCase();
 }
 
-function getPortalRedirectUrl() {
+function getPortalOrigin() {
   const configuredUrl =
     process.env.SITE_URL ??
     process.env.PUBLIC_SITE_URL ??
@@ -343,7 +379,15 @@ function getPortalRedirectUrl() {
     (vercelUrl ? `https://${vercelUrl}` : null) ??
     "https://circle-reborn-portal.vercel.app";
 
-  return `${origin.replace(/\/$/, "")}/portal`;
+  return origin.replace(/\/$/, "");
+}
+
+function getPortalRedirectUrl() {
+  return `${getPortalOrigin()}/portal`;
+}
+
+function getPasswordSetupRedirectUrl() {
+  return `${getPortalOrigin()}/reset-password`;
 }
 
 async function generateAccessTestActionLink(email: string) {
@@ -360,6 +404,264 @@ async function generateAccessTestActionLink(email: string) {
   }
 
   return actionLink;
+}
+
+async function generatePasswordSetupActionLink(email: string) {
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: "magiclink",
+    email,
+    options: {
+      redirectTo: getPasswordSetupRedirectUrl(),
+      data: { portal_onboarding: "password_setup" },
+    },
+  });
+  if (error) throw error;
+
+  const actionLink = data.properties?.action_link;
+  if (!actionLink) {
+    throw new Error("Supabase did not return a password setup link.");
+  }
+
+  return actionLink;
+}
+
+function getPlainMetadata(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value as Record<string, unknown>;
+}
+
+function wasPasswordSetupAlreadySent(claim: PendingClaim) {
+  return typeof getPlainMetadata(claim.metadata).password_setup_sent_at === "string";
+}
+
+function isValidEmailLike(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function passwordSetupEmailHtml(email: string, actionLink: string) {
+  const safeEmail = escapeHtml(email);
+  const safeLink = escapeHtml(actionLink);
+  const loginUrl = `${getPortalOrigin()}/login`;
+
+  return `
+    <div style="font-family:Inter,Arial,sans-serif;color:#171411;line-height:1.55">
+      <h1 style="font-size:24px;margin:0 0 12px">Set your Contractor Circle portal password</h1>
+      <p style="margin:0 0 16px;color:#5b534b">
+        Your Contractor Circle member account is ready for email and password sign-in.
+      </p>
+      <p style="margin:0 0 20px;color:#5b534b">
+        Use this private setup link for <strong>${safeEmail}</strong>. After you set a password,
+        you can sign in from the portal any time with email and password.
+      </p>
+      <p style="margin:0 0 24px">
+        <a href="${safeLink}" style="display:inline-block;background:#171411;color:#fff;text-decoration:none;padding:12px 18px;border-radius:4px;font-weight:700">
+          Set portal password
+        </a>
+      </p>
+      <p style="margin:0 0 10px;color:#5b534b;font-size:14px">
+        If the button does not open, paste this link into your browser:
+      </p>
+      <p style="word-break:break-all;margin:0 0 20px;color:#5b534b;font-size:14px">${safeLink}</p>
+      <p style="margin:0;color:#5b534b;font-size:14px">
+        Portal sign-in: <a href="${escapeHtml(loginUrl)}">${escapeHtml(loginUrl)}</a>
+      </p>
+    </div>
+  `;
+}
+
+function passwordSetupEmailText(email: string, actionLink: string) {
+  return [
+    "Set your Contractor Circle portal password",
+    "",
+    "Your Contractor Circle member account is ready for email and password sign-in.",
+    "",
+    `Use this private setup link for ${email}. After you set a password, you can sign in from the portal any time with email and password.`,
+    "",
+    actionLink,
+    "",
+    `Portal sign-in: ${getPortalOrigin()}/login`,
+  ].join("\n");
+}
+
+async function sendPasswordSetupEmail(email: string, actionLink: string) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.CIRCLE_PORTAL_FROM_EMAIL ?? process.env.INTENSIVE_APPLICATION_FROM_EMAIL;
+
+  if (!apiKey || !from) {
+    return {
+      sent: false,
+      error: "Missing RESEND_API_KEY or CIRCLE_PORTAL_FROM_EMAIL/INTENSIVE_APPLICATION_FROM_EMAIL.",
+    };
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [email],
+      subject: "Set your Contractor Circle portal password",
+      html: passwordSetupEmailHtml(email, actionLink),
+      text: passwordSetupEmailText(email, actionLink),
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.text();
+    return {
+      sent: false,
+      error: body || `Resend returned ${response.status}`,
+    };
+  }
+
+  return { sent: true, error: null };
+}
+
+async function requireAdminEmailForCampaign(context: {
+  userId: string;
+  claims?: unknown;
+}): Promise<string | null> {
+  const claimEmail = (context.claims as { email?: string } | undefined)?.email ?? null;
+  const { data: authUserRes, error: authUserError } = await supabaseAdmin.auth.admin.getUserById(
+    context.userId,
+  );
+  if (authUserError) throw authUserError;
+
+  const email = resolveAuthEmail(authUserRes?.user, claimEmail);
+  if (!(await isUserAdmin(context.userId, email))) {
+    throw new Error("Admin access required");
+  }
+
+  return email;
+}
+
+async function collectPasswordSetupRecipients() {
+  const { data, error, count } = await supabaseAdmin
+    .from("pending_claims")
+    .select(
+      "id, email, stripe_customer_id, stripe_subscription_id, price_id, status, current_period_end, claimed_at, metadata",
+      { count: "exact" },
+    )
+    .is("claimed_at", null)
+    .limit(1000);
+
+  if (error) throw error;
+
+  const skipped = {
+    invalidEmail: 0,
+    ineligibleStatus: 0,
+    duplicateEmail: 0,
+  };
+  let alreadySent = 0;
+  const byEmail = new Map<string, PendingClaim>();
+
+  for (const claim of (data ?? []) as PendingClaim[]) {
+    const email = normalizeEmailForMatch(claim.email);
+    if (!email || !isValidEmailLike(email)) {
+      skipped.invalidEmail++;
+      continue;
+    }
+    if (!isPasswordSetupEligibleClaim(claim.status)) {
+      skipped.ineligibleStatus++;
+      continue;
+    }
+    const matchKey = canonicalEmailForMatch(email);
+    if (byEmail.has(matchKey)) {
+      skipped.duplicateEmail++;
+      continue;
+    }
+    if (wasPasswordSetupAlreadySent(claim)) {
+      alreadySent++;
+      continue;
+    }
+
+    byEmail.set(matchKey, { ...claim, email });
+  }
+
+  return {
+    totalPendingClaims: count ?? data?.length ?? 0,
+    recipients: [...byEmail.values()].sort((left, right) => left.email.localeCompare(right.email)),
+    alreadySent,
+    skipped,
+  };
+}
+
+async function runPasswordSetupCampaign(options: {
+  send: boolean;
+  adminEmail: string | null;
+  limit?: number;
+}): Promise<PasswordSetupCampaignResult> {
+  const generatedAt = new Date().toISOString();
+  const collected = await collectPasswordSetupRecipients();
+  const recipients =
+    typeof options.limit === "number"
+      ? collected.recipients.slice(0, options.limit)
+      : collected.recipients;
+  const failed: PasswordSetupCampaignResult["failed"] = [];
+  let sent = 0;
+
+  if (options.send) {
+    for (const recipient of recipients) {
+      try {
+        const actionLink = await generatePasswordSetupActionLink(recipient.email);
+        const emailResult = await sendPasswordSetupEmail(recipient.email, actionLink);
+        if (!emailResult.sent) {
+          failed.push({ email: recipient.email, error: emailResult.error ?? "Email not sent." });
+          continue;
+        }
+
+        sent++;
+        const metadata = {
+          ...getPlainMetadata(recipient.metadata),
+          password_setup_sent_at: generatedAt,
+          password_setup_sent_by: options.adminEmail,
+        };
+        const { error } = await supabaseAdmin
+          .from("pending_claims")
+          .update({ metadata })
+          .eq("id", recipient.id);
+        if (error) {
+          failed.push({
+            email: recipient.email,
+            error: `Email sent, but the send marker failed: ${error.message}`,
+          });
+        }
+      } catch (error) {
+        failed.push({
+          email: recipient.email,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+  }
+
+  return {
+    mode: options.send ? "send" : "preview",
+    generatedAt,
+    totalPendingClaims: collected.totalPendingClaims,
+    readyToEmail: collected.recipients.length,
+    alreadySent: collected.alreadySent,
+    sent,
+    failed,
+    skipped: collected.skipped,
+    sampleEmails: collected.recipients.slice(0, 12).map((recipient) => recipient.email),
+    emailConfigReady: Boolean(
+      process.env.RESEND_API_KEY &&
+      (process.env.CIRCLE_PORTAL_FROM_EMAIL ?? process.env.INTENSIVE_APPLICATION_FROM_EMAIL),
+    ),
+  };
 }
 
 /**
@@ -561,6 +863,21 @@ export const prepareAccessTest = createServerFn({ method: "POST" })
     ]);
 
     return { memberEmail, memberActionLink, blockedEmail, blockedActionLink, preparedAt };
+  });
+
+export const previewPasswordSetupCampaign = createServerFn({ method: "GET" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PasswordSetupCampaignResult> => {
+    const adminEmail = await requireAdminEmailForCampaign(context);
+    return runPasswordSetupCampaign({ send: false, adminEmail });
+  });
+
+export const sendPasswordSetupCampaign = createServerFn({ method: "POST" })
+  .middleware([attachAuthHeader, requireSupabaseAuth])
+  .inputValidator((data: unknown) => passwordSetupCampaignInputSchema.parse(data ?? {}))
+  .handler(async ({ data, context }): Promise<PasswordSetupCampaignResult> => {
+    const adminEmail = await requireAdminEmailForCampaign(context);
+    return runPasswordSetupCampaign({ send: true, adminEmail, limit: data.limit });
   });
 
 export const getMyMembershipAccess = createServerFn({ method: "GET" })
