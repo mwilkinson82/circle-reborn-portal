@@ -156,9 +156,9 @@ function LoginPage() {
                   {passwordLoading ? "Signing in..." : "Sign in with password"}
                 </Button>
                 <div className="flex justify-between gap-4 text-xs text-muted-foreground">
-                  <Link to="/reset-password" className="underline underline-offset-4">
+                  <a href="/reset-password?request=1" className="underline underline-offset-4">
                     Set or reset password
-                  </Link>
+                  </a>
                   <span>Recommended</span>
                 </div>
               </form>

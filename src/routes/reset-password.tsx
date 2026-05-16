@@ -18,10 +18,22 @@ function ResetPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash.includes("type=recovery")) {
+    if (typeof window === "undefined") return;
+
+    const search = new URLSearchParams(window.location.search);
+    if (search.get("request") === "1") {
+      setMode("request");
+      return;
+    }
+
+    if (
+      window.location.hash.includes("type=recovery") ||
+      window.location.hash.includes("type=magiclink")
+    ) {
       setMode("update");
       return;
     }
+
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) setMode("update");
     });
@@ -60,8 +72,8 @@ function ResetPasswordPage() {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "request"
-              ? "We'll email you a link to set a new password."
-              : "Choose a strong password — at least 8 characters."}
+              ? "We'll email a private link first. The password form opens after that link verifies your email."
+              : "Your email link is verified. Choose a strong password — at least 8 characters."}
           </p>
         </div>
 
